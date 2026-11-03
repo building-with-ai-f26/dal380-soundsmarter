@@ -47,10 +47,10 @@ Each build is due Monday at noon, New York time.
 
 | Build | Class asks for | SoundSmarter |
 | --- | --- | --- |
-| **1 · Nov 9** — Intent + throwaway prototype | PRD v1, one local interaction | Prompt → record → transcribe (fillers kept) → filler count, WPM, prep time. Disposable is fine. |
-| **2 · Nov 16** — Plan + smallest real local version + PostHog | Riskiest part, architecture, budget | Real stack (web + Python + SQLite); session records persisted; pauses + filler-to-pause ratio; LLM classification of lexical fillers; PostHog installed. Tests the top risk: filler detection accuracy. |
+| **1 · Nov 9** — Intent + throwaway prototype | PRD v1, one local interaction | Prompt → record → transcribe (fillers kept) → filler count, speaking rate, prep time. Disposable is fine. |
+| **2 · Nov 16** — Plan + smallest real local version + PostHog | Riskiest part, architecture, budget | Real stack (web + Python + SQLite); session records persisted; pauses + filler-to-pause ratio; LLM classification of lexical fillers; PostHog installed. Start collecting and hand-labeling 10–15 takes (owner + pod member) for build 4 evals. Tests the top risk: filler detection accuracy. |
 | **3 · Nov 23** — Build the core in small changes | The core product | Acoustic features (pitch, loudness); one recommendation per take carried into the next prompt; trends within prompt type. |
-| **4 · Nov 30** — Test: domain evals or user replays | Evidence it works | Evals: hand-labeled recordings vs. app counts for fillers and pauses; tester sessions. |
+| **4 · Nov 30** — Test: domain evals or user replays | Evidence it works | Evals: hand-labeled recordings (collected from build 2) vs. app counts for fillers and pauses; tester sessions. |
 | **5 · Dec 7** — Ship | Live URL + 2-minute video | Cloud deploy; crutch word and vocabulary features if time allows. |
 
 ### Build 1 detail (due Nov 9)
@@ -60,7 +60,7 @@ A throwaway prototype: the smallest working interaction.
 1. **Prompt.** Show one three-beat prompt (hard-coded is fine).
 2. **Record.** Recording starts at prompt reveal; user stops it, hard stop at 60 s.
 3. **Transcribe.** Speech-to-text with fillers preserved and word-level timestamps (Deepgram first).
-4. **Show three numbers:** filler count (vocalized fillers from the STT flag), speaking rate (WPM), and prep time.
+4. **Show three numbers:** filler count (vocalized fillers from the STT flag), speaking rate (WPM, pauses included), and prep time. Articulation rate needs pause detection and comes in build 2.
 
 **Prep time** = prompt reveal → first spoken word, measured after the fact from the transcript's first word timestamp. Shown neutrally ("you took 1.4 s"), never as a score.
 
@@ -310,7 +310,7 @@ Each option lists what it buys and what it costs. **Lean** is the suggested star
 **SQLite with a JSON column per session record; audio on local disk**
 - Upsides: zero ops for build 1.
 - Downsides: migrate to Postgres and object storage if multi-user.
-- Lean: **build 1.**
+- Lean: **build 2.**
 
 Before writing any provider call, confirm flag names and model support against the provider's current docs; both STT providers' documentation has moved recently.
 
@@ -319,7 +319,7 @@ Before writing any provider call, confirm flag names and model support against t
 | Idea | Status | Why |
 | --- | --- | --- |
 | Filler words as the defining feature | Adopted | Owner's call. STT stripping is solved by a provider flag; lexical fillers need LLM classification. |
-| Vocabulary as the second feature | Adopted | Owner's call. Definition for build 1 still open (see Open questions). |
+| Vocabulary as the second feature | Adopted, sequenced to build 5 | Owner's call. Second in priority, built after the filler/pause core. Definition still open (see Open questions). |
 | Acoustic "music of speech": hitches, volume, tone | Adopted | Owner's call. Done with signal processing on the raw audio, not a model. |
 | Grammar analysis | Deferred | Pulls toward the ESL market; spoken grammar is full of fragments and restarts, so an LLM over-flags. |
 | Pronunciation / accent scoring | Deferred | A transcript can't do it; needs a phoneme-level API. Frame as clarity, not accent, if revisited. |
@@ -343,14 +343,14 @@ The first list is settled and should not be relitigated. The second list is prop
 **Stated by the owner**
 
 1. Target user is MBA students (native English speakers) who speak under pressure. Testers: the owner and one pod member.
-2. Filler words are the defining feature; vocabulary is second.
+2. Filler words are the defining feature; vocabulary is second in priority and scheduled for build 5 if time allows.
 3. The app analyzes the acoustic "music" of speech — hitches, volume, tone — beyond transcript-plus-LLM.
 4. Metrics are computed per take and tracked over time: words per minute, fillers per minute, repetition of fillers and most-used words (the crutch), pause metrics.
 5. The timer does not start until the first word is spoken; preparation time is part of the skill.
 6. Continuous flow of speech is the essential UI problem: good prompts, natural progression of thought, structure set up before speaking.
 7. Objective mapping (who the user is speaking to) is deferred.
 8. The finished loop is prompt → record → listen → analyze → metrics → recommendation → iterate, and nothing more.
-9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt → record → transcribe → filler count, WPM, prep time.
+9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt → record → transcribe → filler count, speaking rate, prep time.
 10. Prep time = prompt reveal → first spoken word, from the STT first-word timestamp; framed neutrally.
 
 **Proposed, not yet objected to**
@@ -365,7 +365,7 @@ The first list is settled and should not be relitigated. The second list is prop
 8. Prompts tagged by type; trends compared within type.
 9. Exactly one recommendation per take, carried into the next prompt as its focus.
 10. Numbers come from code; narration comes from the LLM.
-11. Web client, Python backend, SQLite for build 1.
+11. Web client, Python backend, SQLite from build 2 (build 1 is a throwaway).
 
 ## Open questions
 
@@ -373,7 +373,7 @@ Raise these rather than resolve them.
 
 **Product**
 
-- [ ] Vocabulary feature for build 1: precision suggestions ("really good" → a specific word), a lexical-diversity score, or tracking whether suggested words get used in later takes? Only the last one creates a habit loop; it also needs the most sessions to show anything.
+- [ ] Vocabulary feature (build 5): precision suggestions ("really good" → a specific word), a lexical-diversity score, or tracking whether suggested words get used in later takes? Only the last one creates a habit loop; it also needs the most sessions to show anything.
 - [ ] Prompt bank: how many prompts, who writes them, how many per type. The three-beat structure needs to be consistent across the bank or the metrics drift.
 - [ ] Listen before metrics: is playback mandatory before the numbers appear, or optional?
 - [ ] Playback: raw audio, or with fillers and hesitation pauses highlighted on a waveform?
