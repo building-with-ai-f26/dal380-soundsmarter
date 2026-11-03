@@ -23,11 +23,10 @@ Build 1 targets MBA students, native English speakers, who speak under pressure:
 
 ## Problem
 
-People who want to sound more articulate get no feedback in real life. Nobody tells you that you said "like" nine times, that you rushed the first sentence, or that your voice trailed off at the end of every thought.
+Speakers rarely get measured feedback on how they speak, so they can't track improvement.
 
-- The casual advice (Reddit, YouTube) converges on a few behaviors: replace fillers with pauses, slow down, find your crutch word, take a beat before answering. None of it is measured, so people can't tell whether they're improving.
-- Most people have one or two dominant crutch words and can't hear them.
-- Fillers, hesitation pauses, and rushing are one underlying behavior: speaking before the thought is ready. Prep time before the first word is the upstream fix, and the app should make it visible and normal.
+- Starting metrics: filler words, pauses, and prep time.
+- The research behind speech metrics is still developing. Metrics will be added or revised as it does.
 
 ## Before / after
 
