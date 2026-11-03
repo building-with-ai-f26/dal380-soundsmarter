@@ -7,6 +7,8 @@
 - **Primary user & core workflow:** [See the living PRD in `docs/index.html`]
 - **Tech stack:** [e.g., Python 3.12 / FastAPI / Next.js / SQLite / OpenRouter API]
 
+- **Product source of truth:** [`HANDOFF.md`](./HANDOFF.md). Read it before building. Product decisions are made in design review and by the owner; the agent merges approved changes, builds, and never changes a product decision on its own. Put anything that needs deciding under "Questions for design" at the end of HANDOFF.md.
+
 ## 2. Commands
 - **Install dependencies:** `[e.g., npm install / uv sync]`
 - **Run locally:** `[e.g., npm run dev]`
