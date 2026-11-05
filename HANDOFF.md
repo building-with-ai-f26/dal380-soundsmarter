@@ -1,6 +1,6 @@
 # SoundSmarter — Handoff
 
-*As of 2026-11-02 · living document*
+*As of 2026-11-05 · living document*
 
 ## Context
 
@@ -47,8 +47,8 @@ Each build is due Monday at noon, New York time.
 
 | Build | Class asks for | SoundSmarter |
 | --- | --- | --- |
-| **1 · Nov 9** — Intent + throwaway prototype | PRD v1, one local interaction | Prompt → record → transcribe (fillers kept) → filler count, speaking rate, prep time. Disposable is fine. |
-| **2 · Nov 16** — Plan + smallest real local version + PostHog | Riskiest part, architecture, budget | Real stack (web + Python + SQLite); session records persisted; pauses + filler-to-pause ratio; LLM classification of lexical fillers; PostHog installed. Start collecting and hand-labeling 10–15 takes (owner + pod member) for build 4 evals. Tests the top risk: filler detection accuracy. |
+| **1 · Nov 9** — Intent + throwaway prototype | PRD v1, one local interaction | Prompt (fixed bank of 5) → record → transcribe (fillers kept) → filler count. Disposable is fine. |
+| **2 · Nov 16** — Plan + smallest real local version + PostHog | Riskiest part, architecture, budget | Real stack (web + Python + SQLite); session records persisted; speaking rate + prep time (moved from build 1); pauses + filler-to-pause ratio; LLM classification of lexical fillers; PostHog installed. Start collecting and hand-labeling 10–15 takes (owner + pod member) for build 4 evals. Tests the top risk: filler detection accuracy. |
 | **3 · Nov 23** — Build the core in small changes | The core product | Acoustic features (pitch, loudness); one recommendation per take carried into the next prompt; trends within prompt type. |
 | **4 · Nov 30** — Test: domain evals or user replays | Evidence it works | Evals: hand-labeled recordings (collected from build 2) vs. app counts for fillers and pauses; tester sessions. |
 | **5 · Dec 7** — Ship | Live URL + 2-minute video | Cloud deploy; crutch word and vocabulary features if time allows. |
@@ -57,14 +57,24 @@ Each build is due Monday at noon, New York time.
 
 A throwaway prototype: the smallest working interaction.
 
-1. **Prompt.** Show one three-beat prompt (hard-coded is fine).
+1. **Prompt.** Show one prompt from a fixed bank of 5 (hard-coded; owner-written, listed below). If the user doesn't like it, they can skip to the next prompt in the bank (cycling back to the first after the fifth). Skipping discards the current recording and starts a fresh one with the new prompt.
 2. **Record.** Recording starts at prompt reveal; user stops it, hard stop at 60 s.
 3. **Transcribe.** Speech-to-text with fillers preserved and word-level timestamps (Deepgram first).
-4. **Show three numbers:** filler count (vocalized fillers from the STT flag), speaking rate (WPM, pauses included), and prep time. Articulation rate needs pause detection and comes in build 2.
+4. **Show the filler count:** vocalized fillers from the STT flag, as a total plus a breakdown by filler (e.g. "um ×4, uh ×2").
 
-**Prep time** = prompt reveal → first spoken word, measured after the fact from the transcript's first word timestamp. Shown neutrally ("you took 1.4 s"), never as a score.
+**Build 1 prompt bank** (owner-written, 2026-11-05; use verbatim; mix of two- and three-beat is fine for build 1):
 
-Not in build 1: acoustic features, LLM classification of lexical fillers, the recommendation, trends, persistence across sessions, the iterate loop.
+1. Which social media platform do you like most, and why? Which do you like the least?
+2. Tell me about the best Halloween costume you ever wore. What did you dress as most recently?
+3. What would you do on your ideal day off? It could even be your birthday if you want to have a party.
+4. Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?
+5. If you could learn any skill overnight, what would it be? What would you do with it first?
+
+*Changed 2026-11-05 by the owner:* speaking rate and prep time moved to build 2 to keep build 1 focused on the riskiest assumption, filler detection.
+
+**Prep time** (build 2) = prompt reveal → first spoken word, measured after the fact from the transcript's first word timestamp. Shown neutrally ("you took 1.4 s"), never as a score.
+
+Not in build 1: speaking rate, prep time, prompt generation (beyond the fixed bank), acoustic features, LLM classification of lexical fillers, the recommendation, trends, persistence across sessions, the iterate loop.
 
 ## The finished loop (complete by build 3)
 
@@ -350,7 +360,7 @@ The first list is settled and should not be relitigated. The second list is prop
 6. Continuous flow of speech is the essential UI problem: good prompts, natural progression of thought, structure set up before speaking.
 7. Objective mapping (who the user is speaking to) is deferred.
 8. The finished loop is prompt → record → listen → analyze → metrics → recommendation → iterate, and nothing more.
-9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt → record → transcribe → filler count, speaking rate, prep time.
+9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt (fixed bank of 5) → record → transcribe → filler count. *(Changed 2026-11-05: speaking rate and prep time moved to build 2.)*
 10. Prep time = prompt reveal → first spoken word, from the STT first-word timestamp; framed neutrally.
 
 **Proposed, not yet objected to**
@@ -374,7 +384,7 @@ Raise these rather than resolve them.
 **Product**
 
 - [ ] Vocabulary feature (build 5): precision suggestions ("really good" → a specific word), a lexical-diversity score, or tracking whether suggested words get used in later takes? Only the last one creates a habit loop; it also needs the most sessions to show anything.
-- [ ] Prompt bank: how many prompts, who writes them, how many per type. The three-beat structure needs to be consistent across the bank or the metrics drift.
+- [ ] Prompt bank (build 1 uses a fixed bank of 5; prompt generation later): how many prompts, who writes them, how many per type. The three-beat structure needs to be consistent across the bank or the metrics drift.
 - [ ] Listen before metrics: is playback mandatory before the numbers appear, or optional?
 - [ ] Playback: raw audio, or with fillers and hesitation pauses highlighted on a waveform?
 - [ ] Multi-user accounts, or single-user for the demo?
