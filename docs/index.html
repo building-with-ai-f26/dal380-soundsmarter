@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>[Your Product Name] · Building with AI (Fall 2026)</title>
+  <title>SoundSmarter · Building with AI (Fall 2026)</title>
 
   <!-- Week 1: create your PostHog account only.
        Build 2: paste your project's current PostHog web snippet here,
@@ -144,8 +144,8 @@
     <!-- HERO / PRODUCT PITCH -->
     <header>
       <span class="eyebrow">NYU Stern · Building with AI · Fall 2026</span>
-      <h1>[Your Product Name]</h1>
-      <p class="tagline">[One clear sentence: Who is this for, and what painful job does it do for them?]</p>
+      <h1>SoundSmarter</h1>
+      <p class="tagline">For MBA students who speak under pressure: answer a short prompt out loud and see exactly how many filler words you used, so you can measure how you speak and improve take after take.</p>
       <div class="cta-row">
         <a class="btn" href="#live-demo" onclick="window.posthog && posthog.capture('clicked_try_product')">See the Product →</a>
         <a class="btn btn-secondary" href="#prd">Read the Living PRD</a>
@@ -157,7 +157,7 @@
     <section id="live-demo">
       <h2>Product Showcase (Prototype / Live App / 2-Min Video)</h2>
       <p>
-        <strong>Current Status:</strong> [Build 1: local prototype / Builds 2–4: local app / Build 5: cloud app]<br />
+        <strong>Current Status:</strong> Build 1: local prototype (in progress)<br />
         <strong>Demo:</strong> [Add a screenshot or GIF now; add the live cloud app URL in Build 5.]
       </p>
       <p class="meta">
@@ -171,21 +171,30 @@
       <p class="meta">Updated every week as we test with real users and learn what works.</p>
 
       <h3>1. Target User & The Job to Be Done</h3>
-      <p><strong>Who is this for?</strong> [Name a specific, reachable person or role you have direct access to.]</p>
-      <p><strong>The painful "Before" workflow:</strong> [How do they do this today, and why is it slow, manual, or broken?]</p>
-      <p><strong>The "After" workflow with this product:</strong> [What does your tool do for them in one sitting?]</p>
+      <p><strong>Who is this for?</strong> MBA students, native English speakers, who speak under pressure: conversations with executives, interviews, presentations, the moments when nerves show up as fillers and rushed starts. Build 1 testers: me and one member of my pod.</p>
+      <p><strong>The problem:</strong> Speakers rarely get measured feedback on how they speak, so they can't track improvement.</p>
+      <p><strong>The painful "Before" workflow:</strong> There is no feedback loop. A speaker fills gaps with "um" and "like" without knowing how often, rushes the first sentence, and starts talking before they've collected their thoughts. At best they get a vague comment afterwards ("you seemed nervous"), with nothing to measure against next time.</p>
+      <p><strong>The "After" workflow with this product:</strong> In one sitting: read a short structured prompt, speak for up to 60 seconds, and see how many fillers you used and which ones.</p>
+      <p><strong>Core workflow (Build 1):</strong></p>
+      <ol>
+        <li><strong>Prompt:</strong> see one short prompt from a fixed set of five (e.g. "Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?"). Don't like it? Skip to the next one.</li>
+        <li><strong>Record:</strong> recording starts when the prompt appears; stop any time, hard stop at 60 seconds.</li>
+        <li><strong>Transcribe:</strong> speech-to-text that keeps the fillers and times every word.</li>
+        <li><strong>Filler count:</strong> total fillers plus a breakdown by filler (e.g. "um ×4, uh ×2"). Speaking rate and prep time come in Build 2.</li>
+      </ol>
+      <p><strong>How I'll know it works:</strong> A tester can complete the workflow without help and gets back a filler count. The count matches what I hear when I listen back to the same take, and the tester says the count tells them something they didn't know.</p>
 
       <h3>2. Scope & Explicit Non-Goals</h3>
       <ul>
-        <li><strong>In Scope (Core Workflow):</strong> [The 1 main workflow this product does reliably]</li>
-        <li><strong>Out of Scope #1:</strong> [Feature you are deliberately NOT building in 6 weeks]</li>
-        <li><strong>Out of Scope #2:</strong> [Feature you are deliberately NOT building in 6 weeks]</li>
-        <li><strong>Out of Scope #3:</strong> [Feature you are deliberately NOT building in 6 weeks]</li>
+        <li><strong>In Scope (Core Workflow):</strong> prompt → record → analyze → metrics → one recommendation → next prompt. Build 1 covers prompt → record → transcribe → filler count.</li>
+        <li><strong>Out of Scope #1:</strong> Grammar correction and pronunciation or accent scoring. This is not a tool for language learners.</li>
+        <li><strong>Out of Scope #2:</strong> Tailoring feedback to the audience (dinner party vs. office vs. classroom). Every user gets the same treatment for now.</li>
+        <li><strong>Out of Scope #3:</strong> Live coaching while you speak. All feedback comes after the take.</li>
       </ul>
 
       <h3>3. How It Works Under the Hood & Riskiest Assumption (Week 2+)</h3>
-      <p><strong>Riskiest Assumption:</strong> [What is the #1 technical or user risk that could sink this product?]</p>
-      <p><strong>Simple Architecture:</strong> [User Input] → [Your App / Server] → [AI Model / Tool] → [Output]</p>
+      <p><strong>Riskiest Assumption:</strong> That filler words can be detected accurately enough to trust. Speech-to-text tools often clean fillers out of transcripts, and words like "like" are only sometimes fillers ("I like jazz" vs. "it was, like, fine"). If the filler count is wrong, the product's core metric is wrong.</p>
+      <p><strong>Simple Architecture (Build 1):</strong> [Microphone recording] → [Local prototype] → [Deepgram speech-to-text, fillers kept, word timestamps] → [Filler count computed in code] → [Total + breakdown by filler]</p>
 
       <h3>4. Unit Economics & Analytics Snapshot (Updated Weekly)</h3>
       <div class="grid-2">
