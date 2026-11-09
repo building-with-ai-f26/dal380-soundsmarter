@@ -12,9 +12,9 @@ This file is the handoff for the coding agent implementing build 1. It fixes the
 
 ## Target user
 
-Build 1 targets MBA students, native English speakers, who speak under pressure: conversations with executives, interviews, presentations, moments when nerves show up as fillers and rushed starts. It is not for language learners.
+Build 1 targets young professionals, native English speakers, who speak under pressure: conversations with executives, interviews, presentations, moments when nerves show up as fillers and rushed starts. It is not for language learners.
 
-- **Testers for build 1:** the owner and one pod member.
+- **Testers for build 1:** the owner and test user 1 (a young professional who gives presentations and gets nervous speaking).
 - Filler words and prep time are the starting focus.
 
 - Grammar correction and pronunciation/accent scoring are out of scope. Those features pull toward the ESL market (ELSA, Speak) and change the prompts, the feedback tone, and the technical stack.
@@ -57,10 +57,11 @@ Each build is due Monday at noon, New York time.
 
 A throwaway prototype: the smallest working interaction.
 
+0. **Intro screen.** Before Start, show (owner-written, verbatim): "SoundSmarter listens to you talk!" then: 1. Click Start. A prompt appears and recording begins right away. 2. Start answering immediately, in a natural, full voice. 3. Be specific with your answers. It helps the quality of feedback! 4. You can stop after 30 seconds, or keep going until the 60-second limit. Do not tell the user that fillers are counted.
 1. **Prompt.** Show one prompt from a fixed bank of 5 (hard-coded; owner-written, listed below). If the user doesn't like it, they can skip to the next prompt in the bank (cycling back to the first after the fifth). Skipping discards the current recording and starts a fresh one with the new prompt.
-2. **Record.** Recording starts at prompt reveal; user stops it, hard stop at 60 s.
-3. **Transcribe.** Speech-to-text with fillers preserved and word-level timestamps (Deepgram first).
-4. **Show the filler count:** vocalized fillers from the STT flag, as a total plus a breakdown by filler (e.g. "um ×4, uh ×2").
+2. **Record.** Recording starts at prompt reveal. Stop is greyed out (no countdown label) until 30 s, then the user can stop; hard stop at 60 s. Skip works at any time.
+3. **Transcribe.** Deepgram (Nova-2, English) with `filler_words=true` and word-level timestamps. Build 1 is built to Deepgram.
+4. **Show the filler count:** "uh" and "um" only, as detected by Deepgram, as a total plus a breakdown (e.g. "um ×4, uh ×2").
 
 **Build 1 prompt bank** (owner-written, 2026-11-05; use verbatim; mix of two- and three-beat is fine for build 1):
 
@@ -69,6 +70,10 @@ A throwaway prototype: the smallest working interaction.
 3. What would you do on your ideal day off? It could even be your birthday if you want to have a party.
 4. Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?
 5. If you could learn any skill overnight, what would it be? What would you do with it first?
+
+*Changed 2026-11-08 by the owner:* added the intro screen and 30 s minimum after test user 1 didn't know what to do on the first screen. Target user broadened from MBA students to young professionals; test user 1 replaces the pod member.
+
+*Changed 2026-11-07 by the owner:* build 1 counts only "uh" and "um" as detected by Deepgram. Deepgram also flags yes/no sounds (mhmm, mm-mm, uh-uh, uh-huh, nuh-uh); these are not counted. Nothing else (no "er", "like", "you know"); scope follows what the tool reliably does.
 
 *Changed 2026-11-05 by the owner:* speaking rate and prep time moved to build 2 to keep build 1 focused on the riskiest assumption, filler detection.
 
@@ -352,7 +357,7 @@ The first list is settled and should not be relitigated. The second list is prop
 
 **Stated by the owner**
 
-1. Target user is MBA students (native English speakers) who speak under pressure. Testers: the owner and one pod member.
+1. Target user is young professionals (native English speakers) who speak under pressure. Testers: the owner and test user 1. *(Changed 2026-11-08; was MBA students + one pod member.)*
 2. Filler words are the defining feature; vocabulary is second in priority and scheduled for build 5 if time allows.
 3. The app analyzes the acoustic "music" of speech — hitches, volume, tone — beyond transcript-plus-LLM.
 4. Metrics are computed per take and tracked over time: words per minute, fillers per minute, repetition of fillers and most-used words (the crutch), pause metrics.
