@@ -413,4 +413,9 @@ Raise these rather than resolve them.
 
 Added by the coding agent for the next design review. Resolved items move into **Decisions made**.
 
-- [ ] *(none yet)*
+- [ ] **Leading filler is never counted** (owner, Build 1 testing, every take): the "uhh"/"umm" at the very start of a recording is missing from both the count and the transcript. Cause unknown: the browser recorder clipping the first moment, speech starting before recording is live, or Deepgram dropping an opening disfluency. Affects Build 2 prep time (prompt reveal → first spoken word), which would be measured to the wrong word and come out too long.
+- [ ] **Standard A/B test for the underlying tech** (owner, 2026-11-08): test every audio or speech-to-text choice the same way, as a matter of course, not just Deepgram. Proposed protocol:
+  - **A. Simultaneous capture:** record the same take on the phone and in the browser at the same time; compare counts. Isolates browser recording settings (e.g. noise suppression).
+  - **B. Fixed playback:** play one phone recording into the app in Brave, Chrome and Safari; compare counts. Isolates the browser.
+  - **C. Provider comparison:** send the same saved recordings straight to each speech-to-text option (Deepgram Nova-2 / Nova-3, AssemblyAI, Whisper) in code, no microphone involved; compare counts against the owner's hand count. Isolates the model.
+  - Reuse the same small set of hand-counted recordings each time; it can grow into the Build 4 eval set.
