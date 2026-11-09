@@ -1,6 +1,6 @@
 # SoundSmarter
 
-> **One-line pitch:** For young professionals who speak under pressure: answer a short prompt out loud and see how many filler words you used, so you can measure how you speak and improve take after take.
+> **One-line pitch:** Improve your extemporaneous speech by cutting filler words and replacing them with pauses that sound thoughtful. With practice, sound smarter.
 
 - **Builder:** Duncan Lindsay (`@duncanlindsay`)
 - **Pod:** 10
