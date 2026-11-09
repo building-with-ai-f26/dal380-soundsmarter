@@ -50,8 +50,20 @@ const PROMPTS = [
   "Tell me about the best Halloween costume you ever wore. What did you dress as most recently?",
   "What would you do on your ideal day off? It could even be your birthday if you want to have a party.",
   "Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?",
-  "If you could learn any skill overnight, what would it be? What would you do with it first?",
+  "What do you remember about meeting your oldest friend for the first time? What do you remember from the last time you spent time with them?",
+  "What TV or movie character would your friends say you most closely resemble? If you could choose one TV or movie character to hang out with, who would it be?",
+  "If Olympic medals were given out for anything, what 'sport' would you medal in? Eating pizza? Making up funny lyrics to popular songs? Building with AI? What actual Olympic sport would you want to compete in?",
+  "What’s the farthest from home you’ve ever been? What do you remember most clearly about the first day there?",
+  "Describe the house or apartment you grew up in. If you could walk through it right now, which room would you go to first, and why that one?",
+  "If you had to live in one season for the rest of your life, which one? What would you miss most from the other three?",
+  "Explain something you’re weirdly good at: a party trick, a shortcut, a household fix. How did you get good at it, and how would you teach it?",
+  "Describe a tradition your family or friends have that would sound strange to an outsider. How did it start?",
 ];
+// Random order each page load (Fisher-Yates shuffle); Skip/Next then cycle through it
+for (let i = PROMPTS.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [PROMPTS[i], PROMPTS[j]] = [PROMPTS[j], PROMPTS[i]];
+}
 const MAX_SECONDS = 60;
 const MIN_SECONDS = 30;  // Stop is greyed out until then; Skip always works
 
