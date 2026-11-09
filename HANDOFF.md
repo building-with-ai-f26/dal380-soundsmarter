@@ -59,8 +59,8 @@ A throwaway prototype: the smallest working interaction.
 
 1. **Prompt.** Show one prompt from a fixed bank of 5 (hard-coded; owner-written, listed below). If the user doesn't like it, they can skip to the next prompt in the bank (cycling back to the first after the fifth). Skipping discards the current recording and starts a fresh one with the new prompt.
 2. **Record.** Recording starts at prompt reveal; user stops it, hard stop at 60 s.
-3. **Transcribe.** Speech-to-text with fillers preserved and word-level timestamps (Deepgram first).
-4. **Show the filler count:** vocalized fillers from the STT flag, as a total plus a breakdown by filler (e.g. "um ×4, uh ×2").
+3. **Transcribe.** Deepgram (Nova-2, English) with `filler_words=true` and word-level timestamps. Build 1 is built to Deepgram.
+4. **Show the filler count:** "uh" and "um" only, as detected by Deepgram, as a total plus a breakdown (e.g. "um ×4, uh ×2").
 
 **Build 1 prompt bank** (owner-written, 2026-11-05; use verbatim; mix of two- and three-beat is fine for build 1):
 
@@ -69,6 +69,8 @@ A throwaway prototype: the smallest working interaction.
 3. What would you do on your ideal day off? It could even be your birthday if you want to have a party.
 4. Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?
 5. If you could learn any skill overnight, what would it be? What would you do with it first?
+
+*Changed 2026-11-07 by the owner:* build 1 counts only "uh" and "um" as detected by Deepgram. Deepgram also flags yes/no sounds (mhmm, mm-mm, uh-uh, uh-huh, nuh-uh); these are not counted. Nothing else (no "er", "like", "you know"); scope follows what the tool reliably does.
 
 *Changed 2026-11-05 by the owner:* speaking rate and prep time moved to build 2 to keep build 1 focused on the riskiest assumption, filler detection.
 
