@@ -6,6 +6,7 @@
 <style>
   body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; color: #222; }
   #prompt { font-size: 1.4rem; line-height: 1.4; min-height: 4em; }
+  button:disabled { opacity: .4; cursor: default; }
   button { font-size: 1rem; padding: .6rem 1.2rem; margin-right: .5rem; cursor: pointer; }
   #status { color: #666; margin: 1rem 0; }
   #total { font-size: 3rem; font-weight: 700; }
@@ -15,9 +16,16 @@
 </head>
 <body>
 <h1>SoundSmarter</h1>
-<p>Answer the prompt out loud, up to 60 seconds. Recording starts when the prompt appears.</p>
-
-<button id="start">Start</button>
+<div id="intro">
+  <p><strong>SoundSmarter listens to you talk!</strong></p>
+  <ol>
+    <li>Click <strong>Start</strong>. A prompt appears and recording begins right away.</li>
+    <li>Start answering immediately, in a natural, full voice.</li>
+    <li>Be specific with your answers. It helps the quality of feedback!</li>
+    <li>You can stop after 30 seconds, or keep going until the 60-second limit.</li>
+  </ol>
+  <button id="start">Start</button>
+</div>
 
 <div id="session" class="hidden">
   <p id="prompt"></p>
@@ -43,6 +51,7 @@ const PROMPTS = [
   "If you could learn any skill overnight, what would it be? What would you do with it first?",
 ];
 const MAX_SECONDS = 60;
+const MIN_SECONDS = 30;  // Stop is greyed out until then; Skip always works
 
 let index = 0, stream = null, recorder = null, chunks = [], timer = null, discard = false;
 const $ = (id) => document.getElementById(id);
@@ -61,9 +70,11 @@ async function startTake() {
   recorder.onstop = onStopped;
   recorder.start();
   let left = MAX_SECONDS;
+  $("stop").disabled = true;
   $("status").textContent = `Recording… ${left}s left`;
   timer = setInterval(() => {
     left -= 1;
+    if (MAX_SECONDS - left >= MIN_SECONDS) $("stop").disabled = false;
     $("status").textContent = `Recording… ${left}s left`;
     if (left <= 0) stopTake();
   }, 1000);
@@ -102,7 +113,7 @@ function showResults(data) {
 
 function nextPrompt() { index = (index + 1) % PROMPTS.length; }
 
-$("start").onclick = () => { $("start").classList.add("hidden"); startTake(); };
+$("start").onclick = () => { $("intro").classList.add("hidden"); startTake(); };
 $("stop").onclick = stopTake;
 $("skip").onclick = () => { discard = true; nextPrompt(); stopTake(); };
 $("next").onclick = () => { nextPrompt(); startTake(); };
