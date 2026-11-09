@@ -29,5 +29,11 @@ out/
 .DS_Store
 *.log
 
+# Audio recordings (personal voice data; never commit)
+*.m4a
+*.wav
+*.webm
+*.mp3
+
 # Local-only notes
 NOTES.md
