@@ -25,6 +25,7 @@
     <li>You can stop after 30 seconds, or keep going until the 60-second limit.</li>
   </ol>
   <button id="start">Start</button>
+  <p id="access"></p>
 </div>
 
 <div id="session" class="hidden">
@@ -39,6 +40,7 @@
   <p id="breakdown"></p>
   <details><summary>Transcript</summary><p id="transcript"></p></details>
   <button id="next">Next prompt</button>
+  <p id="left"></p>
 </div>
 
 <script>
@@ -52,6 +54,10 @@ const PROMPTS = [
 ];
 const MAX_SECONDS = 60;
 const MIN_SECONDS = 30;  // Stop is greyed out until then; Skip always works
+
+// Invite code comes from the shared link: ...?code=ABC123
+const CODE = new URLSearchParams(location.search).get("code") || "";
+let takesLeft = null;  // null = unlimited (local)
 
 let index = 0, stream = null, recorder = null, chunks = [], timer = null, discard = false;
 const $ = (id) => document.getElementById(id);
@@ -92,11 +98,12 @@ async function onStopped() {
   try {
     const resp = await fetch("/transcribe", {
       method: "POST",
-      headers: { "Content-Type": recorder.mimeType.split(";")[0] },
+      headers: { "Content-Type": recorder.mimeType.split(";")[0], "X-Access-Code": CODE },
       body: blob,
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.detail || resp.status);
+    if (takesLeft !== null) takesLeft -= 1;
     showResults(data);
   } catch (err) {
     $("status").textContent = "Error: " + err.message;
@@ -109,7 +116,25 @@ function showResults(data) {
   $("total").textContent = data.total;
   $("breakdown").textContent = Object.entries(data.breakdown).map(([w, n]) => `${w} ×${n}`).join(", ");
   $("transcript").textContent = data.transcript || "(no speech detected)";
+  if (takesLeft !== null) {
+    $("left").textContent = takesLeft > 0
+      ? `${takesLeft} take${takesLeft === 1 ? "" : "s"} left.`
+      : "That was your last take. Thanks for trying SoundSmarter!";
+    $("next").disabled = takesLeft <= 0;
+  }
 }
+
+// Check the invite code before anyone records (no Deepgram call, no cost)
+async function checkAccess() {
+  $("start").disabled = true;
+  const resp = await fetch("/access", { headers: { "X-Access-Code": CODE } });
+  const data = await resp.json();
+  if (!resp.ok) { $("access").textContent = data.detail; return; }
+  takesLeft = data.takes_left;
+  if (takesLeft !== null) $("access").textContent = `${takesLeft} take${takesLeft === 1 ? "" : "s"} left.`;
+  $("start").disabled = false;
+}
+checkAccess();
 
 function nextPrompt() { index = (index + 1) % PROMPTS.length; }
 
