@@ -145,7 +145,7 @@
     <header>
       <span class="eyebrow">NYU Stern · Building with AI · Fall 2026</span>
       <h1>SoundSmarter</h1>
-      <p class="tagline">For MBA students who speak under pressure: answer a short prompt out loud and see exactly how many filler words you used, so you can measure how you speak and improve take after take.</p>
+      <p class="tagline">For young professionals who speak under pressure: answer a short prompt out loud and see exactly how many filler words you used, so you can measure how you speak and improve take after take.</p>
       <div class="cta-row">
         <a class="btn" href="#live-demo" onclick="window.posthog && posthog.capture('clicked_try_product')">See the Product →</a>
         <a class="btn btn-secondary" href="#prd">Read the Living PRD</a>
@@ -157,12 +157,14 @@
     <section id="live-demo">
       <h2>Product Showcase (Prototype / Live App / 2-Min Video)</h2>
       <p>
-        <strong>Current Status:</strong> Build 1: local prototype (in progress)<br />
-        <strong>Demo:</strong> [Add a screenshot or GIF now; add the live cloud app URL in Build 5.]
+        <strong>Current Status:</strong> Build 1: local prototype working<br />
+        <strong>Demo:</strong> Build 1 local prototype: intro → prompt + recording → results.
       </p>
-      <p class="meta">
-        Ask your coding agent to embed a screenshot or GIF of your local prototype for Build 1. Keep this evidence current, then add your cloud app link and two-minute video in Build 5.
-      </p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <a href="images/soundsmarter_build1_instructionsscreen.png" style="flex:1; min-width:220px; max-width:32%;"><img src="images/soundsmarter_build1_instructionsscreen.png" alt="Intro screen with instructions" style="width:100%; border:1px solid #ddd;" /></a>
+        <a href="images/soundsmarter_build1_promptrecordscreen.png" style="flex:1; min-width:220px; max-width:32%;"><img src="images/soundsmarter_build1_promptrecordscreen.png" alt="Prompt shown while recording" style="width:100%; border:1px solid #ddd;" /></a>
+        <a href="images/soundsmarter_build1_resultsscreen.png" style="flex:1; min-width:220px; max-width:32%;"><img src="images/soundsmarter_build1_resultsscreen.png" alt="Results: um and uh count with transcript" style="width:100%; border:1px solid #ddd;" /></a>
+      </div>
     </section>
 
     <!-- LIVING PRD (Updated every week!) -->
@@ -171,14 +173,14 @@
       <p class="meta">Updated every week as we test with real users and learn what works.</p>
 
       <h3>1. Target User & The Job to Be Done</h3>
-      <p><strong>Who is this for?</strong> MBA students, native English speakers, who speak under pressure: conversations with executives, interviews, presentations, the moments when nerves show up as fillers and rushed starts. Build 1 testers: me and one member of my pod.</p>
+      <p><strong>Who is this for?</strong> Young professionals, native English speakers, who speak under pressure: conversations with executives, interviews, presentations, the moments when nerves show up as fillers and rushed starts. Build 1 testers: me and test user 1.</p>
       <p><strong>The problem:</strong> Speakers rarely get measured feedback on how they speak, so they can't track improvement.</p>
       <p><strong>The painful "Before" workflow:</strong> There is no feedback loop. A speaker fills gaps with "um" and "like" without knowing how often, rushes the first sentence, and starts talking before they've collected their thoughts. At best they get a vague comment afterwards ("you seemed nervous"), with nothing to measure against next time.</p>
       <p><strong>The "After" workflow with this product:</strong> In one sitting: read a short structured prompt, speak for up to 60 seconds, and see how many fillers you used and which ones.</p>
       <p><strong>Core workflow (Build 1):</strong></p>
       <ol>
         <li><strong>Prompt:</strong> see one short prompt from a fixed set of five (e.g. "Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?"). Don't like it? Skip to the next one.</li>
-        <li><strong>Record:</strong> recording starts when the prompt appears; stop any time, hard stop at 60 seconds.</li>
+        <li><strong>Record:</strong> recording starts when the prompt appears; stop after 30 seconds, hard stop at 60 seconds.</li>
         <li><strong>Transcribe:</strong> speech-to-text that keeps the fillers and times every word.</li>
         <li><strong>Filler count:</strong> total fillers plus a breakdown by filler (e.g. "um ×4, uh ×2"). Build 1 counts only "uh" and "um" as detected by Deepgram. Speaking rate and prep time come in Build 2.</li>
       </ol>
@@ -225,10 +227,10 @@
       <div class="log-entry">
         <h3>Build 1 · Intent.md & Throwaway Prototype (Due Nov 9)</h3>
         <ul>
-          <li><strong>What shipped:</strong> [What you actually built; link your local prototype screenshot or GIF above.]</li>
-          <li><strong>Things learned with AI:</strong> [What you learned from AI practice and Terminus Episodes 1 and 2.]</li>
-          <li><strong>What broke / changed in PRD:</strong> [Fill in]</li>
-          <li><strong>Cost & time this week:</strong> $[0.00] · [0] hours</li>
+          <li><strong>What shipped:</strong> A local prototype (Python/FastAPI server + one web page). An intro screen explains the task; the user gets one of 5 fixed prompts, records 30–60 seconds in the browser, and sees how many times they said "um" and "uh", plus the transcript. Skip discards the take and moves to the next prompt. Filler counting is done in code and covered by automated tests.</li>
+          <li><strong>Things learned with AI:</strong> Directing a coding agent is mostly writing things down: it only knows what's in AGENTS.md. After early misses I added my experience level, a rule to teach conventions up front, review before every commit, and strict handling of secrets. Read the assignment yourself and check the agent's facts and paraphrases. Shrink scope to what the tool actually does. When something fails, isolate it: comparing a phone recording with the browser showed that both the speech model and the browser's noise suppression were dropping fillers. Picked up the git loop (status, diff, add, commit, push), Conventional Commits, branches, and pull requests.</li>
+          <li><strong>What broke / changed in PRD:</strong> First live test counted 0 fillers when I'd said 5–8. Two causes: Deepgram's newest model (Nova-3) drops more fillers than the older Nova-2, and the browser's built-in noise suppression flattened soft "um"s. Switching to Nova-2 and raw microphone audio brought it to about 4 of 5–6: it works but still undercounts, which confirms filler detection accuracy as the riskiest assumption. PRD changes: Build 1 now counts only "um" and "uh" (what Deepgram reliably detects); target user broadened from MBA students to young professionals. Test user 1 couldn't tell what to do on the first screen, so I added an intro screen and a 30-second minimum before Stop.</li>
+          <li><strong>Cost & time this week:</strong> ~$0.10 (Deepgram, about 15 short test calls, covered by free credit) · 4–5 hours total (2 on the prototype)</li>
         </ul>
       </div>
 
