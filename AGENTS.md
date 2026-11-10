@@ -4,7 +4,7 @@
 
 ## 1. Project Overview
 - **What this repo builds:** SoundSmarter records 30–60 seconds of extemporaneous speech and returns measured feedback (filler count, speaking rate, prep time) so speakers can track how they improve.
-- **Who it's for:** Young professionals, native English speakers, who speak under pressure (executive conversations, interviews, presentations) and whose nerves show up as fillers and rushed starts. Not for language learners.
+- **Who it's for:** Young professionals, fluent English speakers, who speak under pressure (executive conversations, interviews, presentations) and whose nerves show up as fillers and rushed starts. Not for language learners.
 - **The one job:** give a speaker measured feedback on *how* they speak, take after take.
 - **Primary user & core workflow:** prompt → record → transcribe → metrics. Full PRD in `docs/index.html`.
 - **Tech stack:** Build 1: throwaway local prototype using Deepgram speech-to-text (filler words on, word timestamps). From Build 2 (current lean, not set in stone; open to discovering better tools): web client (browser MediaRecorder), Python backend (FastAPI), SQLite. Details in HANDOFF.md → Technical choices.

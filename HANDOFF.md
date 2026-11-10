@@ -12,7 +12,7 @@ This file is the handoff for the coding agent implementing build 1. It fixes the
 
 ## Target user
 
-Build 1 targets young professionals, native English speakers, who speak under pressure: conversations with executives, interviews, presentations, moments when nerves show up as fillers and rushed starts. It is not for language learners.
+Build 1 targets young professionals, fluent English speakers, who speak under pressure: conversations with executives, interviews, presentations, moments when nerves show up as fillers and rushed starts. It is not for language learners.
 
 - **Testers for build 1:** the owner and test user 1 (a young professional who gives presentations and gets nervous speaking).
 - Filler words and prep time are the starting focus.
@@ -366,7 +366,7 @@ The first list is settled and should not be relitigated. The second list is prop
 
 **Stated by the owner**
 
-1. Target user is young professionals (native English speakers) who speak under pressure. Testers: the owner and test user 1. *(Changed 2026-11-08; was MBA students + one pod member.)*
+1. Target user is young professionals (fluent English speakers) who speak under pressure. Testers: the owner and test user 1. *(Changed 2026-11-08; was MBA students + one pod member. Changed 2026-11-09 by the owner: "native" → "fluent". Fillers are a nerves-and-habit problem, not a language problem; still not for language learners.)*
 2. Filler words are the defining feature; vocabulary is second in priority and scheduled for build 5 if time allows.
 3. The app analyzes the acoustic "music" of speech — hitches, volume, tone — beyond transcript-plus-LLM.
 4. Metrics are computed per take and tracked over time: words per minute, fillers per minute, repetition of fillers and most-used words (the crutch), pause metrics.
