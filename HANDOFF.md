@@ -63,13 +63,22 @@ A throwaway prototype: the smallest working interaction.
 3. **Transcribe.** Deepgram (Nova-2, English) with `filler_words=true` and word-level timestamps. Build 1 is built to Deepgram.
 4. **Show the filler count:** "uh" and "um" only, as detected by Deepgram, as a total plus a breakdown (e.g. "um ×4, uh ×2").
 
-**Build 1 prompt bank** (owner-written, 2026-11-05; use verbatim; mix of two- and three-beat is fine for build 1):
+**Build 1 prompt bank** (owner-written or owner-approved, 2026-11-05, revised 2026-11-09; use verbatim; mix of two- and three-beat is fine for build 1; shown in random order):
 
 1. Which social media platform do you like most, and why? Which do you like the least?
 2. Tell me about the best Halloween costume you ever wore. What did you dress as most recently?
 3. What would you do on your ideal day off? It could even be your birthday if you want to have a party.
 4. Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?
-5. If you could learn any skill overnight, what would it be? What would you do with it first?
+5. What do you remember about meeting your oldest friend for the first time? What do you remember from the last time you spent time with them?
+6. What TV or movie character would your friends say you most closely resemble? If you could choose one TV or movie character to hang out with, who would it be?
+7. If Olympic medals were given out for anything, what 'sport' would you medal in? Eating pizza? Making up funny lyrics to popular songs? Building with AI? What actual Olympic sport would you want to compete in?
+8. What’s the farthest from home you’ve ever been? What do you remember most clearly about the first day there?
+9. Describe the house or apartment you grew up in. If you could walk through it right now, which room would you go to first, and why that one?
+10. If you had to live in one season for the rest of your life, which one? What would you miss most from the other three?
+11. Explain something you’re weirdly good at: a party trick, a shortcut, a household fix. How did you get good at it, and how would you teach it?
+12. Describe a tradition your family or friends have that would sound strange to an outsider. How did it start?
+
+*Changed 2026-11-09 by the owner:* shared online demo pulled forward from build 5 for the Nov 10 demo: invite-code links, 3 takes per code, 30 takes per day across all codes, "N takes left" shown. Prompt bank grown from 5 to 12 and shown in random order (5 → 12: 3 owner-written, 5 proposed in Claude Cowork and owner-approved). Dropped "If you could learn any skill overnight…": hard to answer, lacks specificity. Live at https://soundsmarter-demo.onrender.com/ (Render free tier; ~30 s cold start).
 
 *Changed 2026-11-08 by the owner:* added the intro screen and 30 s minimum after test user 1 didn't know what to do on the first screen. Target user broadened from MBA students to young professionals; test user 1 replaces the pod member.
 

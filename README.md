@@ -5,7 +5,7 @@
 - **Builder:** Duncan Lindsay (`@duncanlindsay`)
 - **Pod:** 10
 - **Product Page & Living PRD:** https://building-with-ai-f26.github.io/dal380-soundsmarter/
-- **App:** runs locally through Week 4; cloud URL in Build 5.
+- **Prototype demo:** https://soundsmarter-demo.onrender.com/ (invite code required; first load can take ~30 s while the free Render server wakes up)
 
 ## What it does (Build 1)
 Prompt → record (30–60 s in the browser) → transcribe with Deepgram → count "um" and "uh".
