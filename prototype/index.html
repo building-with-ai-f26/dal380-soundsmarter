@@ -150,7 +150,16 @@ checkAccess();
 
 function nextPrompt() { index = (index + 1) % PROMPTS.length; }
 
-$("start").onclick = () => { $("intro").classList.add("hidden"); startTake(); };
+$("start").onclick = async () => {
+  try {
+    await startTake();
+    $("intro").classList.add("hidden");  // only leave the intro once the mic is live
+  } catch (err) {
+    // No mic: permission denied, an in-app browser (Messages, WhatsApp...), or no microphone
+    console.error(err);
+    $("access").textContent = "Couldn't use your microphone. Allow microphone access for this site, then reload.";
+  }
+};
 $("stop").onclick = stopTake;
 $("skip").onclick = () => { discard = true; nextPrompt(); stopTake(); };
 $("next").onclick = () => { nextPrompt(); startTake(); };
