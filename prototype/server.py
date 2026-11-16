@@ -1,7 +1,8 @@
 """SoundSmarter Build 1 prototype server.
 
-Serves the page, receives a recording from the browser, sends it to Deepgram,
-and returns the filler count. The Deepgram key stays here, never in the browser.
+Serves the page, receives a recording from the browser, sends it to
+CrisperWhisper (Nyra's hosted API), and returns the filler count. The API key
+stays here, never in the browser.
 When shared online, access.py limits who can use it and how often.
 
 Run from prototype/:  uv run uvicorn server:app --reload
@@ -16,16 +17,21 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 
 from access import AccessDenied, Gate
+from analytics_proxy import router as analytics_router
 from fillers import count_fillers
+from metrics import compute
 
 HERE = Path(__file__).parent
 load_dotenv(HERE.parent / ".env")  # repo-root .env (local only; online, the host sets these)
 
-DEEPGRAM_URL = "https://api.deepgram.com/v1/listen"
-DEEPGRAM_PARAMS = {"model": "nova-2", "language": "en", "filler_words": "true"}
+# CrisperWhisper 2 keeps fillers, repeats and cut-offs (test C: caught 18/18
+# hand-counted fillers vs. Deepgram Nova-2's 13). $0.90 per audio hour.
+NYRA_URL = "https://api.nyra-labs.com/v1/audio/transcriptions"
+NYRA_FIELDS = {"model": "crisperwhisper-v2", "language": "en"}
 MAX_AUDIO_BYTES = 2_000_000  # a 60 s take is ~1 MB; refuse anything much bigger
 
 app = FastAPI()
+app.include_router(analytics_router)  # /ingest/... -> PostHog (gets past ad blockers)
 gate = Gate.from_env()
 
 
@@ -56,9 +62,9 @@ async def read_capped(request: Request) -> bytes:
 
 @app.post("/transcribe")
 async def transcribe(request: Request):
-    key = os.getenv("DEEPGRAM_API_KEY")
+    key = os.getenv("NYRA_API_KEY")
     if not key:
-        raise HTTPException(500, "DEEPGRAM_API_KEY is not set in .env")
+        raise HTTPException(500, "NYRA_API_KEY is not set in .env")
 
     audio = await read_capped(request)
     if not audio:
@@ -70,23 +76,25 @@ async def transcribe(request: Request):
         raise HTTPException(e.status, e.message)
 
     try:
-        async with httpx.AsyncClient(timeout=60) as client:
+        # Sent as a file upload (multipart). Nyra reads the format from the bytes,
+        # so Chrome's webm and Safari's mp4 both work without converting.
+        async with httpx.AsyncClient(timeout=120) as client:
             resp = await client.post(
-                DEEPGRAM_URL,
-                params=DEEPGRAM_PARAMS,
-                headers={
-                    "Authorization": f"Token {key}",
-                    "Content-Type": request.headers.get("content-type", "audio/webm"),
-                },
-                content=audio,
+                NYRA_URL,
+                headers={"Authorization": f"Bearer {key}"},
+                data=NYRA_FIELDS,
+                files={"file": ("take", audio, request.headers.get("content-type", "audio/webm"))},
             )
     except httpx.HTTPError:
         gate.refund(token)
         raise HTTPException(502, "Could not reach the speech service")
     if resp.status_code != 200:
         gate.refund(token)
-        raise HTTPException(502, f"Deepgram error {resp.status_code}: {resp.text[:300]}")
+        raise HTTPException(502, f"Speech service error {resp.status_code}: {resp.text[:300]}")
 
     data = resp.json()
-    alt = data["results"]["channels"][0]["alternatives"][0]
-    return {**count_fillers(data), "transcript": alt.get("transcript", "")}
+    return {
+        **count_fillers(data),
+        **compute(data),  # word count, fillers per 100 words, prep time, pauses
+        "transcript": (data.get("verbatim") or {}).get("text", ""),
+    }

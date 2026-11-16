@@ -2,46 +2,233 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>SoundSmarter · Build 1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SoundSmarter</title>
+<!-- PostHog analytics (pageviews, clicks, session replay).
+     The phc_ key is a PUBLIC project key: it can only send events, not read
+     data, and is meant to sit in page code. Never put a phx_ personal key here. -->
+<script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}p||((p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",p.onerror=function(){p=null},(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r));var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_BgzbNiyeKhkdQA6WgAurmjHzwKFn6uyDv8Di7iJ9Lox2', {
+        api_host: '/ingest',                 // our own server relays to PostHog (analytics_proxy.py), so ad blockers don't drop events
+        ui_host: 'https://us.posthog.com',
+        defaults: '2026-08-30',
+    })
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; color: #222; }
-  #prompt { font-size: 1.4rem; line-height: 1.4; min-height: 4em; }
-  button:disabled { opacity: .4; cursor: default; }
-  button { font-size: 1rem; padding: .6rem 1.2rem; margin-right: .5rem; cursor: pointer; }
-  #status { color: #666; margin: 1rem 0; }
-  #total { font-size: 3rem; font-weight: 700; }
-  #transcript { color: #555; font-size: .95rem; line-height: 1.5; }
-  .hidden { display: none; }
+  /* Design: HANDOFF.md "Build 2 front end" + design/mockups/2026-11-15-frontend-mockup.html */
+  :root {
+    --paper: #fdfcfa;
+    --ink: #222;
+    --rule: #f0efec;
+    --purple: #4a2a7d;   /* flat accent: numbers, primary buttons, fill bar */
+    --yellow: #ffd21e;   /* marks fillers */
+    --blue: #73c2fb;     /* maya blue: marks silent pauses; value boxes */
+    --grey: #8a8782;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    font-family: "Archivo Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--paper);
+    text-shadow: 0 0 0.6px rgba(0,0,0,0.5);
+    line-height: 1.45;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 40px 24px 56px; }
+  h1, h2, h3, button { font-weight: 700; }
+  .hidden { display: none !important; }
+
+  .wordmark { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 17px; letter-spacing: 0.01em; padding-bottom: 12px; }
+  .wordmark svg { width: 34px; height: 34px; display: block; }
+  .rule2 { display: flex; height: 6px; margin-bottom: 26px; }
+  .rule2 .y { flex: 1; background: var(--yellow); }
+  .rule2 .b { flex: 1; background: var(--blue); }
+
+  /* buttons */
+  button {
+    font-family: inherit; font-size: 17px;
+    border: 1px solid var(--ink); background: var(--paper); color: var(--ink);
+    padding: 12px 28px; cursor: pointer; border-radius: 0;
+  }
+  button.primary { background: var(--purple); border-color: var(--purple); color: #fff; text-shadow: none; }
+  button.start { font-size: 24px; padding: 16px 37px; }
+  button:disabled { border-color: var(--rule); color: var(--grey); cursor: not-allowed; }
+  button.primary:disabled { background: var(--rule); border-color: var(--rule); color: var(--grey); }
+  button:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+  .linklike { border: none; background: none; padding: 4px 0; text-decoration: underline; font-weight: 400; font-size: 16px; }
+  .message { margin-top: 20px; font-size: 16px; }
+
+  /* landing */
+  .landing { text-align: center; padding-top: 36px; }
+  .landing svg { width: 200px; height: 200px; }
+  .landing h1 { font-size: 48px; line-height: 1; margin: 30px 0 18px; color: var(--purple); }
+  .landing .tagline { font-size: 19px; line-height: 1.55; max-width: 58ch; margin: 0 auto 44px; }
+
+  /* start */
+  .intro { text-align: center; padding-top: 24px; }
+  .intro h1 { font-size: 34px; line-height: 1.1; margin-bottom: 26px; }
+  .instructions { font-size: 17px; line-height: 1.6; margin: 0 auto 40px; }
+
+  /* record */
+  .prompt { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 40px; }
+  .fillbar { height: 6px; background: var(--rule); margin-bottom: 10px; position: relative; }
+  .fillbar .fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--purple); }
+  .fillbar .tick { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--purple); }
+  .fillbar .check30 {
+    position: absolute; left: 50%; transform: translateX(-50%); bottom: 10px;
+    color: var(--blue); font-size: 20px; font-weight: 700; text-shadow: none;
+  }
+  .rec-actions { display: flex; align-items: center; gap: 24px; margin-top: 36px; }
+
+  /* analyze */
+  .analyze { text-align: center; padding-top: 24px; }
+  .analyze-actions { margin-bottom: 48px; }
+  .analyze-actions .primary { font-size: 21px; padding: 14px 32px; min-width: 220px; }
+  .facts { max-width: 54ch; margin: 0 auto; text-align: center; }
+  .facts p { font-size: 17px; line-height: 2.0; margin-bottom: 26px; }
+  .facts .f { margin: 0 1px; }
+  .facts .val { display: inline-block; background: var(--blue); padding: 4px 16px; font-weight: 700; font-size: 22px; text-shadow: none; margin-top: 8px; }
+  .facts-note { font-size: 15px; }
+
+  /* results */
+  .cards { display: flex; gap: 22px; align-items: center; margin-bottom: 40px; }
+  .card-fillers { background: var(--rule); border: 2px solid var(--purple); padding: 22px; }
+  .cf-num { font-size: 64px; font-weight: 700; color: var(--purple); line-height: 1; }
+  .cf-label { font-size: 34px; font-weight: 700; margin-left: 10px; }
+  .cf-chips { display: flex; gap: 10px; margin-top: 16px; }
+  .card-right { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+  .ybox { background: var(--yellow); padding: 8px 14px; font-weight: 700; font-size: 18px; text-shadow: none; }
+  .bbox { background: var(--blue); padding: 14px 18px; font-weight: 700; font-size: 19px; text-shadow: none; display: inline-block; }
+  .player { display: flex; align-items: center; gap: 16px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); padding: 18px 0; margin-bottom: 18px; }
+  .player .track { flex: 1; height: 6px; background: var(--rule); position: relative; cursor: pointer; }
+  .player .track .done { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--purple); }
+  .transcript { margin-bottom: 34px; }
+  .transcript h3 { font-size: 17px; margin-bottom: 12px; }
+  .transcript p { font-size: 17px; line-height: 1.7; max-width: 60ch; }
+  .f { background: var(--yellow); padding: 1px 4px; text-shadow: none; }
+  .p { background: var(--blue); padding: 1px 5px; font-size: 14px; font-weight: 700; text-shadow: none; white-space: nowrap; }
+  .legend { font-size: 15px; margin-top: 12px; }
+  .legend span { margin-right: 10px; }
+  .results-actions { margin-top: 44px; }
+
+  /* phones: desktop-first design, kept usable on small screens */
+  @media (max-width: 560px) {
+    main { padding: 24px 18px 40px; }
+    .landing svg { width: 140px; height: 140px; }
+    .landing h1 { font-size: 40px; }
+    .prompt { font-size: 23px; }
+    .cards { flex-direction: column; align-items: flex-start; }
+    .cf-num { font-size: 52px; }
+    .cf-label { font-size: 28px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .fillbar .fill { transition: none !important; } }
 </style>
 </head>
 <body>
-<h1>SoundSmarter</h1>
-<div id="intro">
-  <p><strong>SoundSmarter listens to you talk!</strong></p>
-  <ol>
-    <li>Click <strong>Start</strong>. A prompt appears and recording begins right away.</li>
-    <li>Start answering immediately, in a natural, full voice.</li>
-    <li>Be specific with your answers. It helps the quality of feedback!</li>
-    <li>You can stop after 30 seconds, or keep going until the 60-second limit.</li>
-  </ol>
-  <button id="start">Start</button>
-  <p id="access"></p>
-</div>
 
-<div id="session" class="hidden">
-  <p id="prompt"></p>
-  <button id="stop">Stop</button>
-  <button id="skip">Skip prompt</button>
-  <p id="status"></p>
-</div>
+<!-- Logo, defined once and reused (design/logo/soundsmarter-logo.svg) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 100 100">
+    <rect width="100" height="100" fill="#73c2fb"/>
+    <path d="M52.2,76.9 L46.8,76.6 L42.8,74.9 L40.4,72.5 L38.6,69.5 L38.0,64.4 L27.8,64.4 L27.2,63.9 L0.0,63.8 L0.0,0.0 L99.9,0.0 L99.8,37.6 L72.2,37.6 L71.4,36.8 L70.6,29.8 L68.4,24.8 L65.2,21.4 L63.0,19.9 L56.2,17.4 L53.0,16.9 L46.8,16.9 L41.5,17.9 L38.0,19.1 L34.0,21.4 L30.1,25.5 L28.1,30.5 L27.6,36.2 L28.6,42.5 L31.1,47.2 L34.5,50.4 L38.5,52.6 L54.8,58.6 L59.4,62.5 L60.6,64.8 L61.1,68.0 L60.9,69.8 L59.6,72.5 L56.0,75.9 L52.2,76.9 Z" fill="#ffd21e" fill-rule="evenodd"/>
+    <path d="M49.35 87.2Q43.04 87.2 37.64 84.8Q32.25 82.4 28.95 77.65Q25.65 72.9 25.65 65.9Q25.65 65.3 25.7 64.7Q25.75 64.1 25.75 63.7H39.05Q39.05 63.78 39 64.36Q38.95 64.94 38.95 65.33Q38.95 70.2 41.85 73.2Q44.75 76.2 49.95 76.2Q55.75 76.2 58.05 73.65Q60.35 71.1 60.35 68.1Q60.35 64.6 58.53 62.51Q56.71 60.41 53.78 59.05Q50.84 57.68 47.29 56.59Q43.75 55.5 40.15 54.08Q36.55 52.66 33.6 50.43Q30.65 48.2 28.85 44.58Q27.05 40.96 27.05 35.4Q27.05 28.88 30.25 24.64Q33.45 20.4 38.7 18.3Q43.95 16.2 50 16.2Q56.05 16.2 61.1 18.3Q66.15 20.4 69.2 24.85Q72.25 29.3 72.25 36.37V37.6H59.15V36.7Q59.15 32.3 56.7 29.75Q54.25 27.2 49.83 27.2Q45.25 27.2 42.75 29.25Q40.25 31.3 40.25 34.5Q40.25 37.5 42.07 39.31Q43.88 41.12 46.82 42.31Q49.75 43.5 53.35 44.55Q56.95 45.6 60.5 47.02Q64.06 48.44 67 50.67Q69.95 52.9 71.75 56.45Q73.55 60 73.55 65.36Q73.55 73.31 70.45 78.05Q67.35 82.8 61.88 85Q56.4 87.2 49.35 87.2Z" fill="#4a2a7d"/>
+  </symbol>
+</svg>
 
-<div id="results" class="hidden">
-  <p>Fillers (uh, um): <span id="total"></span></p>
-  <p id="breakdown"></p>
-  <details><summary>Transcript</summary><p id="transcript"></p></details>
-  <button id="next">Next prompt</button>
-  <p id="left"></p>
-</div>
+<main>
+  <div class="wordmark hidden" id="wordmark">
+    <svg aria-hidden="true"><use href="#logo"/></svg>
+    <span>SoundSmarter</span>
+  </div>
+  <div class="rule2 hidden" id="rule2"><span class="y"></span><span class="b"></span></div>
+
+  <!-- 1 · LANDING (owner copy, verbatim) -->
+  <section class="screen landing" id="s-landing">
+    <svg aria-hidden="true"><use href="#logo"/></svg>
+    <h1>SoundSmarter</h1>
+    <p class="tagline">A self-improvement tool that listens to you speak and helps you communicate your thoughts more fluidly and confidently.</p>
+    <button class="primary start" id="ok">OK</button>
+    <p class="message" id="access"></p>
+  </section>
+
+  <!-- 2 · START (owner copy, verbatim) -->
+  <section class="screen intro hidden" id="s-intro">
+    <h1>Record A Response</h1>
+    <p class="instructions">A prompt will appear and recording will begin.<br>At least 30 seconds of audio are needed.</p>
+    <button class="primary start" id="start">START</button>
+    <p class="message" id="mic"></p>
+  </section>
+
+  <!-- 3 · RECORD: soft fill bar 0-60 s, no numerals; tick + check at 30 s -->
+  <section class="screen hidden" id="s-record">
+    <p class="prompt" id="prompt"></p>
+    <div class="fillbar" role="progressbar" aria-label="Recording time, 60 second limit">
+      <div class="fill" id="fill"></div>
+      <span class="tick"></span>
+      <span class="check30 hidden" id="check30">&#10003;</span>
+    </div>
+    <div class="rec-actions">
+      <button id="stop" disabled>Stop</button>
+      <button class="linklike" id="skip">Skip this prompt</button>
+    </div>
+  </section>
+
+  <!-- 4 · ANALYZE: countdown from 10; flips to Results when analysis returns -->
+  <section class="screen analyze hidden" id="s-analyze">
+    <div class="analyze-actions">
+      <button class="primary" id="results-btn" disabled>Analyzing (10)</button>
+      <p class="message" id="analyze-error"></p>
+    </div>
+    <div class="facts">
+      <p>Most common filler words:<br>
+        <span class="f">um</span> <span class="f">uh</span> <span class="f">like</span>
+        <span class="f">you know</span> <span class="f">so</span> <span class="f">I mean</span>
+        <span class="f">actually</span> <span class="f">basically</span> <span class="f">kind of</span>
+        <span class="f">sort of</span> <span class="f">right</span> <span class="f">well</span>
+        <span class="f">okay</span> <span class="f">just</span> <span class="f">literally</span></p>
+      <p>Average filler words per 100 spoken words:<br><span class="val">2.6</span></p>
+      <p>Average prep time (pause before beginning to speak):<br><span class="val">1.5 seconds</span></p>
+      <p class="facts-note">Filler word list and prep time average are placeholders, not yet research-sourced.</p>
+    </div>
+  </section>
+
+  <!-- 5 · RESULTS -->
+  <section class="screen hidden" id="s-results">
+    <div class="cards">
+      <div class="card-fillers">
+        <div><span class="cf-num" id="total"></span> <span class="cf-label" id="total-label"></span></div>
+        <div class="cf-chips"><span class="ybox" id="ums"></span><span class="ybox" id="uhs"></span></div>
+      </div>
+      <div class="card-right">
+        <div class="bbox" id="rate"></div>
+        <div class="bbox" id="prep"></div>
+      </div>
+    </div>
+
+    <div class="player">
+      <button id="play">Playback</button>
+      <div class="track" id="track"><div class="done" id="done"></div></div>
+      <audio id="audio" preload="auto"></audio>
+    </div>
+
+    <!-- ph-no-capture: session replay never records what the user said -->
+    <div class="transcript ph-no-capture">
+      <h3 id="word-count"></h3>
+      <p id="transcript"></p>
+      <p class="legend"><span class="f">filler</span> <span class="p">silent pause</span></p>
+    </div>
+
+    <div class="results-actions">
+      <button class="primary" id="next">Record Next Response</button>
+      <p class="message" id="left"></p>
+    </div>
+  </section>
+</main>
 
 <script>
 // Owner-written prompt bank (HANDOFF.md, verbatim)
@@ -65,48 +252,75 @@ for (let i = PROMPTS.length - 1; i > 0; i--) {
   [PROMPTS[i], PROMPTS[j]] = [PROMPTS[j], PROMPTS[i]];
 }
 const MAX_SECONDS = 60;
-const MIN_SECONDS = 30;  // Stop is greyed out until then; Skip always works
+const MIN_SECONDS = 30;   // Stop is greyed out until then; Skip always works
+const COUNTDOWN = 10;     // analysis usually takes ~8-10 s
 
 // Invite code comes from the shared link: ...?code=ABC123
 const CODE = new URLSearchParams(location.search).get("code") || "";
-let takesLeft = null;  // null = unlimited (local)
+let takesLeft = null;  // null = no per-code limit
 
-let index = 0, stream = null, recorder = null, chunks = [], timer = null, discard = false;
+let index = 0, stream = null, recorder = null, chunks = [], discard = false;
+let recTimer = null, waitTimer = null, takeStartedAt = 0, audioUrl = null;
 const $ = (id) => document.getElementById(id);
+// Named analytics events for the funnel (no transcript or audio is ever sent)
+const track = (event, props) => window.posthog && posthog.capture(event, props);
+// Plural unless exactly 1 (owner: "0 Ums")
+const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
+function show(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("hidden", s.id !== id));
+  const landing = id === "s-landing";
+  $("wordmark").classList.toggle("hidden", landing);
+  $("rule2").classList.toggle("hidden", landing);
+  window.scrollTo(0, 0);
+}
+
+// ---------- record ----------
 async function startTake() {
   if (!stream) stream = await navigator.mediaDevices.getUserMedia({
     // Browser clean-up flattens soft "um"s; send raw audio instead
     audio: { noiseSuppression: false, autoGainControl: false, echoCancellation: false },
   });
-  $("results").classList.add("hidden");
-  $("session").classList.remove("hidden");
+  show("s-record");
   $("prompt").textContent = PROMPTS[index];
   chunks = []; discard = false;
   recorder = new MediaRecorder(stream);
   recorder.ondataavailable = (e) => chunks.push(e.data);
   recorder.onstop = onStopped;
   recorder.start();
-  let left = MAX_SECONDS;
-  $("stop").disabled = true;
-  $("status").textContent = `Recording… ${left}s left`;
-  timer = setInterval(() => {
-    left -= 1;
-    if (MAX_SECONDS - left >= MIN_SECONDS) $("stop").disabled = false;
-    $("status").textContent = `Recording… ${left}s left`;
-    if (left <= 0) stopTake();
-  }, 1000);
+  takeStartedAt = Date.now();
+  track("take_started", { prompt_index: index });
+  renderClock(0);
+  clearInterval(recTimer);
+  recTimer = setInterval(() => {
+    const t = (Date.now() - takeStartedAt) / 1000;
+    if (t >= MAX_SECONDS) return stopTake();
+    renderClock(t);
+  }, 100);
+}
+
+function renderClock(t) {
+  $("fill").style.width = Math.min(100, (t / MAX_SECONDS) * 100) + "%";
+  const reached = t >= MIN_SECONDS;
+  $("check30").classList.toggle("hidden", !reached);
+  $("stop").disabled = !reached;
 }
 
 function stopTake() {
-  clearInterval(timer);
+  clearInterval(recTimer);
   if (recorder && recorder.state === "recording") recorder.stop();
 }
 
+// ---------- analyze ----------
 async function onStopped() {
   if (discard) return startTake();  // skip: throw away audio, new prompt
-  $("status").textContent = "Analyzing…";
+  const seconds = Math.round((Date.now() - takeStartedAt) / 1000);
+  track("take_stopped", { seconds });
   const blob = new Blob(chunks, { type: recorder.mimeType });
+  if (audioUrl) URL.revokeObjectURL(audioUrl);
+  audioUrl = URL.createObjectURL(blob);  // playback stays in the browser
+  startCountdown();
+  const analysisStartedAt = Date.now();
   try {
     const resp = await fetch("/transcribe", {
       method: "POST",
@@ -116,53 +330,128 @@ async function onStopped() {
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.detail || resp.status);
     if (takesLeft !== null) takesLeft -= 1;
-    showResults(data);
+    fillResults(data);
+    clearInterval(waitTimer);
+    $("results-btn").textContent = "Results";
+    $("results-btn").disabled = false;
+    // analysis_ms vs. seconds: data for sizing the countdown to the take length
+    track("analysis_done", { fillers: data.total, um: data.breakdown.um, uh: data.breakdown.uh, seconds,
+      analysis_ms: Date.now() - analysisStartedAt });
   } catch (err) {
-    $("status").textContent = "Error: " + err.message;
+    clearInterval(waitTimer);
+    track("transcribe_failed", { error: String(err.message).slice(0, 100) });
+    $("results-btn").textContent = "Record Next Response";
+    $("results-btn").disabled = false;
+    $("results-btn").onclick = () => { nextPrompt(); startTake(); };
+    $("analyze-error").textContent = "Error: " + err.message;
   }
 }
 
-function showResults(data) {
-  $("session").classList.add("hidden");
-  $("results").classList.remove("hidden");
+function startCountdown() {
+  show("s-analyze");
+  const btn = $("results-btn");
+  btn.disabled = true;
+  btn.onclick = showResults;
+  $("analyze-error").textContent = "";
+  let left = COUNTDOWN;
+  btn.textContent = `Analyzing (${left})`;
+  clearInterval(waitTimer);
+  waitTimer = setInterval(() => {
+    left -= 1;
+    btn.textContent = left > 0 ? `Analyzing (${left})` : "Analyzing...(a bit longer)";
+    if (left <= 0) clearInterval(waitTimer);
+  }, 1000);
+}
+
+// ---------- results ----------
+function fillResults(data) {
   $("total").textContent = data.total;
-  $("breakdown").textContent = Object.entries(data.breakdown).map(([w, n]) => `${w} ×${n}`).join(", ");
-  $("transcript").textContent = data.transcript || "(no speech detected)";
+  $("total-label").textContent = data.total === 1 ? "Filler" : "Fillers";
+  $("ums").textContent = plural(data.breakdown.um, "Um");
+  $("uhs").textContent = plural(data.breakdown.uh, "Uh");
+  $("rate").textContent = `${data.fillers_per_100.toFixed(1)} fillers per 100 words`;
+  $("prep").textContent = data.prep_s === null ? "No speech detected" : `${data.prep_s.toFixed(1)} seconds prep time`;
+  $("word-count").textContent = `Transcription (${plural(data.word_count, "word")})`;
+
+  // Transcript: fillers highlighted yellow, silent pauses as blue duration chips
+  const p = $("transcript");
+  p.textContent = "";
+  if (!data.tokens.length) p.textContent = "(no speech detected)";
+  data.tokens.forEach((t) => {
+    if ("pause" in t) {
+      const chip = document.createElement("span");
+      chip.className = "p";
+      chip.textContent = `${t.pause.toFixed(1)}\u00a0s`;
+      p.append(chip, " ");
+    } else if (t.filler) {
+      const f = document.createElement("span");
+      f.className = "f";
+      f.textContent = t.text;
+      p.append(f, " ");
+    } else {
+      p.append(t.text + " ");
+    }
+  });
+
+  $("audio").src = audioUrl;
+  $("done").style.width = "0%";
+  $("play").textContent = "Playback";
+
   if (takesLeft !== null) {
-    $("left").textContent = takesLeft > 0
-      ? `${takesLeft} take${takesLeft === 1 ? "" : "s"} left.`
-      : "That was your last take. Thanks for trying SoundSmarter!";
+    $("next").textContent = `Record Next Response (${takesLeft} left)`;
     $("next").disabled = takesLeft <= 0;
+    $("left").textContent = takesLeft > 0 ? "" : "That was your last take. Thanks for trying SoundSmarter!";
   }
 }
 
-// Check the invite code before anyone records (no Deepgram call, no cost)
+function showResults() {
+  show("s-results");
+  track("results_shown");
+}
+
+// ---------- playback ----------
+$("play").onclick = () => {
+  const a = $("audio");
+  if (a.paused) { a.play(); $("play").textContent = "Pause"; track("playback_started"); }
+  else { a.pause(); $("play").textContent = "Playback"; }
+};
+$("audio").ontimeupdate = () => {
+  const a = $("audio");
+  if (a.duration && isFinite(a.duration)) $("done").style.width = (a.currentTime / a.duration) * 100 + "%";
+};
+$("audio").onended = () => { $("play").textContent = "Playback"; $("done").style.width = "100%"; };
+$("track").onclick = (e) => {
+  const a = $("audio");
+  if (a.duration && isFinite(a.duration)) a.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * a.duration;
+};
+
+// ---------- access ----------
+// Check the invite code before anyone records (no speech-service call, no cost)
 async function checkAccess() {
-  $("start").disabled = true;
+  $("ok").disabled = true;
   const resp = await fetch("/access", { headers: { "X-Access-Code": CODE } });
   const data = await resp.json();
   if (!resp.ok) { $("access").textContent = data.detail; return; }
   takesLeft = data.takes_left;
-  if (takesLeft !== null) $("access").textContent = `${takesLeft} take${takesLeft === 1 ? "" : "s"} left.`;
-  $("start").disabled = false;
+  $("ok").disabled = false;
 }
 checkAccess();
 
 function nextPrompt() { index = (index + 1) % PROMPTS.length; }
 
+$("ok").onclick = () => show("s-intro");
 $("start").onclick = async () => {
   try {
     await startTake();
-    $("intro").classList.add("hidden");  // only leave the intro once the mic is live
   } catch (err) {
-    // No mic: permission denied, an in-app browser (Messages, WhatsApp...), or no microphone
     console.error(err);
-    $("access").textContent = "Couldn't use your microphone. Allow microphone access for this site, then reload.";
+    track("mic_blocked", { error: err.name });
+    $("mic").textContent = "Couldn't use your microphone. Allow microphone access for this site, then reload.";
   }
 };
 $("stop").onclick = stopTake;
-$("skip").onclick = () => { discard = true; nextPrompt(); stopTake(); };
-$("next").onclick = () => { nextPrompt(); startTake(); };
+$("skip").onclick = () => { track("prompt_skipped", { prompt_index: index }); discard = true; nextPrompt(); stopTake(); };
+$("next").onclick = () => { $("audio").pause(); nextPrompt(); startTake(); };
 </script>
 </body>
 </html>

@@ -56,3 +56,12 @@ def test_refund_gives_the_take_back():
 def test_no_codes_is_open_locally_but_locked_on_server():
     assert Gate(codes=[""]).reserve("") is None
     assert denied_status(Gate(codes=[""], on_server=True).reserve, "") == 503
+
+
+def test_no_per_code_limit_by_default_only_daily_cap():
+    # Owner, 2026-11-15: one code, reused by tester after tester
+    g = Gate(codes=["DEMO"], daily_cap=5, today=lambda: date(2026, 11, 15))
+    assert g.takes_left("DEMO") is None
+    for _ in range(5):
+        g.reserve("demo")
+    assert denied_status(g.reserve, "DEMO") == 429  # daily cap still holds
