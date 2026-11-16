@@ -320,6 +320,7 @@ async function onStopped() {
   if (audioUrl) URL.revokeObjectURL(audioUrl);
   audioUrl = URL.createObjectURL(blob);  // playback stays in the browser
   startCountdown();
+  const analysisStartedAt = Date.now();
   try {
     const resp = await fetch("/transcribe", {
       method: "POST",
@@ -333,7 +334,9 @@ async function onStopped() {
     clearInterval(waitTimer);
     $("results-btn").textContent = "Results";
     $("results-btn").disabled = false;
-    track("analysis_done", { fillers: data.total, um: data.breakdown.um, uh: data.breakdown.uh, seconds });
+    // analysis_ms vs. seconds: data for sizing the countdown to the take length
+    track("analysis_done", { fillers: data.total, um: data.breakdown.um, uh: data.breakdown.uh, seconds,
+      analysis_ms: Date.now() - analysisStartedAt });
   } catch (err) {
     clearInterval(waitTimer);
     track("transcribe_failed", { error: String(err.message).slice(0, 100) });
