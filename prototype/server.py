@@ -37,7 +37,8 @@ gate = Gate.from_env()
 
 @app.get("/")
 def index():
-    return FileResponse(HERE / "index.html")
+    # no-cache: browsers re-check for a new version instead of showing an old copy
+    return FileResponse(HERE / "index.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/access")
