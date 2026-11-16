@@ -122,6 +122,7 @@
   .legend { font-size: 15px; margin-top: 12px; }
   .legend span { margin-right: 10px; }
   .results-actions { margin-top: 44px; }
+  .notice { font-size: 14px; color: var(--grey); max-width: 52ch; margin: 40px auto 0; line-height: 1.5; text-wrap: balance; }
 
   /* phones: desktop-first design, kept usable on small screens */
   @media (max-width: 560px) {
@@ -167,6 +168,8 @@
       <input id="code-input" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Demo code">
       <button class="primary" type="submit">OK</button>
     </form>
+    <!-- Recording + analytics notice (owner-approved draft, 2026-11-16) -->
+    <p class="notice">This demo records your voice to measure your speech. It also uses PostHog to record how you use the page, including screen replays.</p>
   </section>
 
   <!-- 2 · START (owner copy, verbatim) -->
@@ -413,7 +416,7 @@ function fillResults(data) {
   if (takesLeft !== null) {
     $("next").textContent = `Record Next Response (${takesLeft} left)`;
     $("next").disabled = takesLeft <= 0;
-    $("left").textContent = takesLeft > 0 ? "" : "That was your last take. Thanks for trying SoundSmarter!";
+    $("left").textContent = takesLeft > 0 ? "" : "That was your last response. Thanks for trying SoundSmarter!";
   }
 }
 
