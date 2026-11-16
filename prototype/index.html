@@ -62,6 +62,13 @@
   button:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
   .linklike { border: none; background: none; padding: 4px 0; text-decoration: underline; font-weight: 400; font-size: 16px; }
   .message { margin-top: 20px; font-size: 16px; }
+  .code-form input {
+    font-family: inherit; font-size: 20px; font-weight: 700; text-transform: uppercase;
+    width: 9em; padding: 10px 12px; margin: 14px 8px 0 0; text-align: center;
+    border: 1px solid var(--ink); background: #fff; border-radius: 0;
+  }
+  .code-form button { padding: 11px 24px; font-size: 18px; }
+  .code-form input:focus { outline: 2px solid var(--purple); outline-offset: 2px; }
 
   /* landing */
   .landing { text-align: center; padding-top: 36px; }
@@ -154,6 +161,12 @@
     <p class="tagline">A self-improvement tool that listens to you speak and helps you communicate your thoughts more fluidly and confidently.</p>
     <button class="primary start" id="ok">OK</button>
     <p class="message" id="access"></p>
+    <!-- Shown when the link has no valid demo code (owner copy: "You need a demo code.") -->
+    <form class="code-form hidden" id="code-form">
+      <p class="message">You need a demo code.</p>
+      <input id="code-input" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Demo code">
+      <button class="primary" type="submit">OK</button>
+    </form>
   </section>
 
   <!-- 2 · START (owner copy, verbatim) -->
@@ -193,7 +206,7 @@
         <span class="f">okay</span> <span class="f">just</span> <span class="f">literally</span></p>
       <p>Average filler words per 100 spoken words:<br><span class="val">2.6</span></p>
       <p>Average prep time (pause before beginning to speak):<br><span class="val">1.5 seconds</span></p>
-      <p class="facts-note">Filler word list and prep time average are placeholders, not yet research-sourced.</p>
+      <p class="facts-note">Filler word list and prep time average are <strong>placeholders, not yet research-sourced</strong>.</p>
     </div>
   </section>
 
@@ -256,7 +269,7 @@ const MIN_SECONDS = 30;   // Stop is greyed out until then; Skip always works
 const COUNTDOWN = 10;     // analysis usually takes ~8-10 s
 
 // Invite code comes from the shared link: ...?code=ABC123
-const CODE = new URLSearchParams(location.search).get("code") || "";
+let CODE = new URLSearchParams(location.search).get("code") || "";
 let takesLeft = null;  // null = no per-code limit
 
 let index = 0, stream = null, recorder = null, chunks = [], discard = false;
@@ -431,10 +444,26 @@ async function checkAccess() {
   $("ok").disabled = true;
   const resp = await fetch("/access", { headers: { "X-Access-Code": CODE } });
   const data = await resp.json();
+  if (resp.status === 403) {  // no code, or a wrong one: ask for it
+    $("ok").classList.add("hidden");
+    $("code-form").classList.remove("hidden");
+    $("code-input").value = "";
+    $("code-input").focus();
+    return;
+  }
   if (!resp.ok) { $("access").textContent = data.detail; return; }
   takesLeft = data.takes_left;
+  $("code-form").classList.add("hidden");
+  $("ok").classList.remove("hidden");
   $("ok").disabled = false;
 }
+$("code-form").onsubmit = async (e) => {
+  e.preventDefault();
+  CODE = $("code-input").value.trim();
+  history.replaceState(null, "", "?code=" + encodeURIComponent(CODE));  // a reload keeps the code
+  await checkAccess();
+  if (!$("ok").disabled) show("s-intro");  // valid code: straight on to Start
+};
 checkAccess();
 
 function nextPrompt() { index = (index + 1) % PROMPTS.length; }
