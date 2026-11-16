@@ -39,7 +39,7 @@ Sustained use should move a user from unaware to self-correcting on a handful of
 | Pace | Rushes, especially the first sentence | Speaking rate inside a conversational band; slows by pausing, not by dragging |
 | Starting | Talks immediately, usually "so, um…" | Takes a beat; prep time is visible and treated as normal |
 | Delivery | Monotone or trailing off, unaware of either | Hears where volume dropped or pitch flattened, on specific words |
-| Feedback loop | None | One recommendation per take, carried into the next prompt; a trend line per metric |
+| Feedback loop | None | One recommendation per recording, carried into the next prompt; a trend line per metric |
 
 ## Roadmap (Builds 1–5)
 
@@ -48,8 +48,8 @@ Each build is due Monday at noon, New York time.
 | Build | Class asks for | SoundSmarter |
 | --- | --- | --- |
 | **1 · Nov 9** — Intent + throwaway prototype | PRD v1, one local interaction | Prompt (fixed bank of 5) → record → transcribe (fillers kept) → filler count. Disposable is fine. |
-| **2 · Nov 16** — Plan + smallest real local version + PostHog | Riskiest part, architecture, budget | Real stack (web + Python + SQLite); session records persisted; speaking rate + prep time (moved from build 1); pauses + filler-to-pause ratio; LLM classification of lexical fillers; PostHog installed. Start collecting and hand-labeling 10–15 takes (owner + pod member) for build 4 evals. Tests the top risk: filler detection accuracy. |
-| **3 · Nov 23** — Build the core in small changes | The core product | Acoustic features (pitch, loudness); one recommendation per take carried into the next prompt; trends within prompt type. |
+| **2 · Nov 16** — Plan + smallest real local version + PostHog | Riskiest part, architecture, budget | Real stack (web + Python + SQLite); session records persisted; speaking rate + prep time (moved from build 1); pauses + filler-to-pause ratio; LLM classification of lexical fillers; PostHog installed. Start collecting and hand-labeling 10–15 recordings (owner + pod member) for build 4 evals. Tests the top risk: filler detection accuracy. |
+| **3 · Nov 23** — Build the core in small changes | The core product | Acoustic features (pitch, loudness); one recommendation per recording carried into the next prompt; trends within prompt type. |
 | **4 · Nov 30** — Test: domain evals or user replays | Evidence it works | Evals: hand-labeled recordings (collected from build 2) vs. app counts for fillers and pauses; tester sessions. |
 | **5 · Dec 7** — Ship | Live URL + 2-minute video | Cloud deploy; crutch word and vocabulary features if time allows. |
 
@@ -78,7 +78,7 @@ A throwaway prototype: the smallest working interaction.
 11. Explain something you’re weirdly good at: a party trick, a shortcut, a household fix. How did you get good at it, and how would you teach it?
 12. Describe a tradition your family or friends have that would sound strange to an outsider. How did it start?
 
-*Changed 2026-11-09 by the owner:* shared online demo pulled forward from build 5 for the Nov 10 demo: invite-code links, 3 takes per code, 30 takes per day across all codes, "N takes left" shown. Prompt bank grown from 5 to 12 and shown in random order (5 → 12: 3 owner-written, 5 proposed in Claude Cowork and owner-approved). Dropped "If you could learn any skill overnight…": hard to answer, lacks specificity. Live at https://soundsmarter-demo.onrender.com/ (Render free tier; ~30 s cold start).
+*Changed 2026-11-09 by the owner:* shared online demo pulled forward from build 5 for the Nov 10 demo: invite-code links, 3 recordings per code, 30 recordings per day across all codes, "N responses left" shown. Prompt bank grown from 5 to 12 and shown in random order (5 → 12: 3 owner-written, 5 proposed in Claude Cowork and owner-approved). Dropped "If you could learn any skill overnight…": hard to answer, lacks specificity. Live at https://soundsmarter-demo.onrender.com/ (Render free tier; ~30 s cold start).
 
 *Changed 2026-11-08 by the owner:* added the intro screen and 30 s minimum after test user 1 didn't know what to do on the first screen. Target user broadened from MBA students to young professionals; test user 1 replaces the pod member.
 
@@ -100,9 +100,9 @@ Decided by the owner in design review, 2026-11-15. Reference implementation: `de
 2. **Start.** Headline "Record A Response". Instruction on two lines: "A prompt will appear and recording will begin." / "At least 30 seconds of audio are needed." Purple START button, centered, enlarged.
 3. **Record.** Prompt large. Soft fill bar represents 0–60 s, no numerals; thin purple tick at the 30 s mark; at 30 s a blue check appears above the tick and Stop becomes enabled; Skip works at any time; hard stop at 60 s advances to Analyze.
 4. **Analyze.** Button top-center, greyed: "Analyzing (n)" counting down from 10, flipping to purple "Results" when analysis returns — the countdown number shows immediately, and the flip follows actual completion, sooner or later than the 10. Below, three reference lines: "Most common filler words:" with the list on the next line in yellow boxes (um, uh, like, you know, so, I mean, actually, basically, kind of, sort of, right, well, okay, just, literally); "Average filler words per 100 spoken words:" with **2.6** in a blue box (Bortfeld et al. 2001, conversational task); "Average prep time (pause before beginning to speak):" with **1.5 seconds** in a blue box. On-page note: "Filler word list and prep time average are placeholders, not yet research-sourced."
-5. **Results.** Left: light-grey card with purple border — filler count in purple beside "Fillers", under it yellow boxes "N Ums" / "N Uh" (plural only when the count is greater than 1). To the right, vertically centered against the card: blue boxes "N fillers per 100 words" and "N seconds prep time". Then Playback (button plus progress bar), then "Transcription (N words)" with fillers highlighted yellow and silent pauses as blue duration chips, legend beneath. Bottom: purple button "Record Next Response (N left)" — the invite-code takes-left count lives here now.
+5. **Results.** Left: light-grey card with purple border — filler count in purple beside "Fillers", under it yellow boxes "N Ums" / "N Uh" (plural only when the count is greater than 1). To the right, vertically centered against the card: blue boxes "N fillers per 100 words" and "N seconds prep time". Then Playback (button plus progress bar), then "Transcription (N words)" with fillers highlighted yellow and silent pauses as blue duration chips, legend beneath. Bottom: purple button "Record Next Response (N left)" — the invite-code responses-left count lives here now.
 
-Cut from the build 2 results page by the owner, 2026-11-15: the recommendation line, the fillers-by-take trend chart, the standalone takes-left line, and pauses, filler-to-pause ratio, hitches and words per minute as displayed numbers. The metrics spec still computes and stores all metrics; this list only governs what build 2 displays.
+Cut from the build 2 results page by the owner, 2026-11-15: the recommendation line, the fillers-by-recording trend chart, the standalone responses-left line, and pauses, filler-to-pause ratio, hitches and words per minute as displayed numbers. The metrics spec still computes and stores all metrics; this list only governs what build 2 displays.
 
 *Build details, owner, 2026-11-15:*
 - **Silent pause** = a gap of **450 ms** or more between words. Blue chips may appear after most sentences; that's intended, as each speaker's baseline (disfluency is personal).
@@ -111,8 +111,8 @@ Cut from the build 2 results page by the owner, 2026-11-15: the recommendation l
 - If the 10 s countdown runs out before results are ready, the button reads **"Analyzing...(a bit longer)"**. In testing, results usually arrive in about 2–10 s.
 - **Plurals:** plural unless the count is exactly 1, so "0 Ums", "1 Uh", "3 Ums".
 - Desktop-first, but kept usable on phones.
-- **Invite codes:** no per-code take limit. One code can be reused by tester after tester; the daily cap across all codes still protects the bill (`TAKES_PER_CODE` unset or 0; `DAILY_CAP`, default 30). So the next-response button has no "(N left)" unless a per-code limit is set.
-- Playback plays the take from the browser's memory; audio isn't uploaded anywhere but the speech service.
+- **Invite codes:** no per-code recording limit. One code can be reused by tester after tester; the daily cap across all codes still protects the bill (`TAKES_PER_CODE` unset or 0; `DAILY_CAP`, default 30). So the next-response button has no "(N left)" unless a per-code limit is set.
+- Playback plays the recording from the browser's memory; audio isn't uploaded anywhere but the speech service.
 
 **Placeholders needing research** (owner-acknowledged): the most-common-fillers list is the lexical-filler lexicon plus common additions, unranked and unsourced; the 1.5 s prep-time average is invented. A primary-source pass (recent disfluency research, common fillers, disfluency-rate change over the last 30 years) is planned; 2.6 per 100 words is already sourced.
 
@@ -120,11 +120,11 @@ Cut from the build 2 results page by the owner, 2026-11-15: the recommendation l
 
 The product is the loop and nothing else: **prompt → record → listen → analyze → metrics → recommendation → iterate.**
 
-1. **Prompt.** Show one prompt with structure built in — three beats, e.g. "Tell me about your last weekend: where you were, one thing that happened, how you felt about it." Each prompt is tagged by type (narrative, opinion, explanation). If the previous take produced a recommendation, the prompt states it as this take's focus.
+1. **Prompt.** Show one prompt with structure built in — three beats, e.g. "Tell me about your last weekend: where you were, one thing that happened, how you felt about it." Each prompt is tagged by type (narrative, opinion, explanation). If the previous recording produced a recommendation, the prompt states it as this recording's focus.
 2. **Record.** Recording starts when the prompt is revealed. The clock starts at the first detected word. Progress is a soft fill bar with no numerals; hard stop at 60 s; the user may stop early.
-3. **Listen.** Play the take back. The user hears themselves before seeing numbers. *(Changed 2026-11-15 by the owner: playback lives on the results screen, above the transcription; the analysis wait shows reference facts instead. Hearing the take before seeing numbers is no longer guaranteed.)*
+3. **Listen.** Play the recording back. The user hears themselves before seeing numbers. *(Changed 2026-11-15 by the owner: playback lives on the results screen, above the transcription; the analysis wait shows reference facts instead. Hearing the recording before seeing numbers is no longer guaranteed.)*
 4. **Analyze.** Speech-to-text with disfluencies preserved and word-level timestamps, in parallel with acoustic feature extraction from the raw audio. Align the two on timestamps.
-5. **Metrics.** Compute the Metrics spec deterministically in code. Show per-take values and the trend across prior takes of the same prompt type.
+5. **Metrics.** Compute the Metrics spec deterministically in code. Show per-recording values and the trend across prior recordings of the same prompt type.
 6. **Recommendation.** One LLM call sees the transcript, the per-phrase feature table, and the metrics; it returns filler classifications, two or three vocabulary suggestions, delivery notes tied to specific words, and exactly one recommendation.
 7. **Iterate.** Persist the session record. The next prompt carries the recommendation as its focus.
 
@@ -146,16 +146,16 @@ flowchart LR
     F --> AL
     AL --> M["Metrics in code<br/>deterministic, never from the LLM"]
     M -->|transcript + table + metrics| L["LLM narrates<br/>classifies fillers, vocab, one recommendation"]
-    L --> R["Session record<br/>one JSON per take; trends read it"]
+    L --> R["Session record<br/>one JSON per recording; trends read it"]
     R --> N["Next prompt<br/>carries the recommendation"]
-    N -->|next take| A
+    N -->|next recording| A
 ```
 
 The transcript and the acoustic pass never see each other until alignment. Everything numeric is computed before the LLM is called. The loop closes when the next prompt carries the recommendation.
 
 ## Metrics spec
 
-Every number comes from code, never from the LLM. All rates are normalized to speaking time; trend comparisons are made only within prompt type; acoustic measures are reported relative to the user's own prior takes, never as absolutes.
+Every number comes from code, never from the LLM. All rates are normalized to speaking time; trend comparisons are made only within prompt type; acoustic measures are reported relative to the user's own prior recordings, never as absolutes.
 
 | Metric | Definition | Notes |
 | --- | --- | --- |
@@ -164,18 +164,18 @@ Every number comes from code, never from the LLM. All rates are normalized to sp
 | Articulation rate (WPM) | Words ÷ voiced time, pauses excluded | Ratio to speaking rate shows whether a slowdown came from pausing (intended) or dragging syllables. |
 | Rate over time | Speaking rate in sliding windows (suggest 5 s) | Catches rushing, especially at the start. |
 | Filler count / rate | Vocalized (um, uh, er) + lexical (like, you know, sort of, kind of, basically, actually, right?) per minute of speaking time | Vocalized fillers come from the STT disfluency flag. Lexical fillers are real words and need context classification by the LLM ("I like jazz" vs. "it was, like, fine"). |
-| Top words | Most frequent words per take, stopwords excluded | Feeds crutch-word detection and vocabulary suggestions. |
-| Crutch word | The non-content word that recurs most across sessions | Computed per take; surfaced as "your crutch" only once stable across N takes (suggest N = 5). One take is noise. |
+| Top words | Most frequent words per recording, stopwords excluded | Feeds crutch-word detection and vocabulary suggestions. |
+| Crutch word | The non-content word that recurs most across sessions | Computed per recording; surfaced as "your crutch" only once stable across N recordings (suggest N = 5). One recording is noise. |
 | Pauses | Count, mean, max duration of silences ≥ threshold (suggest 300 ms, tunable) | Split by position: boundary (between clauses or thoughts) vs. hesitation (mid-clause). Position comes from word timestamps plus clause boundaries in the transcript. |
 | Filler-to-pause ratio | Fillers ÷ (fillers + hesitation pauses) | Headline metric. Directly measures the substitution behavior the advice is about. |
 | Hitches | Restarts, repeated words ("I— I went"), false starts | From the disfluency transcript, not the audio. |
 | Pitch | F0 mean, range, variability per phrase; terminal-rise flag on declaratives (uptalk) | Relative to the user's baseline. Range is personal. |
-| Loudness | RMS energy envelope; trailing-off at phrase ends; dynamic range | Relative within the take. Mic and room make absolute dB meaningless. |
-| Ended cleanly | Stopped early vs. hit cutoff; landed vs. trailed off | From end-of-take energy and the transcript's last clause. |
+| Loudness | RMS energy envelope; trailing-off at phrase ends; dynamic range | Relative within the recording. Mic and room make absolute dB meaningless. |
+| Ended cleanly | Stopped early vs. hit cutoff; landed vs. trailed off | From end-of-recording energy and the transcript's last clause. |
 
 ## Session record
 
-One JSON object per take is the contract between every part of the app: the recorder writes timing and audio, the analysis pipeline writes transcript, acoustic features, and metrics, the LLM writes analysis, and the UI and trend charts only read. Shape is a proposal; field names are the agent's to settle.
+One JSON object per recording is the contract between every part of the app: the recorder writes timing and audio, the analysis pipeline writes transcript, acoustic features, and metrics, the LLM writes analysis, and the UI and trend charts only read. Shape is a proposal; field names are the agent's to settle.
 
 ```json
 {
@@ -238,7 +238,7 @@ One JSON object per take is the contract between every part of the app: the reco
     "delivery_notes": [
       { "word_index": 41, "note": "Volume dropped and rate rose through 'and then we tried the'." }
     ],
-    "recommendation": "Next take: when you feel a 'like' coming, stop and wait instead."
+    "recommendation": "Next response: when you feel a 'like' coming, stop and wait instead."
   }
 }
 ```
@@ -253,8 +253,8 @@ Each option lists what it buys and what it costs. **Lean** is the suggested star
 
 *Changed 2026-11-15 by the owner:* speech-to-text moves to **[CrisperWhisper 2.0](https://github.com/nyrahealth/CrisperWhisper)** (verbatim mode, word timestamps) from Build 2, called through Nyra's hosted API ([docs](https://docs.nyra-labs.com/quickstart); $0.90 per audio hour; prepaid wallet), not self-hosted. The owner tried the online demo and it caught every filler. Test C (Deepgram Nova-2 vs. CrisperWhisper 2.0 vs. ElevenLabs Scribe v3, against hand counts) runs as evidence, not as the deciding test. Open: commercial terms of the API, and Deepgram's future role (see Questions for design).
 
-*Test C results, 2026-11-15* (4 phone takes, one speaker; details in `experiments/stt-compare/RESULTS.md`):
-- On the three normal takes (18 hand-counted fillers): Deepgram Nova-2 caught 13 (72%); CrisperWhisper 2.0 and Scribe v3 caught all 18.
+*Test C results, 2026-11-15* (4 phone recordings, one speaker; details in `experiments/stt-compare/RESULTS.md`):
+- On the three normal recordings (18 hand-counted fillers): Deepgram Nova-2 caught 13 (72%); CrisperWhisper 2.0 and Scribe v3 caught all 18.
 - Deepgram dropped the opening filler on a phone recording too, so the leading-filler problem is the Deepgram model, not the browser. Its first-word time was 2 s late (4.00 s vs. 2.00 s), which would have overstated prep time.
 - No service tells a filler "um" from "um" said as a word ("an um"); CrisperWhisper also invented one filler ("clear M sound" → "[UM] sound"). Handle with the AI classification step (owner: AI for classification is fine). Rare in normal speech.
 - CrisperWhisper's per-token labels (repetition, cut-off, correction) worked, which supplies the Hitches metric directly.
@@ -386,11 +386,11 @@ Before writing any provider call, confirm flag names and model support against t
 | Visible countdown with numerals | Rejected | Produces rushing. Soft fill bar, hard stop at 60 s. |
 | Mid-recording prompts | Rejected | On-screen text while speaking causes hitches and restarts — the app would be generating the artifact it measures. |
 | Structure built into the prompt (three beats) | Adopted | Hands the speaker a plan before the first word; natural 30–45 s arc. |
-| Follow-up question between takes | Deferred to build 2 | Closer to real conversation. Templated per prompt first; LLM-generated from the transcript later. |
+| Follow-up question between recordings | Deferred to build 2 | Closer to real conversation. Templated per prompt first; LLM-generated from the transcript later. |
 | Prompt tagging by type; trends within type | Adopted | Prompt difficulty is a confound; narrative produces fewer fillers than opinion or explanation. |
-| Crutch word surfaced only once stable | Adopted | Three "likes" in one take is noise; the same word across five takes is a crutch. |
+| Crutch word surfaced only once stable | Adopted | Three "likes" in one recording is noise; the same word across five recordings is a crutch. |
 | Filler-to-pause ratio as headline metric | Adopted | Measures the substitution behavior directly. |
-| Exactly one recommendation per take, carried into the next prompt | Adopted | Turns "iterate" into a loop rather than a series of report cards. |
+| Exactly one recommendation per recording, carried into the next prompt | Adopted | Turns "iterate" into a loop rather than a series of report cards. |
 | Allow stopping early; track ended-cleanly | Adopted | Ending cleanly vs. trailing off is a skill. |
 | Audio-native LLM listening to the clip | Side experiment | A vibe, not a number. Compare against hand-rolled features; don't build the pipeline on it. |
 | Objective mapping / onboarding by use case | Deferred | Owner's call: post-build-1. |
@@ -404,7 +404,7 @@ The first list is settled and should not be relitigated. The second list is prop
 1. Target user is young professionals (fluent English speakers) who speak under pressure. Testers: the owner and test user 1. *(Changed 2026-11-08; was MBA students + one pod member. Changed 2026-11-10 by the owner: "native" → "fluent". Fillers are a nerves-and-habit problem, not a language problem; still not for language learners.)*
 2. Filler words are the defining feature; vocabulary is second in priority and scheduled for build 5 if time allows.
 3. The app analyzes the acoustic "music" of speech — hitches, volume, tone — beyond transcript-plus-LLM.
-4. Metrics are computed per take and tracked over time: words per minute, fillers per minute, repetition of fillers and most-used words (the crutch), pause metrics.
+4. Metrics are computed per recording and tracked over time: words per minute, fillers per minute, repetition of fillers and most-used words (the crutch), pause metrics.
 5. The timer does not start until the first word is spoken; preparation time is part of the skill.
 6. Continuous flow of speech is the essential UI problem: good prompts, natural progression of thought, structure set up before speaking.
 7. Objective mapping (who the user is speaking to) is deferred.
@@ -417,13 +417,13 @@ The first list is settled and should not be relitigated. The second list is prop
 
 1. Two WPM figures: speaking rate and articulation rate.
 2. Lexical fillers classified by the LLM with context; vocalized fillers from the STT flag.
-3. Crutch word shown only once stable across N takes.
+3. Crutch word shown only once stable across N recordings.
 4. Pauses split by position; filler-to-pause ratio as the headline metric.
 5. Recording starts at prompt reveal; prep time stored and framed neutrally.
 6. No numeric countdown; soft fill bar; hard stop at 60 s; stopping early allowed.
 7. Structure inside the prompt; no mid-recording prompts.
 8. Prompts tagged by type; trends compared within type.
-9. Exactly one recommendation per take, carried into the next prompt as its focus.
+9. Exactly one recommendation per recording, carried into the next prompt as its focus.
 10. Numbers come from code; narration comes from the LLM.
 11. Web client, Python backend, SQLite from build 2 (build 1 is a throwaway).
 
@@ -433,7 +433,7 @@ Raise these rather than resolve them.
 
 **Product**
 
-- [ ] Vocabulary feature (build 5): precision suggestions ("really good" → a specific word), a lexical-diversity score, or tracking whether suggested words get used in later takes? Only the last one creates a habit loop; it also needs the most sessions to show anything.
+- [ ] Vocabulary feature (build 5): precision suggestions ("really good" → a specific word), a lexical-diversity score, or tracking whether suggested words get used in later recordings? Only the last one creates a habit loop; it also needs the most sessions to show anything.
 - [ ] Prompt bank (build 1 uses a fixed bank of 5; prompt generation later): how many prompts, who writes them, how many per type. The three-beat structure needs to be consistent across the bank or the metrics drift.
 - [ ] Listen before metrics: is playback mandatory before the numbers appear, or optional?
 - [ ] Playback: raw audio, or with fillers and hesitation pauses highlighted on a waveform?
@@ -443,11 +443,11 @@ Raise these rather than resolve them.
 **Tuning defaults (proposed values, all adjustable)**
 
 - [ ] Pause threshold: 300 ms.
-- [ ] Crutch stability: N = 5 takes.
+- [ ] Crutch stability: N = 5 recordings.
 - [ ] Speaking-rate band: roughly 140–160 WPM as the starting default.
 - [ ] Lexical filler lexicon: like, you know, sort of, kind of, basically, actually, right?, so (sentence-initial), I mean.
 - [ ] Rate-over-time window: 5 s.
-- [ ] Hard stop: 60 s; minimum take length before analysis runs: suggest 10 s.
+- [ ] Hard stop: 60 s; minimum recording length before analysis runs: suggest 10 s.
 
 **Technical**
 
@@ -460,9 +460,9 @@ Added by the coding agent for the next design review. Resolved items move into *
 
 - [ ] **Numbers, not AI text** (owner, 2026-11-15): minimize AI-generated text feedback; show the user numbers; a numbers-first look is a core design element, away from the "AI slop" look (after trying Yoodli, which drops fillers and gives generic AI feedback). *Owner, same day:* AI for **classification** is fine (e.g. "like" as filler vs. verb); AI-written **feedback prose** is what to minimize. This conflicts with the finished loop step 6 (LLM writes vocabulary suggestions, delivery notes and the recommendation) and Proposed decision 10 ("narration comes from the LLM"). Design to propose what survives, e.g. the recommendation becomes a templated line driven by the numbers.
 
-- [x] **Leading filler is never counted** (owner, Build 1 testing, every take): the "uhh"/"umm" at the very start of a recording is missing from both the count and the transcript. *Resolved 2026-11-15 by test C:* the Deepgram model drops it (it happened on a phone recording too, no browser involved); CrisperWhisper and Scribe v3 both caught it. Fixed by the move to CrisperWhisper. Browser clipping not fully ruled out until test A/B runs.
+- [x] **Leading filler is never counted** (owner, Build 1 testing, every recording): the "uhh"/"umm" at the very start of a recording is missing from both the count and the transcript. *Resolved 2026-11-15 by test C:* the Deepgram model drops it (it happened on a phone recording too, no browser involved); CrisperWhisper and Scribe v3 both caught it. Fixed by the move to CrisperWhisper. Browser clipping not fully ruled out until test A/B runs.
 - [ ] **Standard A/B test for the underlying tech** (owner, 2026-11-08): test every audio or speech-to-text choice the same way, as a matter of course, not just Deepgram. Proposed protocol:
-  - **A. Simultaneous capture:** record the same take on the phone and in the browser at the same time; compare counts. Isolates browser recording settings (e.g. noise suppression).
+  - **A. Simultaneous capture:** record the same recording on the phone and in the browser at the same time; compare counts. Isolates browser recording settings (e.g. noise suppression).
   - **B. Fixed playback:** play one phone recording into the app in Brave, Chrome and Safari; compare counts. Isolates the browser.
   - **C. Provider comparison:** send the same saved recordings straight to each speech-to-text option (Deepgram Nova-2 / Nova-3, AssemblyAI, Whisper) in code, no microphone involved; compare counts against the owner's hand count. Isolates the model.
   - Reuse the same small set of hand-counted recordings each time; it can grow into the Build 4 eval set.

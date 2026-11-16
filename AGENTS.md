@@ -3,10 +3,11 @@
 > Give this file to your coding agent and check that it is using these instructions. Keep the stack, commands, and ground rules current.
 
 ## 1. Project Overview
-- **What this repo builds:** SoundSmarter records 30–60 seconds of extemporaneous speech and returns measured feedback (filler count, speaking rate, prep time) so speakers can track how they improve.
-- **Who it's for:** Young professionals, fluent English speakers, who speak under pressure (executive conversations, interviews, presentations) and whose nerves show up as fillers and rushed starts. Not for language learners.
-- **The one job:** give a speaker measured feedback on *how* they speak, take after take.
+- **What this repo builds:** SoundSmarter records 30–60 seconds of extemporaneous speech and returns measured metrics (filler count, fillers per 100 words, prep time, pauses) so speakers become aware of their filler and pause habits.
+- **Who it's for:** Speakers who want to develop awareness of their extemporaneous speech patterns through metric analysis (PRD, 2026-11-16). Improvement-seeking users come later, once recommendations or tracking across recordings exist. Not for language learners.
+- **The one job:** give a speaker measured feedback on *how* they speak, response after response.
 - **Primary user & core workflow:** prompt → record → transcribe → metrics. Full PRD in `docs/index.html`.
+- **Copy rule:** never call a recording a "take" (owner, 2026-11-16). Say recording, response, or attempt. Applies to the app, the Product Page and docs. Code identifiers (`takes_left`, `TAKES_PER_CODE`) can stay.
 - **Tech stack:** Build 1: throwaway local prototype using Deepgram speech-to-text (filler words on, word timestamps). From Build 2: speech-to-text is CrisperWhisper 2 via Nyra's hosted API (decided 2026-11-15 after test C). Current lean, not set in stone: web client (browser MediaRecorder), Python backend (FastAPI), SQLite. Details in HANDOFF.md → Technical choices.
 
 - **Product source of truth:** [`HANDOFF.md`](./HANDOFF.md). Read it before building. Product decisions are made in design review and by the owner; the agent merges approved changes, builds, and never changes a product decision on its own. Put anything that needs deciding under "Questions for design" at the end of HANDOFF.md.
