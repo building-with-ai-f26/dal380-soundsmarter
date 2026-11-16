@@ -1,12 +1,13 @@
 """Access gate for the shared demo: invite codes + a daily cap.
 
-Protects the speech-to-text bill when the app is online. Each invite code gets a few
-takes; all codes together share a daily cap. Counts live in memory, so they
+Protects the speech-to-text bill when the app is online. Invite codes keep
+strangers out; all codes together share a daily cap. A code can be reused by
+one tester after another (owner, 2026-11-15); a per-code limit is optional. Counts live in memory, so they
 reset if the server restarts (fine for a demo; the daily cap still holds).
 
 Settings come from environment variables (never hard-coded):
   ACCESS_CODES    comma-separated invite codes, e.g. "ABC123,DEF456"
-  TAKES_PER_CODE  takes allowed per code (default 3)
+  TAKES_PER_CODE  takes allowed per code; 0 or unset = no per-code limit (default)
   DAILY_CAP       total takes per day across all codes (default 30)
 
 If ACCESS_CODES is empty: open when running locally, locked when running on
@@ -28,7 +29,7 @@ class AccessDenied(Exception):
 
 
 class Gate:
-    def __init__(self, codes, takes_per_code=3, daily_cap=30, on_server=False, today=None):
+    def __init__(self, codes, takes_per_code=0, daily_cap=30, on_server=False, today=None):
         self.codes = {c.strip().upper() for c in codes if c.strip()}
         self.takes_per_code = takes_per_code
         self.daily_cap = daily_cap
@@ -42,7 +43,7 @@ class Gate:
     def from_env(cls):
         return cls(
             codes=os.getenv("ACCESS_CODES", "").split(","),
-            takes_per_code=int(os.getenv("TAKES_PER_CODE", "3")),
+            takes_per_code=int(os.getenv("TAKES_PER_CODE") or "0"),
             daily_cap=int(os.getenv("DAILY_CAP", "30")),
             on_server=bool(os.getenv("RENDER")),
         )
@@ -61,7 +62,7 @@ class Gate:
         code = (code or "").strip().upper()
         if code not in self.codes:
             raise AccessDenied(403, "This link needs a valid invite code.")
-        if self.used.get(code, 0) >= self.takes_per_code:
+        if self.takes_per_code and self.used.get(code, 0) >= self.takes_per_code:
             raise AccessDenied(429, "You've used all your takes. Thanks for trying SoundSmarter!")
         self._roll_day()
         if self.today_count >= self.daily_cap:
@@ -71,8 +72,8 @@ class Gate:
     def takes_left(self, code):
         """How many takes this code has left (raises AccessDenied if none)."""
         code = self._check(code)
-        if code is None:
-            return None  # unlimited locally
+        if code is None or not self.takes_per_code:
+            return None  # unlimited (locally, or no per-code limit)
         return self.takes_per_code - self.used.get(code, 0)
 
     def reserve(self, code):
