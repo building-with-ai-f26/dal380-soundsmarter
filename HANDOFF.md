@@ -225,6 +225,15 @@ Each option lists what it buys and what it costs. **Lean** is the suggested star
 
 ### Speech-to-text
 
+*Changed 2026-11-15 by the owner:* speech-to-text moves to **[CrisperWhisper 2.0](https://github.com/nyrahealth/CrisperWhisper)** (verbatim mode, word timestamps) from Build 2, called through Nyra's hosted API ([docs](https://docs.nyra-labs.com/quickstart); $0.90 per audio hour; prepaid wallet), not self-hosted. The owner tried the online demo and it caught every filler. Test C (Deepgram Nova-2 vs. CrisperWhisper 2.0 vs. ElevenLabs Scribe v3, against hand counts) runs as evidence, not as the deciding test. Open: commercial terms of the API, and Deepgram's future role (see Questions for design).
+
+*Test C results, 2026-11-15* (4 phone takes, one speaker; details in `experiments/stt-compare/RESULTS.md`):
+- On the three normal takes (18 hand-counted fillers): Deepgram Nova-2 caught 13 (72%); CrisperWhisper 2.0 and Scribe v3 caught all 18.
+- Deepgram dropped the opening filler on a phone recording too, so the leading-filler problem is the Deepgram model, not the browser. Its first-word time was 2 s late (4.00 s vs. 2.00 s), which would have overstated prep time.
+- No service tells a filler "um" from "um" said as a word ("an um"); CrisperWhisper also invented one filler ("clear M sound" → "[UM] sound"). Handle with the AI classification step (owner: AI for classification is fine). Rare in normal speech.
+- CrisperWhisper's per-token labels (repetition, cut-off, correction) worked, which supplies the Hitches metric directly.
+- Scribe v3 tied CrisperWhisper on counts and has a commercial license; CrisperWhisper stays the pick for its labels and timing accuracy. Scribe is the fallback candidate.
+
 **Deepgram, Nova family, `filler_words=true`** — [docs](https://developers.deepgram.com/docs/filler-words)
 - Upsides: one flag; word timestamps standard; fast. Documented token set: uh, um, mhmm, mm-mm, uh-uh, uh-huh, nuh-uh.
 - Downsides: English only. Only those 7 tokens — "like", "you know" still need classification. Deepgram's own pages disagree on which models support it (Nova-3 vs. Flux); test on the exact model.
@@ -422,7 +431,9 @@ Raise these rather than resolve them.
 
 Added by the coding agent for the next design review. Resolved items move into **Decisions made**.
 
-- [ ] **Leading filler is never counted** (owner, Build 1 testing, every take): the "uhh"/"umm" at the very start of a recording is missing from both the count and the transcript. Cause unknown: the browser recorder clipping the first moment, speech starting before recording is live, or Deepgram dropping an opening disfluency. Affects Build 2 prep time (prompt reveal → first spoken word), which would be measured to the wrong word and come out too long.
+- [ ] **Numbers, not AI text** (owner, 2026-11-15): minimize AI-generated text feedback; show the user numbers; a numbers-first look is a core design element, away from the "AI slop" look (after trying Yoodli, which drops fillers and gives generic AI feedback). *Owner, same day:* AI for **classification** is fine (e.g. "like" as filler vs. verb); AI-written **feedback prose** is what to minimize. This conflicts with the finished loop step 6 (LLM writes vocabulary suggestions, delivery notes and the recommendation) and Proposed decision 10 ("narration comes from the LLM"). Design to propose what survives, e.g. the recommendation becomes a templated line driven by the numbers.
+
+- [x] **Leading filler is never counted** (owner, Build 1 testing, every take): the "uhh"/"umm" at the very start of a recording is missing from both the count and the transcript. *Resolved 2026-11-15 by test C:* the Deepgram model drops it (it happened on a phone recording too, no browser involved); CrisperWhisper and Scribe v3 both caught it. Fixed by the move to CrisperWhisper. Browser clipping not fully ruled out until test A/B runs.
 - [ ] **Standard A/B test for the underlying tech** (owner, 2026-11-08): test every audio or speech-to-text choice the same way, as a matter of course, not just Deepgram. Proposed protocol:
   - **A. Simultaneous capture:** record the same take on the phone and in the browser at the same time; compare counts. Isolates browser recording settings (e.g. noise suppression).
   - **B. Fixed playback:** play one phone recording into the app in Brave, Chrome and Safari; compare counts. Isolates the browser.
