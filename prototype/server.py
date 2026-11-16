@@ -17,6 +17,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 
 from access import AccessDenied, Gate
+from analytics_proxy import router as analytics_router
 from fillers import count_fillers
 from metrics import compute
 
@@ -30,6 +31,7 @@ NYRA_FIELDS = {"model": "crisperwhisper-v2", "language": "en"}
 MAX_AUDIO_BYTES = 2_000_000  # a 60 s take is ~1 MB; refuse anything much bigger
 
 app = FastAPI()
+app.include_router(analytics_router)  # /ingest/... -> PostHog (gets past ad blockers)
 gate = Gate.from_env()
 
 
