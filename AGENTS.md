@@ -7,12 +7,12 @@
 - **Who it's for:** Young professionals, fluent English speakers, who speak under pressure (executive conversations, interviews, presentations) and whose nerves show up as fillers and rushed starts. Not for language learners.
 - **The one job:** give a speaker measured feedback on *how* they speak, take after take.
 - **Primary user & core workflow:** prompt → record → transcribe → metrics. Full PRD in `docs/index.html`.
-- **Tech stack:** Build 1: throwaway local prototype using Deepgram speech-to-text (filler words on, word timestamps). From Build 2 (current lean, not set in stone; open to discovering better tools): web client (browser MediaRecorder), Python backend (FastAPI), SQLite. Details in HANDOFF.md → Technical choices.
+- **Tech stack:** Build 1: throwaway local prototype using Deepgram speech-to-text (filler words on, word timestamps). From Build 2: speech-to-text is CrisperWhisper 2 via Nyra's hosted API (decided 2026-11-15 after test C). Current lean, not set in stone: web client (browser MediaRecorder), Python backend (FastAPI), SQLite. Details in HANDOFF.md → Technical choices.
 
 - **Product source of truth:** [`HANDOFF.md`](./HANDOFF.md). Read it before building. Product decisions are made in design review and by the owner; the agent merges approved changes, builds, and never changes a product decision on its own. Put anything that needs deciding under "Questions for design" at the end of HANDOFF.md.
 
 ## 2. Commands
-All commands run from the `prototype/` folder (`cd prototype`). Needs `DEEPGRAM_API_KEY` in the repo-root `.env`.
+All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_KEY` in the repo-root `.env` (CrisperWhisper via Nyra's API, from Build 2; Build 1 used Deepgram).
 - **Install dependencies:** `uv sync`
 - **Run locally:** `uv run uvicorn server:app --reload`, then open http://localhost:8000
 - **Run deterministic tests:** `uv run pytest`

@@ -1,6 +1,6 @@
 """Access gate for the shared demo: invite codes + a daily cap.
 
-Protects the Deepgram bill when the app is online. Each invite code gets a few
+Protects the speech-to-text bill when the app is online. Each invite code gets a few
 takes; all codes together share a daily cap. Counts live in memory, so they
 reset if the server restarts (fine for a demo; the daily cap still holds).
 
@@ -76,7 +76,7 @@ class Gate:
         return self.takes_per_code - self.used.get(code, 0)
 
     def reserve(self, code):
-        """Use up one take before calling Deepgram. Returns a token for refund()."""
+        """Use up one take before calling the speech service. Returns a token for refund()."""
         code = self._check(code)
         if code is not None:
             self.used[code] = self.used.get(code, 0) + 1
@@ -84,7 +84,7 @@ class Gate:
         return code
 
     def refund(self, code):
-        """Give the take back if Deepgram failed (we weren't charged)."""
+        """Give the take back if the speech service failed (we weren't charged)."""
         if code is not None:
             self.used[code] -= 1
             self.today_count -= 1
