@@ -18,6 +18,7 @@ from fastapi.responses import FileResponse
 
 from access import AccessDenied, Gate
 from fillers import count_fillers
+from metrics import compute
 
 HERE = Path(__file__).parent
 load_dotenv(HERE.parent / ".env")  # repo-root .env (local only; online, the host sets these)
@@ -90,4 +91,8 @@ async def transcribe(request: Request):
         raise HTTPException(502, f"Speech service error {resp.status_code}: {resp.text[:300]}")
 
     data = resp.json()
-    return {**count_fillers(data), "transcript": (data.get("verbatim") or {}).get("text", "")}
+    return {
+        **count_fillers(data),
+        **compute(data),  # word count, fillers per 100 words, prep time, pauses
+        "transcript": (data.get("verbatim") or {}).get("text", ""),
+    }
