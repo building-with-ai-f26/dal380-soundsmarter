@@ -16,181 +16,197 @@
       })
   </script>
 
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    /* Same palette + type as the app (prototype/index.html) */
     :root {
-      --bg: #fafafa;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #4b5563;
-      --border: #e5e7eb;
-      --accent: #1d63dc;
-      --tag-bg: #eff6ff;
-      --tag-text: #1e40af;
+      --paper: #fdfcfa; --ink: #222; --rule: #f0efec; --line: #e4e2dd;
+      --purple: #4a2a7d; --yellow: #ffd21e; --blue: #73c2fb; --grey: #8a8782;
     }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "DM Sans", "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
+      margin: 0; font-family: "Archivo Narrow", "Helvetica Neue", Arial, sans-serif;
+      background: var(--paper); color: var(--ink); line-height: 1.5; font-size: 16px;
     }
-    .container {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
-    }
-    header {
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 28px;
-      margin-bottom: 32px;
-    }
-    .eyebrow {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      background: var(--tag-bg);
-      color: var(--tag-text);
-      padding: 4px 10px;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
-    h1 {
-      font-size: 36px;
-      line-height: 1.15;
-      margin: 0 0 12px;
-      letter-spacing: -0.02em;
-    }
-    .tagline {
-      font-size: 19px;
-      color: var(--muted);
-      margin: 0 0 20px;
-    }
-    .cta-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    a { color: var(--purple); }
+
+    /* Desktop: header fixed at top, each panel scrolls on its own (scrollbar hidden) */
+    .page { max-width: 1560px; height: 100vh; margin: 0 auto; padding: 24px 32px 0; display: flex; flex-direction: column; }
+
+    .topbar { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding-bottom: 14px; }
+    .wordmark { display: flex; align-items: flex-end; gap: 14px; }
+    .wordmark .text { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .wordmark svg { width: 46px; height: 46px; display: block; flex: none; }
+    .wordmark .name { font-weight: 700; font-size: 46px; line-height: 0.8; color: var(--purple); white-space: nowrap; }
+    .wordmark .desc { font-size: 17px; }
+    .course { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey); text-decoration: none; white-space: nowrap; }
+    .course:hover { color: var(--purple); text-decoration: underline; }
+    .rule2 { display: flex; height: 6px; flex: none; }
+    .rule2 .y { flex: 1; background: var(--yellow); }
+    .rule2 .b { flex: 1; background: var(--blue); }
+
+    .triptych { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 6px 1fr 6px 1fr; gap: 0 32px; }
+    .divider { margin: 28px 0; background: linear-gradient(var(--yellow) 0 50%, var(--blue) 50% 100%); }
+    .panel { min-width: 0; overflow-y: auto; padding: 28px 2px 60px; scrollbar-width: none; }
+    .panel::-webkit-scrollbar, .scroll::-webkit-scrollbar { display: none; }
+    .panel.split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
+    .panel.split .scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 8px 2px 60px; border-top: 1px solid var(--line); }
+
+    h2 { font-size: 28px; line-height: 1.15; margin: 0 0 12px; color: var(--purple); text-align: center; }
+    h3 { font-size: 19px; margin: 22px 0 6px; }
+    p, ul, ol { margin: 0 0 12px; }
+    li { margin-bottom: 6px; }
+    .meta { font-size: 15px; color: var(--grey); text-align: center; margin-bottom: 18px; }
+    .status { text-align: center; margin-bottom: 22px; }
+    .block { margin-top: 48px; }
+
+    .demo-row { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
     .btn {
-      display: inline-block;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;
-      text-decoration: none;
-      background: var(--accent);
-      color: #fff;
+      display: inline-block; padding: 12px 24px; font-weight: 700; font-size: 18px; text-decoration: none;
+      background: var(--purple); color: #fff; border: 1px solid var(--purple); border-radius: 0;
     }
-    .btn-secondary {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
+    .btn:hover { outline: 2px solid var(--yellow); outline-offset: 2px; }
+    .demo-notes { margin: 0; padding-left: 18px; font-size: 15px; }
+    .demo-notes li { margin: 0; }
+
+    /* app screens: screenshots are 1920x940; frame crops to the app's centre column */
+    .screen { margin-top: 30px; }
+    .screen .toggle-row { display: flex; justify-content: center; }
+    .screen .toggle { border-top: 0; }
+    .screen-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .screen-head h3 { margin: 0 0 4px; }
+    .frame { display: block; overflow: hidden; border: 1px solid var(--ink); aspect-ratio: 720 / var(--h); margin-top: 8px; background: var(--paper); }
+    .frame img { display: block; width: calc(1920 / 720 * 100%); margin-left: calc(-600 / 720 * 100%); }
+    .toggle { display: inline-flex; border: 1px solid var(--ink); }
+    .toggle button {
+      font-family: inherit; font-size: 14px; border: 0; background: var(--paper); color: var(--ink);
+      padding: 4px 10px; cursor: pointer;
     }
-    section {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-      margin-bottom: 24px;
-    }
-    h2 {
-      font-size: 20px;
-      margin: 0 0 14px;
-      letter-spacing: -0.01em;
-    }
-    h3 {
-      font-size: 16px;
-      margin: 18px 0 6px;
-    }
-    p, ul {
-      margin: 0 0 12px;
-      color: #1f2937;
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-    }
-    .stat-box {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 16px;
-      background: var(--bg);
-    }
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .stat-value {
-      font-size: 20px;
-      font-weight: 700;
-      margin-top: 4px;
-    }
-    .log-entry {
-      border-top: 1px solid var(--border);
-      padding-top: 16px;
-      margin-top: 16px;
-    }
-    .log-entry:first-of-type {
-      border-top: none;
-      padding-top: 0;
-      margin-top: 0;
-    }
-    .meta {
-      font-size: 13px;
-      color: var(--muted);
+    .toggle button + button { border-left: 1px solid var(--ink); }
+    .toggle button[aria-pressed="true"] { background: var(--purple); color: #fff; }
+
+    .shot-placeholder { border: 1px dashed var(--grey); background: var(--rule); color: var(--grey); aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .analytics-shot { width: 100%; display: block; border: 1px solid var(--ink); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 12px; }
+    .stat-box { border-left: 6px solid var(--blue); background: var(--rule); padding: 12px 16px; }
+    .stat-label { font-size: 13px; color: var(--grey); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 17px; font-weight: 700; margin-top: 4px; line-height: 1.3; }
+
+    /* build log: rounded light-grey cards; click to open (details/summary) */
+    .build { border: 1px solid var(--line); border-radius: 10px; background: var(--rule); margin-bottom: 12px; overflow: hidden; }
+    .build[open] { border: 2px solid var(--purple); background: #fff; }
+    .build summary { cursor: pointer; padding: 14px 14px; font-weight: 700; font-size: 16.5px; list-style: none; display: flex; gap: 8px; }
+    .build summary::-webkit-details-marker { display: none; }
+    .build summary::before { content: "+"; color: var(--purple); width: 1ch; }
+    .build[open] summary::before { content: "\2212"; }
+    .build[open] summary { border-bottom: 2px solid var(--blue); }
+    .build .body { padding: 12px 16px 4px; }
+    .build.upcoming { background: transparent; color: #b9b6b0; padding: 14px 14px 14px 32px; font-weight: 700; font-size: 16.5px; }
+
+    /* narrow screens: panels stack, page scrolls normally */
+    @media (max-width: 1100px) {
+      .page { height: auto; padding-bottom: 60px; }
+      .topbar { flex-wrap: wrap; }
+      .triptych { display: block; }
+      .panel, .panel.split, .panel.split .scroll { overflow: visible; padding: 28px 0 0; display: block; border: 0; }
+      .divider { height: 6px; margin: 28px 0 0; background: linear-gradient(90deg, var(--yellow) 0 50%, var(--blue) 50% 100%); }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- HERO / PRODUCT PITCH -->
-    <header>
-      <span class="eyebrow">NYU Stern · Building with AI · Fall 2026</span>
-      <h1>SoundSmarter</h1>
-      <p class="tagline">Improve your extemporaneous speech by cutting filler words and replacing them with pauses that sound thoughtful. With practice, sound smarter.</p>
-      <div class="cta-row">
-        <a class="btn" href="#live-demo" onclick="window.posthog && posthog.capture('clicked_try_product')">See the Product →</a>
-        <a class="btn btn-secondary" href="https://soundsmarter-demo.onrender.com/" target="_blank" rel="noopener">Try the Prototype Demo →</a>
-        <a class="btn btn-secondary" href="#prd">Read the Living PRD</a>
-        <a class="btn btn-secondary" href="#build-log">Weekly Build Log</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 100 100">
+    <rect width="100" height="100" fill="#73c2fb"/>
+    <path d="M52.2,76.9 L46.8,76.6 L42.8,74.9 L40.4,72.5 L38.6,69.5 L38.0,64.4 L27.8,64.4 L27.2,63.9 L0.0,63.8 L0.0,0.0 L99.9,0.0 L99.8,37.6 L72.2,37.6 L71.4,36.8 L70.6,29.8 L68.4,24.8 L65.2,21.4 L63.0,19.9 L56.2,17.4 L53.0,16.9 L46.8,16.9 L41.5,17.9 L38.0,19.1 L34.0,21.4 L30.1,25.5 L28.1,30.5 L27.6,36.2 L28.6,42.5 L31.1,47.2 L34.5,50.4 L38.5,52.6 L54.8,58.6 L59.4,62.5 L60.6,64.8 L61.1,68.0 L60.9,69.8 L59.6,72.5 L56.0,75.9 L52.2,76.9 Z" fill="#ffd21e" fill-rule="evenodd"/>
+    <path d="M49.35 87.2Q43.04 87.2 37.64 84.8Q32.25 82.4 28.95 77.65Q25.65 72.9 25.65 65.9Q25.65 65.3 25.7 64.7Q25.75 64.1 25.75 63.7H39.05Q39.05 63.78 39 64.36Q38.95 64.94 38.95 65.33Q38.95 70.2 41.85 73.2Q44.75 76.2 49.95 76.2Q55.75 76.2 58.05 73.65Q60.35 71.1 60.35 68.1Q60.35 64.6 58.53 62.51Q56.71 60.41 53.78 59.05Q50.84 57.68 47.29 56.59Q43.75 55.5 40.15 54.08Q36.55 52.66 33.6 50.43Q30.65 48.2 28.85 44.58Q27.05 40.96 27.05 35.4Q27.05 28.88 30.25 24.64Q33.45 20.4 38.7 18.3Q43.95 16.2 50 16.2Q56.05 16.2 61.1 18.3Q66.15 20.4 69.2 24.85Q72.25 29.3 72.25 36.37V37.6H59.15V36.7Q59.15 32.3 56.7 29.75Q54.25 27.2 49.83 27.2Q45.25 27.2 42.75 29.25Q40.25 31.3 40.25 34.5Q40.25 37.5 42.07 39.31Q43.88 41.12 46.82 42.31Q49.75 43.5 53.35 44.55Q56.95 45.6 60.5 47.02Q64.06 48.44 67 50.67Q69.95 52.9 71.75 56.45Q73.55 60 73.55 65.36Q73.55 73.31 70.45 78.05Q67.35 82.8 61.88 85Q56.4 87.2 49.35 87.2Z" fill="#4a2a7d"/>
+  </symbol>
+</svg>
+<div class="page">
+  <div class="topbar">
+    <div class="wordmark">
+      <svg aria-hidden="true"><use href="#logo"/></svg>
+      <span class="text">
+        <span class="name">SoundSmarter</span>
+        <span class="desc">Extemporaneous-speech self-improvement app that tracks important speech metrics like filler word usage.</span>
+      </span>
+    </div>
+    <a class="course" href="https://github.com/building-with-ai-f26" target="_blank" rel="noopener">NYU Stern · Building with AI · Fall 2026</a>
+  </div>
+  <div class="rule2"><span class="y"></span><span class="b"></span></div>
+
+  <div class="triptych">
+
+    <!-- LEFT: product showcase -->
+    <div class="panel split" id="live-demo">
+      <h2>Product Showcase</h2>
+      <p class="status"><strong>Current Status:</strong> Build 2 live hosted by Render</p>
+      <div class="demo-row">
+        <a class="btn" href="https://soundsmarter-demo.onrender.com/" target="_blank" rel="noopener" onclick="window.posthog && posthog.capture('clicked_try_product')">Demo the Product →</a>
+        <ul class="demo-notes">
+          <li>Demo code required</li>
+          <li>First load may take ~30 seconds</li>
+        </ul>
       </div>
-    </header>
+      <div class="scroll">
+        <div class="screen">
+          <h3>Landing Page</h3>
+          <p>User sees this page first, and is asked to enter a demo code to begin.</p>
+          <a class="frame" style="--h:640" href="images/build2-1-landing-1.png" target="_blank" rel="noopener"><img src="images/build2-1-landing-1.png" alt="Landing screen" /></a>
+          <div class="toggle-row"><div class="toggle" role="group" aria-label="Landing states"><button type="button" data-src="images/build2-1-landing-1.png" aria-pressed="true">Code needed</button><button type="button" data-src="images/build2-1-landing-2.png" aria-pressed="false">Code entered</button></div></div>
+        </div>
+        <div class="screen">
+          <h3>Start Page</h3>
+          <p>User is instructed how to use the app, and what is required of them.</p>
+          <a class="frame" style="--h:420" href="images/build2-1-start.png" target="_blank" rel="noopener"><img src="images/build2-1-start.png" alt="Start screen" /></a>
+        </div>
+        <div class="screen">
+          <h3>Recording Page</h3>
+          <p>Displays a prompt, begins recording and indicates time elapsed, shows when the minimum 30 seconds have been recorded, allows for prompt skipping, and allows user to move to analysis page.</p>
+          <a class="frame" style="--h:360" href="images/build2-1-recording-1.png" target="_blank" rel="noopener"><img src="images/build2-1-recording-1.png" alt="Recording screen" /></a>
+          <div class="toggle-row"><div class="toggle" role="group" aria-label="Recording states"><button type="button" data-src="images/build2-1-recording-1.png" aria-pressed="true">Under 30 s</button><button type="button" data-src="images/build2-1-recording-2.png" aria-pressed="false">30 s reached</button></div></div>
+        </div>
+        <div class="screen">
+          <h3>Analysis Page</h3>
+          <p>Holding location while AI is called, displays ticking-down time until results can be viewed, provides basic context to evaluate metrics that user will see on the results page. Allows user to move to results page when analysis is complete.</p>
+          <a class="frame" style="--h:720" href="images/build2-1-analysis-1.png" target="_blank" rel="noopener"><img src="images/build2-1-analysis-1.png" alt="Analysis screen" /></a>
+          <div class="toggle-row"><div class="toggle" role="group" aria-label="Analysis states"><button type="button" data-src="images/build2-1-analysis-1.png" aria-pressed="true">Analyzing</button><button type="button" data-src="images/build2-1-analysis-2.png" aria-pressed="false">Done</button></div></div>
+        </div>
+        <div class="screen">
+          <h3>Results Page</h3>
+          <p>Shows the metrics, filler word usage, fillers per 100 words, prep time length. Then allows for playback and shows transcript with pauses and fillers indicated. Allows for a new recording to be made.</p>
+          <a class="frame" style="--h:880" href="images/build2-1-results.png" target="_blank" rel="noopener"><img src="images/build2-1-results.png" alt="Results screen" /></a>
+        </div>
 
-    <!-- DEMO / SCREENSHOT / VIDEO SHOWCASE -->
-    <section id="live-demo">
-      <h2>Product Showcase (Prototype / Live App / 2-Min Video)</h2>
-      <p>
-        <strong>Current Status:</strong> Build 1 prototype, live online<br />
-        <strong>Demo:</strong> <a href="https://soundsmarter-demo.onrender.com/" target="_blank" rel="noopener">Try the prototype demo</a> (invite code required; first load can take ~30 seconds while the free server wakes up). Intro → prompt + recording → results.
-      </p>
-      <div style="display:flex; gap:12px; flex-wrap:wrap;">
-        <a href="images/soundsmarter_build1_instructionsscreen.png" style="flex:1; min-width:220px; max-width:32%;"><img src="images/soundsmarter_build1_instructionsscreen.png" alt="Intro screen with instructions" style="width:100%; border:1px solid #ddd;" /></a>
-        <a href="images/soundsmarter_build1_promptrecordscreen.png" style="flex:1; min-width:220px; max-width:32%;"><img src="images/soundsmarter_build1_promptrecordscreen.png" alt="Prompt shown while recording" style="width:100%; border:1px solid #ddd;" /></a>
-        <a href="images/soundsmarter_build1_resultsscreen.png" style="flex:1; min-width:220px; max-width:32%;"><img src="images/soundsmarter_build1_resultsscreen.png" alt="Results: um and uh count with transcript" style="width:100%; border:1px solid #ddd;" /></a>
+        <div class="block" id="analytics">
+          <h2>Analytics</h2>
+          <!-- DRAFT: Duncan edits. PostHog screenshots go in docs/images/posthog-*.png -->
+          <p>PostHog tracks both the app and this page. Events are sent through the app's own server, so browser ad blockers (e.g. Brave Shields) don't drop them.</p>
+          <p><strong>App events:</strong> take started, take stopped, prompt skipped, analysis done (with filler count, take length and analysis time), results shown, playback started, microphone blocked, transcription failed. Plus pageviews, clicks and session replay.</p>
+          <p><strong>This page:</strong> pageviews, clicks, and "Demo the Product" clicks.</p>
+          <a href="images/posthog-1.png" target="_blank" rel="noopener"><img class="analytics-shot" src="images/posthog-1.png" alt="PostHog dashboard with SoundSmarter events" /></a>
+        </div>
       </div>
-    </section>
+    </div>
 
-    <!-- LIVING PRD (Updated every week!) -->
-    <section id="prd">
-      <h2>Living PRD (Product Requirements Document)</h2>
-      <p class="meta">Updated every week as we test with real users and learn what works.</p>
+    <div class="divider" aria-hidden="true"></div>
 
+    <!-- MIDDLE: PRD -->
+    <div class="panel split" id="prd">
+      <h2>Product Requirements Document</h2>
+      <p class="meta">Updated weekly</p>
+      <div class="scroll">
       <h3>1. Target User & The Job to Be Done</h3>
-      <p><strong>Who is this for?</strong> Young professionals, fluent English speakers, who speak under pressure: conversations with executives, interviews, presentations, the moments when nerves show up as fillers and rushed starts. Build 1 testers: me and test user 1.</p>
+      <p><strong>Who is this for?</strong> Young professionals, fluent English speakers, who speak under pressure: conversations with executives, interviews, presentations, the moments when nerves show up as fillers and rushed starts. Testers so far: me and test user 1.</p>
       <p><strong>What it helps with:</strong> Fillers ("um," "uh") make a speaker sound less sure than they are. A pause in the same spot sounds thoughtful. SoundSmarter shows you how often you fill instead of pause, so you can change it.</p>
       <p><strong>The painful "Before" workflow:</strong> Speakers fill silences with "um" and "uh" and don't know how often. Feedback, if they get any, is vague and lacks measurable detail, so there's nothing to compare against next time.</p>
       <p><strong>The "After" workflow with this product:</strong> Answer a short prompt out loud for 30–60 seconds, see how many fillers you used, and try again. Later builds track your progress over time.</p>
-      <p><strong>Core workflow (Build 1):</strong></p>
+      <p><strong>Core workflow (Build 2):</strong></p>
       <ol>
-        <li><strong>Prompt:</strong> see one short prompt from a fixed set of five (e.g. "Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?"). Don't like it? Skip to the next one.</li>
-        <li><strong>Record:</strong> recording starts when the prompt appears; stop after 30 seconds, hard stop at 60 seconds.</li>
-        <li><strong>Transcribe:</strong> speech-to-text that keeps the fillers and times every word.</li>
-        <li><strong>Filler count:</strong> total fillers plus a breakdown by filler (e.g. "um ×4, uh ×2"). Build 1 counts only "uh" and "um", the fillers today's speech-to-text detects reliably; more fillers and speech features will follow as the tech allows. Speaking rate and prep time come in Build 2.</li>
+        <li><strong>Prompt:</strong> one short prompt from a bank of 12, in random order (e.g. "Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?"). Skip if you don't like it.</li>
+        <li><strong>Record:</strong> recording starts when the prompt appears. A fill bar shows time without numbers; Stop unlocks at 30 seconds; hard stop at 60.</li>
+        <li><strong>Analyze:</strong> speech-to-text that keeps every filler and times every word. While it runs, the screen shows reference numbers to compare against.</li>
+        <li><strong>Results:</strong> filler count (ums and uhs), fillers per 100 words, prep time (prompt to first sound), playback of the take, and the transcript with fillers and silent pauses marked. Numbers only; no AI-written feedback.</li>
       </ol>
       <p><strong>How I'll know it works:</strong> A tester can complete the workflow without help and gets back a filler count. The count matches what I hear when I listen back to the same take, and the tester says the count tells them something they didn't know.</p>
 
@@ -204,81 +220,88 @@
 
       <h3>3. How It Works Under the Hood & Riskiest Assumption (Week 2+)</h3>
       <p><strong>Riskiest Assumption:</strong> That filler words can be detected accurately enough to trust. Speech-to-text tools often clean fillers out of transcripts, and words like "like" are only sometimes fillers ("I like jazz" vs. "it was, like, fine"). If the filler count is wrong, the product's core metric is wrong.</p>
-      <p><strong>Simple Architecture (Build 1):</strong> [Microphone recording] → [Local prototype] → [Deepgram speech-to-text, fillers kept, word timestamps] → [Filler count computed in code] → [Total + breakdown by filler]</p>
+      <p><strong>How Build 2 tests it:</strong> I hand-counted the ums and uhs in four phone recordings and sent the same files to three speech-to-text services. On the three normal takes (18 fillers): Deepgram Nova-2 caught 13; CrisperWhisper 2 and ElevenLabs Scribe v3 caught all 18. Deepgram also dropped the "uh" at the very start of a take, which would have made prep time 2 seconds too long. No service could tell a filler "um" from "um" used as a word, so that stays a known gap. Small sample: one speaker, four takes.</p>
+      <p><strong>Simple Architecture (Build 2):</strong> [Browser records the take] → [Python server (FastAPI) on Render] → [CrisperWhisper 2 via Nyra's API: verbatim transcript, word timestamps] → [Metrics computed in code: fillers, fillers per 100 words, prep time, silent pauses of 450 ms or more] → [Results page]. Analytics: PostHog, relayed through the app's own server so ad blockers don't drop events.</p>
 
       <h3>4. Unit Economics & Analytics Snapshot (Updated Weekly)</h3>
       <div class="grid-2">
         <div class="stat-box">
           <div class="stat-label">Cumulative Build Spend</div>
-          <div class="stat-value">~$0.10 (Deepgram)</div>
+          <div class="stat-value">$10 (Nyra prepaid, under $1 used); Deepgram, ElevenLabs, Render, PostHog free</div>
         </div>
         <div class="stat-box">
           <div class="stat-label">Est. Cost Per User Run</div>
-          <div class="stat-value">Under 1¢ per take (est.)</div>
+          <div class="stat-value">~1.5¢ per 60-second take ($0.90 per audio hour)</div>
         </div>
         <div class="stat-box">
           <div class="stat-label">User Evidence (Analytics from Build 2)</div>
-          <div class="stat-value">Not yet measured</div>
+          <div class="stat-value">PostHog live: pageviews, clicks, session replay, take events. First numbers next week.</div>
         </div>
         <div class="stat-box">
           <div class="stat-label">Sponsor Call (Week 6)</div>
           <div class="stat-value">TBD</div>
         </div>
       </div>
-    </section>
+      </div>
+    </div>
 
-    <!-- WEEKLY BUILD LOG (Updated at least twice a week via Git commits) -->
-    <section id="build-log">
-      <h2>Weekly Build Log</h2>
-      <p class="meta">Build on at least two separate days each week outside class, including the November 3 break. Push commits and log actual progress, failures, PRD changes, costs, and hours here. All build deadlines are noon, New York time.</p>
+    <div class="divider" aria-hidden="true"></div>
 
-      <div class="log-entry">
-        <h3>Build 1 · Intent.md & Throwaway Prototype (Due Nov 9)</h3>
-        <ul>
+    <!-- RIGHT: build log + research. Active build open by default; upcoming builds greyed, not clickable -->
+    <div class="panel split" id="build-log">
+      <h2>Build Log</h2>
+      <p class="meta">As of Nov. 16, 2026</p>
+      <div class="scroll">
+      <details class="build">
+        <summary>Build 1: Nov. 9, 2026 – First Working Prototype</summary>
+        <div class="body">
+          <ul>
           <li><strong>What shipped:</strong> A local prototype (Python/FastAPI server + one web page). An intro screen explains the task; the user gets one of 5 fixed prompts, records 30–60 seconds in the browser, and sees how many times they said "um" and "uh", plus the transcript. Skip discards the take and moves to the next prompt. Filler counting is done in code and covered by automated tests.</li>
           <li><strong>Things learned with AI:</strong> Directing a coding agent is mostly writing things down: it only knows what's in AGENTS.md. After early misses I added my experience level, a rule to teach conventions up front, review before every commit, and strict handling of secrets. Read the assignment yourself and check the agent's facts and paraphrases. Shrink scope to what the tool actually does. When something fails, isolate it: comparing a phone recording with the browser showed that both the speech model and the browser's noise suppression were dropping fillers. Picked up the git loop (status, diff, add, commit, push), Conventional Commits, branches, and pull requests.</li>
           <li><strong>What broke / changed in PRD:</strong> First live test counted 0 fillers when I'd said 5–8. Two causes: Deepgram's newest model (Nova-3) drops more fillers than the older Nova-2, and the browser's built-in noise suppression flattened soft "um"s. Switching to Nova-2 and raw microphone audio brought it to about 4 of 5–6: it works but still undercounts, which confirms filler detection accuracy as the riskiest assumption. PRD changes: Build 1 now counts only "um" and "uh" (what Deepgram reliably detects); target user broadened from MBA students to young professionals. Test user 1 couldn't tell what to do on the first screen, so I added an intro screen and a 30-second minimum before Stop.</li>
           <li><strong>Cost & time this week:</strong> ~$0.10 (Deepgram, about 15 short test calls, covered by free credit) · 4–5 hours total (2 on the prototype)</li>
         </ul>
-      </div>
-
-      <div class="log-entry">
-        <h3>Build 2 · Smallest Local Version & PostHog (Due Nov 16)</h3>
-        <ul>
-          <li><strong>What shipped:</strong> [Local working slice, PostHog verified on this page and the local app, PRD v2, and local setup in AGENTS.md]</li>
-          <li><strong>What broke / changed in PRD:</strong> [Fill in]</li>
-          <li><strong>Cost & time this week:</strong> $[0.00] · [0] hours</li>
+        </div>
+      </details>
+      <details class="build" open>
+        <summary>Build 2: Nov. 16, 2026 – Live, Redesigned, with Analytics</summary>
+        <div class="body">
+          <ul>
+          <li><strong>What shipped:</strong> Build 2, live online and on my laptop. New five-screen design (landing, start, record, analyze, results) in yellow, purple and maya blue. Speech-to-text switched from Deepgram to CrisperWhisper 2. Results show fillers, fillers per 100 words, prep time, playback and a marked-up transcript, all computed in code. PostHog on the app and this page. One demo code can now be reused by tester after tester, with a daily cap to protect the bill.</li>
+          <li><strong>Things learned with AI:</strong> Test every option the same way before trusting a vendor's benchmark. Isolate the cause: a phone recording showed the missing opening "uh" was Deepgram, not the browser. Brave's Shields block analytics; routing PostHog through my own server fixed it. A failed deploy can look like a broken app: Render didn't redeploy on merge, so I deployed manually.</li>
+          <li><strong>What broke / changed in PRD:</strong> Deepgram missed about a quarter of my fillers and every opening one, so speech-to-text moved to CrisperWhisper 2. The page went blank when the microphone was blocked; it now says why. PRD changes: numbers instead of AI-written feedback; new design; prep time, fillers per 100 words and silent pauses added; one reusable demo code instead of many.</li>
+          <li><strong>Cost & time this week:</strong> $10 (Nyra prepaid, under $1 used; everything else free) · 6–8 hours</li>
         </ul>
-      </div>
+        </div>
+      </details>
+      <div class="build upcoming">Build 3: Upcoming</div>
+      <div class="build upcoming">Build 4: Upcoming</div>
+      <div class="build upcoming">Build 5: Upcoming</div>
 
-      <div class="log-entry">
-        <h3>Build 3 · Build.exe: The Core Workflow (Due Nov 23)</h3>
-        <ul>
-          <li><strong>What shipped:</strong> [End-to-end workflow working with real inputs + PostHog funnel events]</li>
-          <li><strong>What broke / changed in PRD:</strong> [Fill in]</li>
-          <li><strong>Cost & time this week:</strong> $[0.00] · [0] hours</li>
-        </ul>
+      <div class="block" id="research">
+        <h2>Research Impetus</h2>
+        <!-- DRAFT: Duncan writes this section -->
+        <p>[Research Impetus: copy to come]</p>
       </div>
+      </div>
+    </div>
 
-      <div class="log-entry">
-        <h3>Build 4 · Test.py: Choose Track A or Track B (Due Nov 30)</h3>
-        <ul>
-          <li><strong>Chosen track:</strong> [A: 10-case domain eval and one outside target-user review; OR B: 3–5 outside users and replay findings]</li>
-          <li><strong>Results and improvements:</strong> [Before/after evidence; for Track B, fixes to the top three friction points]</li>
-          <li><strong>PRD v4 changes:</strong> [What the evidence changed]</li>
-          <li><strong>Cost & time this week:</strong> $[0.00] · [0] hours</li>
-        </ul>
-      </div>
-
-      <div class="log-entry">
-        <h3>Build 5 · Ship.installer: Launch Ops, Rollback Check & 2-Min Video (Due Dec 7)</h3>
-        <ul>
-          <li><strong>Launch Ops & Safety:</strong> [Verified no exposed keys, set spend cap, tested 2-minute rollback]</li>
-          <li><strong>2-Minute Video & Final Polish:</strong> [Link/embed above]</li>
-          <li><strong>Cost & time this week:</strong> $[0.00] · [0] hours</li>
-        </ul>
-      </div>
-    </section>
   </div>
+</div>
+
+<script>
+  // Screenshot toggles: swap the image (and its full-size link) for that screen
+  document.querySelectorAll('.toggle').forEach(function (group) {
+    var frame = group.closest('.screen').querySelector('.frame');
+    group.querySelectorAll('button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        group.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+        btn.setAttribute('aria-pressed', 'true');
+        frame.querySelector('img').src = btn.dataset.src;
+        frame.href = btn.dataset.src;
+      });
+    });
+  });
+</script>
 </body>
 </html>
