@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundSmarter — front-end mockup (2026-11-15)</title>
+<!--
+  Static mockup for the Build 2+ front end. Design session, 2026-11-15.
+  Not wired to anything. The grey bar at the bottom switches app states
+  and is mockup chrome only — it does not ship.
+
+  Palette proposal (exact values for Duncan to judge):
+    paper   #fdfcfa   (duncanlindsay.com background)
+    ink     #222      (text)
+    rule    #f0efec   (row dividers)
+    purple  #4a2a7d   ink accent — dark enough to pass contrast as text;
+                      used flat, never as a gradient
+    yellow  #ffd21e   highlighter fill only, dark text on top — marks fillers
+    blue    #73c2fb   maya blue (owner's pick) — marks silent pauses; also
+                      the lower field of the logo
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fdfcfa;
+    --ink: #222;
+    --rule: #f0efec;
+    --purple: #4a2a7d;
+    --yellow: #ffd21e;
+    --blue: #73c2fb;
+    --grey: #8a8782;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { background: var(--paper); }
+
+  body {
+    font-family: "Archivo Narrow", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--paper);
+    text-shadow: 0 0 0.6px rgba(0,0,0,0.5);
+    line-height: 1.45;
+    padding-bottom: 72px; /* room for mockup nav */
+  }
+
+  main {
+    max-width: 640px;   /* desktop-native for now; mobile pass later */
+    margin: 0 auto;
+    padding: 40px 24px 56px;
+  }
+
+  h1, h2, h3, .num, button { font-weight: 700; }
+
+  a { color: var(--ink); text-decoration: underline; }
+  a:hover { color: var(--purple); }
+
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+    padding-bottom: 12px;
+  }
+  .wordmark svg { width: 34px; height: 34px; display: block; }
+
+  /* ---------- buttons ---------- */
+
+  button {
+    font-family: inherit;
+    font-size: 17px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    padding: 12px 28px;
+    cursor: pointer;
+    border-radius: 0;
+  }
+  button.primary {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: #fff;
+    text-shadow: none;
+  }
+  button.start {
+    font-size: 24px;
+    padding: 16px 37px;
+  }
+  button:disabled {
+    border-color: var(--rule);
+    color: var(--grey);
+    cursor: not-allowed;
+  }
+  button.primary:disabled {
+    background: var(--rule);
+    border-color: var(--rule);
+    color: var(--grey);
+  }
+  button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--purple);
+    outline-offset: 2px;
+  }
+  .linklike {
+    border: none;
+    background: none;
+    padding: 4px 0;
+    text-decoration: underline;
+    font-weight: 400;
+    font-size: 16px;
+  }
+
+  /* ---------- screens ---------- */
+
+  .screen { display: none; }
+  .screen.on { display: block; }
+
+  /* intro */
+
+  .landing { text-align: center; padding-top: 36px; }
+  .landing svg { width: 200px; height: 200px; }
+  .landing h1 { font-size: 48px; line-height: 1; margin: 30px 0 18px; color: var(--purple); }
+  .landing .tagline { font-size: 19px; line-height: 1.55; max-width: 58ch; margin: 0 auto 44px; }
+
+  .rule2 { display: flex; height: 6px; margin-bottom: 26px; }
+  .rule2 .y { flex: 1; background: var(--yellow); }
+  .rule2 .b { flex: 1; background: var(--blue); }
+
+  .intro { text-align: center; padding-top: 24px; }
+  .intro h1 { font-size: 34px; line-height: 1.1; margin-bottom: 26px; }
+  .instructions {
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 0 auto 40px;
+  }
+
+  /* record */
+
+  .prompt {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 40px;
+  }
+  .fillbar {
+    height: 6px;
+    background: var(--rule);
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .fillbar .fill {
+    position: absolute; inset: 0 auto 0 0;
+    width: 0%;
+    background: var(--purple);
+  }
+  .fillbar .tick {
+    position: absolute; left: 50%; top: -2px; bottom: -2px;
+    width: 2px; background: var(--purple);
+  }
+  .fillbar .check30 {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    bottom: 10px;
+    color: var(--blue); font-size: 20px; font-weight: 700;
+    text-shadow: none;
+    display: none;
+  }
+  .rec-actions { display: flex; align-items: center; gap: 24px; margin-top: 36px; }
+
+  /* analyzing (guess your count) */
+
+  .analyze { text-align: center; padding-top: 24px; }
+  .analyze-actions { margin-bottom: 48px; }
+  .analyze-actions .primary { font-size: 21px; padding: 14px 32px; min-width: 220px; }
+  .facts { max-width: 54ch; margin: 0 auto; text-align: center; }
+  .facts p { font-size: 17px; line-height: 2.0; margin-bottom: 26px; }
+  .facts .f { margin: 0 1px; }
+  .facts .val {
+    display: inline-block;
+    background: var(--blue);
+    padding: 4px 16px;
+    font-weight: 700;
+    font-size: 22px;
+    text-shadow: none;
+    margin-top: 8px;
+  }
+  .facts-note { font-size: 15px; }
+
+  /* playback (on results, above transcription) */
+  .player {
+    display: flex; align-items: center; gap: 16px;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 18px 0;
+    margin-bottom: 18px;
+  }
+  .player .track {
+    flex: 1; height: 6px; background: var(--rule); position: relative;
+  }
+  .player .track .done {
+    position: absolute; inset: 0 auto 0 0; width: 34%;
+    background: var(--purple);
+  }
+  /* results */
+
+  .cards { display: flex; gap: 22px; align-items: center; margin-bottom: 40px; }
+  .card-fillers {
+    background: var(--rule);
+    border: 2px solid var(--purple);
+    padding: 22px;
+  }
+  .cf-num { font-size: 64px; font-weight: 700; color: var(--purple); line-height: 1; }
+  .cf-label { font-size: 34px; font-weight: 700; margin-left: 10px; }
+  .cf-chips { display: flex; gap: 10px; margin-top: 16px; }
+  .card-right { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+  .ybox {
+    background: var(--yellow);
+    padding: 8px 14px;
+    font-weight: 700; font-size: 18px;
+    text-shadow: none;
+  }
+  .bbox {
+    background: var(--blue);
+    padding: 14px 18px;
+    font-weight: 700; font-size: 19px;
+    text-shadow: none;
+    display: inline-block;
+  }
+  .results-actions { margin-top: 44px; }
+
+  .transcript { margin-bottom: 34px; }
+  .transcript h3 { font-size: 17px; margin-bottom: 12px; }
+  .transcript p { font-size: 17px; line-height: 1.7; max-width: 60ch; }
+  .f {
+    background: var(--yellow);
+    padding: 1px 4px;
+    text-shadow: none;
+  }
+  .p {
+    background: var(--blue);
+    padding: 1px 5px;
+    font-size: 14px;
+    font-weight: 700;
+    text-shadow: none;
+    white-space: nowrap;
+  }
+  .legend { font-size: 15px; color: var(--ink); margin-top: 12px; }
+  .legend span { margin-right: 10px; }
+
+  /* ---------- design notes ---------- */
+
+  /* ---------- mockup-only nav ---------- */
+
+  .mock-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--ink); color: #bbb;
+    display: flex; align-items: center; gap: 4px;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  .mock-nav span { margin-right: 8px; }
+  .mock-nav button {
+    border: 1px solid #555; background: none; color: #ddd;
+    font-size: 14px; padding: 5px 10px; text-shadow: none;
+  }
+  .mock-nav button[aria-pressed="true"] { background: #fff; color: var(--ink); border-color: #fff; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fillbar .fill { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wordmark" id="wordmark">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" fill="#73c2fb"/>
+      <path d="M52.2,76.9 L46.8,76.6 L42.8,74.9 L40.4,72.5 L38.6,69.5 L38.0,64.4 L27.8,64.4 L27.2,63.9 L0.0,63.8 L0.0,0.0 L99.9,0.0 L99.8,37.6 L72.2,37.6 L71.4,36.8 L70.6,29.8 L68.4,24.8 L65.2,21.4 L63.0,19.9 L56.2,17.4 L53.0,16.9 L46.8,16.9 L41.5,17.9 L38.0,19.1 L34.0,21.4 L30.1,25.5 L28.1,30.5 L27.6,36.2 L28.6,42.5 L31.1,47.2 L34.5,50.4 L38.5,52.6 L54.8,58.6 L59.4,62.5 L60.6,64.8 L61.1,68.0 L60.9,69.8 L59.6,72.5 L56.0,75.9 L52.2,76.9 Z" fill="#ffd21e" fill-rule="evenodd"/>
+      <path d="M49.35 87.2Q43.04 87.2 37.64 84.8Q32.25 82.4 28.95 77.65Q25.65 72.9 25.65 65.9Q25.65 65.3 25.7 64.7Q25.75 64.1 25.75 63.7H39.05Q39.05 63.78 39 64.36Q38.95 64.94 38.95 65.33Q38.95 70.2 41.85 73.2Q44.75 76.2 49.95 76.2Q55.75 76.2 58.05 73.65Q60.35 71.1 60.35 68.1Q60.35 64.6 58.53 62.51Q56.71 60.41 53.78 59.05Q50.84 57.68 47.29 56.59Q43.75 55.5 40.15 54.08Q36.55 52.66 33.6 50.43Q30.65 48.2 28.85 44.58Q27.05 40.96 27.05 35.4Q27.05 28.88 30.25 24.64Q33.45 20.4 38.7 18.3Q43.95 16.2 50 16.2Q56.05 16.2 61.1 18.3Q66.15 20.4 69.2 24.85Q72.25 29.3 72.25 36.37V37.6H59.15V36.7Q59.15 32.3 56.7 29.75Q54.25 27.2 49.83 27.2Q45.25 27.2 42.75 29.25Q40.25 31.3 40.25 34.5Q40.25 37.5 42.07 39.31Q43.88 41.12 46.82 42.31Q49.75 43.5 53.35 44.55Q56.95 45.6 60.5 47.02Q64.06 48.44 67 50.67Q69.95 52.9 71.75 56.45Q73.55 60 73.55 65.36Q73.55 73.31 70.45 78.05Q67.35 82.8 61.88 85Q56.4 87.2 49.35 87.2Z" fill="#4a2a7d"/>
+    </svg>
+    <span>SoundSmarter</span>
+  </div>
+  <div class="rule2" id="rule2"><span class="y"></span><span class="b"></span></div>
+
+  <!-- 0 · LANDING — copy is owner-written, 2026-11-15, verbatim -->
+  <section class="screen landing on" id="s-landing">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" fill="#73c2fb"/>
+      <path d="M52.2,76.9 L46.8,76.6 L42.8,74.9 L40.4,72.5 L38.6,69.5 L38.0,64.4 L27.8,64.4 L27.2,63.9 L0.0,63.8 L0.0,0.0 L99.9,0.0 L99.8,37.6 L72.2,37.6 L71.4,36.8 L70.6,29.8 L68.4,24.8 L65.2,21.4 L63.0,19.9 L56.2,17.4 L53.0,16.9 L46.8,16.9 L41.5,17.9 L38.0,19.1 L34.0,21.4 L30.1,25.5 L28.1,30.5 L27.6,36.2 L28.6,42.5 L31.1,47.2 L34.5,50.4 L38.5,52.6 L54.8,58.6 L59.4,62.5 L60.6,64.8 L61.1,68.0 L60.9,69.8 L59.6,72.5 L56.0,75.9 L52.2,76.9 Z" fill="#ffd21e" fill-rule="evenodd"/>
+      <path d="M49.35 87.2Q43.04 87.2 37.64 84.8Q32.25 82.4 28.95 77.65Q25.65 72.9 25.65 65.9Q25.65 65.3 25.7 64.7Q25.75 64.1 25.75 63.7H39.05Q39.05 63.78 39 64.36Q38.95 64.94 38.95 65.33Q38.95 70.2 41.85 73.2Q44.75 76.2 49.95 76.2Q55.75 76.2 58.05 73.65Q60.35 71.1 60.35 68.1Q60.35 64.6 58.53 62.51Q56.71 60.41 53.78 59.05Q50.84 57.68 47.29 56.59Q43.75 55.5 40.15 54.08Q36.55 52.66 33.6 50.43Q30.65 48.2 28.85 44.58Q27.05 40.96 27.05 35.4Q27.05 28.88 30.25 24.64Q33.45 20.4 38.7 18.3Q43.95 16.2 50 16.2Q56.05 16.2 61.1 18.3Q66.15 20.4 69.2 24.85Q72.25 29.3 72.25 36.37V37.6H59.15V36.7Q59.15 32.3 56.7 29.75Q54.25 27.2 49.83 27.2Q45.25 27.2 42.75 29.25Q40.25 31.3 40.25 34.5Q40.25 37.5 42.07 39.31Q43.88 41.12 46.82 42.31Q49.75 43.5 53.35 44.55Q56.95 45.6 60.5 47.02Q64.06 48.44 67 50.67Q69.95 52.9 71.75 56.45Q73.55 60 73.55 65.36Q73.55 73.31 70.45 78.05Q67.35 82.8 61.88 85Q56.4 87.2 49.35 87.2Z" fill="#4a2a7d"/>
+    </svg>
+    <h1>SoundSmarter</h1>
+    <p class="tagline">A self-improvement tool that listens to you speak and helps you communicate your thoughts more fluidly and confidently.</p>
+    <button class="primary start" onclick="go('s-intro')">OK</button>
+  </section>
+
+  <!-- 1 · START — copy is owner-written, 2026-11-15, verbatim -->
+  <section class="screen intro" id="s-intro">
+    <h1>Record A Response</h1>
+    <p class="instructions">A prompt will appear and recording will begin.<br>At least 30 seconds of audio are needed.</p>
+    <button class="primary start" onclick="go('s-record')">START</button>
+  </section>
+
+  <!-- 2 · PROMPT + RECORDING -->
+  <section class="screen" id="s-record">
+    <p class="prompt">Who was your first favorite musician or band? What did you love about them? Who are you listening to these days?</p>
+    <div class="fillbar" id="fillbar" role="progressbar" aria-label="Recording time, 60 second limit">
+      <div class="fill" id="fill" style="width:0%"></div>
+      <span class="tick"></span>
+      <span class="check30" id="check30">&#10003;</span>
+    </div>
+    <div class="rec-actions">
+      <button id="stopbtn" disabled onclick="go('s-listen')">Stop</button>
+      <button class="linklike" onclick="go('s-record')">Skip this prompt</button>
+    </div>
+  </section>
+
+  <!-- 3 · ANALYZING — countdown button on top, reference facts below.
+       Filler list and prep-time average are placeholders; see HANDOFF.md. -->
+  <section class="screen analyze" id="s-listen">
+    <div class="analyze-actions">
+      <button class="primary" id="analyzebtn" disabled onclick="go('s-results')">Analyzing (10)</button>
+    </div>
+    <div class="facts">
+      <p>Most common filler words:<br>
+        <span class="f">um</span> <span class="f">uh</span> <span class="f">like</span>
+        <span class="f">you know</span> <span class="f">so</span> <span class="f">I mean</span>
+        <span class="f">actually</span> <span class="f">basically</span> <span class="f">kind of</span>
+        <span class="f">sort of</span> <span class="f">right</span> <span class="f">well</span>
+        <span class="f">okay</span> <span class="f">just</span> <span class="f">literally</span></p>
+      <p>Average filler words per 100 spoken words:<br><span class="val">2.6</span></p>
+      <p>Average prep time (pause before beginning to speak):<br><span class="val">1.5 seconds</span></p>
+      <p class="facts-note">Filler word list and prep time average are placeholders, not yet research-sourced.</p>
+    </div>
+  </section>
+
+  <!-- 4 · RESULTS — metric cards (owner's layout, 2026-11-15) -->
+  <section class="screen" id="s-results">
+    <div class="cards">
+      <div class="card-fillers">
+        <div class="cf-head"><span class="cf-num">4</span> <span class="cf-label">Fillers</span></div>
+        <div class="cf-chips"><span class="ybox">3 Ums</span><span class="ybox">1 Uh</span></div>
+      </div>
+      <div class="card-right">
+        <div class="bbox">4.2 fillers per 100 words</div>
+        <div class="bbox">1.4 seconds prep time</div>
+      </div>
+    </div>
+
+    <div class="player">
+      <button aria-label="Playback">Playback</button>
+      <div class="track"><div class="done"></div></div>
+    </div>
+
+    <div class="transcript">
+      <h3>Transcription (95 words)</h3>
+      <p>So, <span class="f">um</span>, my first favorite band was probably the Beatles, because my dad had, <span class="f">uh</span>, this big stack of records in the basement <span class="p">0.8&nbsp;s</span> and I remember the red and blue albums, the greatest-hits ones. <span class="f">Um</span>, we'd listen to the blue one on, like, every long car ride. <span class="p">1.1&nbsp;s</span> What I loved was that the songs were short and you could <span class="f">um</span> sing every part. <span class="p">0.6&nbsp;s</span> These days it's mostly jazz. Piano trios, mostly.</p>
+      <p class="legend"><span class="f">filler</span> <span class="p">silent pause</span></p>
+    </div>
+
+    <div class="results-actions">
+      <button class="primary" onclick="go('s-record')">Record Next Response (1 left)</button>
+    </div>
+  </section>
+
+
+</main>
+
+<!-- mockup chrome only — not part of the app -->
+<nav class="mock-nav" aria-label="Mockup state switcher">
+  <span>Mockup states:</span>
+  <button aria-pressed="true" data-s="s-landing" onclick="go('s-landing')">Landing</button>
+  <button aria-pressed="false" data-s="s-intro" onclick="go('s-intro')">Start</button>
+  <button aria-pressed="false" data-s="s-record" onclick="go('s-record')">Record</button>
+  <button aria-pressed="false" data-s="s-listen" onclick="go('s-listen')">Analyze</button>
+  <button aria-pressed="false" data-s="s-results" onclick="go('s-results')">Results</button>
+</nav>
+
+<script>
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id));
+    document.querySelectorAll('.mock-nav button').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.s === id)));
+    window.scrollTo(0, 0);
+    const landing = id === 's-landing';
+    document.getElementById('wordmark').style.display = landing ? 'none' : 'flex';
+    document.getElementById('rule2').style.display = landing ? 'none' : 'flex';
+    if (id === 's-record') startRec(); else clearInterval(recTimer);
+    if (id === 's-listen') startAnalyze(); else clearInterval(waitTimer);
+  }
+
+  // analysis wait: button counts down from 10 greyed, then turns purple.
+  // In the real app the countdown shows immediately and the button flips to
+  // Results the moment analysis returns, sooner or later than the 10.
+  let waitTimer = null;
+  function startAnalyze() {
+    clearInterval(waitTimer);
+    const btn = document.getElementById('analyzebtn');
+    let left = 10;
+    btn.disabled = true; btn.textContent = 'Analyzing (' + left + ')';
+    waitTimer = setInterval(() => {
+      left -= 1;
+      if (left <= 0) {
+        clearInterval(waitTimer);
+        btn.disabled = false; btn.textContent = 'Results';
+      } else {
+        btn.textContent = 'Analyzing (' + left + ')';
+      }
+    }, 1000);
+  }
+
+  // recording clock: bar fills 0-60s, check appears at 30s, Stop unlocks at 30s,
+  // hard stop at 60s -> Listen
+  let recT = 0, recTimer = null;
+  function renderRec() {
+    document.getElementById('fill').style.width = (recT / 60 * 100) + '%';
+    const reached = recT >= 30;
+    document.getElementById('check30').style.display = reached ? 'block' : 'none';
+    document.getElementById('stopbtn').disabled = !reached;
+  }
+  function startRec() {
+    clearInterval(recTimer); recT = 0; renderRec();
+    recTimer = setInterval(() => {
+      recT += 0.1;
+      if (recT >= 60) { clearInterval(recTimer); go('s-listen'); return; }
+      renderRec();
+    }, 100);
+  }
+  // mockup-only: click anywhere on the bar to scrub the clock
+  document.getElementById('fillbar').addEventListener('click', e => {
+    recT = Math.max(0, Math.min(60, e.offsetX / e.currentTarget.offsetWidth * 60));
+    renderRec();
+  });
+
+  go('s-landing');
+</script>
+
+</body>
+</html>

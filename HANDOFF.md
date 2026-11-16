@@ -90,13 +90,39 @@ A throwaway prototype: the smallest working interaction.
 
 Not in build 1: speaking rate, prep time, prompt generation (beyond the fixed bank), acoustic features, LLM classification of lexical fillers, the recommendation, trends, persistence across sessions, the iterate loop.
 
+## Build 2 front end (shipped design, 2026-11-15)
+
+Decided by the owner in design review, 2026-11-15. Reference implementation: `design/mockups/2026-11-15-frontend-mockup.html` (static; the dark state-switcher bar at the bottom and the click-to-scrub recording bar are mockup chrome and do not ship). Five pages, desktop-first; a mobile pass comes later. All quoted user-facing copy is owner-written; use verbatim.
+
+**Visual system.** Paper `#fdfcfa`, ink `#222`, purple `#4a2a7d` (flat accent: numbers, primary buttons, fill bar — never a gradient), yellow `#ffd21e` (marks fillers), maya blue `#73c2fb` (marks silent pauses; value boxes). Type: Archivo Narrow 700 (Google Fonts), fallback "Helvetica Neue", Arial. On every page after the landing, a 6 px rule under the header: left half yellow, right half blue. Logo assets: `design/logo/` (SVG plus 1024 and 512 PNG).
+
+1. **Landing.** Large logo, then "SoundSmarter", then "A self-improvement tool that listens to you speak and helps you communicate your thoughts more fluidly and confidently." Purple OK button. No header chrome on this page.
+2. **Start.** Headline "Record A Response". Instruction on two lines: "A prompt will appear and recording will begin." / "At least 30 seconds of audio are needed." Purple START button, centered, enlarged.
+3. **Record.** Prompt large. Soft fill bar represents 0–60 s, no numerals; thin purple tick at the 30 s mark; at 30 s a blue check appears above the tick and Stop becomes enabled; Skip works at any time; hard stop at 60 s advances to Analyze.
+4. **Analyze.** Button top-center, greyed: "Analyzing (n)" counting down from 10, flipping to purple "Results" when analysis returns — the countdown number shows immediately, and the flip follows actual completion, sooner or later than the 10. Below, three reference lines: "Most common filler words:" with the list on the next line in yellow boxes (um, uh, like, you know, so, I mean, actually, basically, kind of, sort of, right, well, okay, just, literally); "Average filler words per 100 spoken words:" with **2.6** in a blue box (Bortfeld et al. 2001, conversational task); "Average prep time (pause before beginning to speak):" with **1.5 seconds** in a blue box. On-page note: "Filler word list and prep time average are placeholders, not yet research-sourced."
+5. **Results.** Left: light-grey card with purple border — filler count in purple beside "Fillers", under it yellow boxes "N Ums" / "N Uh" (plural only when the count is greater than 1). To the right, vertically centered against the card: blue boxes "N fillers per 100 words" and "N seconds prep time". Then Playback (button plus progress bar), then "Transcription (N words)" with fillers highlighted yellow and silent pauses as blue duration chips, legend beneath. Bottom: purple button "Record Next Response (N left)" — the invite-code takes-left count lives here now.
+
+Cut from the build 2 results page by the owner, 2026-11-15: the recommendation line, the fillers-by-take trend chart, the standalone takes-left line, and pauses, filler-to-pause ratio, hitches and words per minute as displayed numbers. The metrics spec still computes and stores all metrics; this list only governs what build 2 displays.
+
+*Build details, owner, 2026-11-15:*
+- **Silent pause** = a gap of **450 ms** or more between words. Blue chips may appear after most sentences; that's intended, as each speaker's baseline (disfluency is personal).
+- **Word count** ("Transcription (N words)") includes fillers. **Fillers per 100 words** = fillers ÷ non-filler words × 100.
+- **Prep time** = prompt reveal → first sound, a filler included.
+- If the 10 s countdown runs out before results are ready, the button reads **"Analyzing...(a bit longer)"**. In testing, results usually arrive in about 2–10 s.
+- **Plurals:** plural unless the count is exactly 1, so "0 Ums", "1 Uh", "3 Ums".
+- Desktop-first, but kept usable on phones.
+- **Invite codes:** no per-code take limit. One code can be reused by tester after tester; the daily cap across all codes still protects the bill (`TAKES_PER_CODE` unset or 0; `DAILY_CAP`, default 30). So the next-response button has no "(N left)" unless a per-code limit is set.
+- Playback plays the take from the browser's memory; audio isn't uploaded anywhere but the speech service.
+
+**Placeholders needing research** (owner-acknowledged): the most-common-fillers list is the lexical-filler lexicon plus common additions, unranked and unsourced; the 1.5 s prep-time average is invented. A primary-source pass (recent disfluency research, common fillers, disfluency-rate change over the last 30 years) is planned; 2.6 per 100 words is already sourced.
+
 ## The finished loop (complete by build 3)
 
 The product is the loop and nothing else: **prompt → record → listen → analyze → metrics → recommendation → iterate.**
 
 1. **Prompt.** Show one prompt with structure built in — three beats, e.g. "Tell me about your last weekend: where you were, one thing that happened, how you felt about it." Each prompt is tagged by type (narrative, opinion, explanation). If the previous take produced a recommendation, the prompt states it as this take's focus.
 2. **Record.** Recording starts when the prompt is revealed. The clock starts at the first detected word. Progress is a soft fill bar with no numerals; hard stop at 60 s; the user may stop early.
-3. **Listen.** Play the take back. The user hears themselves before seeing numbers.
+3. **Listen.** Play the take back. The user hears themselves before seeing numbers. *(Changed 2026-11-15 by the owner: playback lives on the results screen, above the transcription; the analysis wait shows reference facts instead. Hearing the take before seeing numbers is no longer guaranteed.)*
 4. **Analyze.** Speech-to-text with disfluencies preserved and word-level timestamps, in parallel with acoustic feature extraction from the raw audio. Align the two on timestamps.
 5. **Metrics.** Compute the Metrics spec deterministically in code. Show per-take values and the trend across prior takes of the same prompt type.
 6. **Recommendation.** One LLM call sees the transcript, the per-phrase feature table, and the metrics; it returns filler classifications, two or three vocabulary suggestions, delivery notes tied to specific words, and exactly one recommendation.
@@ -385,6 +411,7 @@ The first list is settled and should not be relitigated. The second list is prop
 8. The finished loop is prompt → record → listen → analyze → metrics → recommendation → iterate, and nothing more.
 9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt (fixed bank of 5) → record → transcribe → filler count. *(Changed 2026-11-05: speaking rate and prep time moved to build 2.)*
 10. Prep time = prompt reveal → first spoken word, from the STT first-word timestamp; framed neutrally.
+11. The build 2 front end ships the five-page design of 2026-11-15 (see **Build 2 front end** below). No built-in education in build 2: no recommendation line, no trend chart on results.
 
 **Proposed, not yet objected to**
 

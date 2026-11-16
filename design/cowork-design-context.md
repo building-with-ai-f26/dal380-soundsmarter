@@ -29,7 +29,7 @@ Read alongside `HANDOFF.md` (product source of truth) and `design/2026-11-15-bui
    - emoji bullet lists, confetti, gamified badges
    - generic SaaS font stacks (Inter everywhere), pill-shaped everything
    - vague encouragement copy ("Great job! You're on your way!")
-3. **Colour: yellow and lime green** as the accents (Duncan's starting idea; propose exact values). Watch contrast: yellow or lime *text* on a light background fails accessibility. Use them as fills, highlights, bars or markers, with dark text on top.
+3. **Palette: yellow, purple, maya blue** (owner, 2026-11-15; lime green is out). Working values from the mockup: yellow `#ffd21e` (highlighter fill only, marks fillers), purple `#4a2a7d` (ink accent, dark enough to pass as text; flat, never a gradient), maya blue `#73c2fb` (marks silent pauses; lower field of the logo), on paper `#fdfcfa` and ink `#222`. Watch contrast: yellow or maya blue *text* on a light background fails accessibility. Use them as fills, highlights, bars or markers, with dark text on top.
 4. **Font: the same as duncanlindsay.com.** Archivo Narrow, weight 700 (Google Fonts), fallback "Helvetica Neue", Arial, sans-serif. Duncan chose it after the condensed bold type on the back cover of the *Randy Newman Live* LP.
 5. **Reference: duncanlindsay.com's look.** Barely off-white background `#fdfcfa`, near-black text `#222`, thin 1px rules, a near-invisible grey row divider `#f0efec`, plain underlined links, a faint text-shadow for analog softness (`0 0 0.6px rgba(0,0,0,0.5)`). Spare, typographic, a printed-record-sleeve feel more than an app dashboard.
 6. **Tone of copy:** brutally minimal, plain, specific. Duncan writes or approves all user-facing words. The intro screen text in HANDOFF is his, verbatim.
