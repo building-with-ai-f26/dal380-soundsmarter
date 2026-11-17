@@ -19,7 +19,27 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
 - **Run deterministic tests:** `uv run pytest`
 - **Run model evals:** none yet (Build 4)
 
-## 3. Non-Negotiable Engineering Rules
+## 3. Project Structure
+- `prototype/`: the app. Run everything from here.
+  - `server.py`: web server; receives a recording, calls Nyra, returns results
+  - `index.html`: the whole front end (all screens, PostHog setup)
+  - `fillers.py`: counts "um"/"uh" in the transcript
+  - `metrics.py`: word count, fillers per 100 words, prep time, pauses
+  - `access.py`: invite codes and daily cap for the shared demo
+  - `analytics_proxy.py`: relays PostHog events so ad blockers don't drop them
+  - `tests/`: unit tests for `access`, `analytics_proxy`, `fillers`, `metrics` (`uv run pytest`)
+- `docs/index.html`: Product Page (PRD + build log), served by GitHub Pages
+- `HANDOFF.md`: product source of truth. Read before building
+- `README.md`: front page of the GitHub repo, for human visitors
+- `tests/` (repo root): verification guidance for Build 4, not test code
+- `design/`: design briefs, mockups, logo
+- `experiments/stt-compare/`: speech-to-text comparison (test C); reference, not app code
+- `journal/`: optional weekly build notes
+- `Intent.md`, `Plan.md`, `SPONSOR_MEMO.md`: class templates
+- `.env.example`: required environment variables (real keys go in `.env`, never committed)
+- Deploy: Render serves `prototype/` from `main`. Auto-deploy doesn't fire; run Manual Deploy after each merge.
+
+## 4. Non-Negotiable Engineering Rules
 1. **Plan before coding:** Before touching multiple files, propose a brief plan and wait for approval.
 2. **Small batches:** Make small, focused changes that can be reviewed and explained by a human in a single Pull Request.
 3. **Explainability:** Avoid unnecessary abstractions or dependencies. Help the human builder understand the main components, what changed, why it matters, what could break, and how it was checked.
