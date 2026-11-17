@@ -27,9 +27,11 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
   - `metrics.py`: word count, fillers per 100 words, prep time, pauses
   - `access.py`: invite codes and daily cap for the shared demo
   - `analytics_proxy.py`: relays PostHog events so ad blockers don't drop them
-  - `tests/`: one test file per module (`uv run pytest`)
+  - `tests/`: unit tests for `access`, `analytics_proxy`, `fillers`, `metrics` (`uv run pytest`)
 - `docs/index.html`: Product Page (PRD + build log), served by GitHub Pages
 - `HANDOFF.md`: product source of truth. Read before building
+- `README.md`: front page of the GitHub repo, for human visitors
+- `tests/` (repo root): verification guidance for Build 4, not test code
 - `design/`: design briefs, mockups, logo
 - `experiments/stt-compare/`: speech-to-text comparison (test C); reference, not app code
 - `journal/`: optional weekly build notes
