@@ -35,7 +35,8 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
 - `design/`: design briefs, mockups, logo
 - `experiments/stt-compare/`: speech-to-text comparison (test C); reference, not app code
 - `journal/`: optional weekly build notes
-- `Intent.md`, `Plan.md`, `SPONSOR_MEMO.md`: class templates
+- `Intent.md`, `Plan.md`: class kit files; their content lives on the Product Page (pointers only)
+- `SPONSOR_MEMO.md`: class template; the final memo is written here (due Dec 14)
 - `.env.example`: required environment variables (real keys go in `.env`, never committed)
 - Deploy: Render serves `prototype/` from `main`. Auto-deploy doesn't fire; run Manual Deploy after each merge.
 
