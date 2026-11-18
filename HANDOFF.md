@@ -460,6 +460,39 @@ Added by the coding agent for the next design review. Resolved items move into *
 
 - [ ] **Numbers, not AI text** (owner, 2026-11-15): minimize AI-generated text feedback; show the user numbers; a numbers-first look is a core design element, away from the "AI slop" look (after trying Yoodli, which drops fillers and gives generic AI feedback). *Owner, same day:* AI for **classification** is fine (e.g. "like" as filler vs. verb); AI-written **feedback prose** is what to minimize. This conflicts with the finished loop step 6 (LLM writes vocabulary suggestions, delivery notes and the recommendation) and Proposed decision 10 ("narration comes from the LLM"). Design to propose what survives, e.g. the recommendation becomes a templated line driven by the numbers.
 
+- [ ] **Next-build ideas for a research-backed design discussion** (owner, 2026-11-17). Owner is gathering the research; discuss with Claude in research context before anything is built.
+  - **Scoping page up front:** ask what the user wants help with before any prompt. Conflicts with the deferred objective mapping (Target user) and PRD out-of-scope #2.
+  - **Prompt types, including visual prompts:** the user responds to a non-text impetus, e.g. describe a picture or animation; say what is happening, has happened, or will happen.
+  - **Short, shifting prompts to create instability:** instead of one 30 s prompt, 6 × 10 s or 4 × 15 s responses with quickly changing prompts. Needs research on time pressure, task switching and prompt type vs. filler/pause rate. Leads: Christenfeld 1995; picture-description tasks ("Cookie Theft") in speech research; cognitive load and filler rate.
+  - **Famous speakers on the analysis page:** show SoundSmarter results for famous speakers. Scripted speeches (e.g. Churchill) show few fillers, so they aren't a like-for-like comparison; unscripted moments compare better: press conferences (JFK, Obama), talk shows (Carson, Cavett), live debates (Buckley–Vidal 1968), Prime Minister's Questions. Film clips raise copyright questions; public-domain material is safer.
+  - **Scope: do fewer fillers make a better speaker?** Obama is widely seen as an excellent speaker yet says "uh" often when unscripted; Clark & Fox Tree 2002 treat um/uh as signals listeners use. Wit is content; SoundSmarter measures delivery only. The PRD's goal is awareness, not "eliminate fillers"; a famous-speaker comparison could undercut that unless it includes great speakers with high filler counts. Owner's questions: who are the great extemporaneous speakers? Is it rapier wit? How do you define it?
+  - **More prompt modes and task types** (owner, 2026-11-17): **audio prompts** (play a short clip, the user describes it), alongside text and visual. Task types: describe something; give an opinion; estimate or reason something through; solve a puzzle aloud; continue a story from a given opening; more to come. Question: does filler/pause rate differ by mode and task type?
+  - **Terminology:** in competitive speech, "extemporaneous" = prepared, delivered without a script; "impromptu" = little or no prep. SoundSmarter is closer to impromptu, but the docs say extemporaneous.
+
+- [ ] **Fail states: bad audio** (owner, 2026-11-17): no design yet for when the app gets poor audio. Owner tested in a loud room with several people talking at once; the app returned metrics as normal on a transcript that started readable, then broke down into fragments and mixed languages (excerpt: "sv delleissant Fell timber ... incred incred76 incred norms¿ 원래 careg") and other people's speech. Design needs guidelines for:
+  - **Detection:** how the app knows the audio is bad (e.g. low transcription confidence, non-English or garbled words, more than one speaker, background noise level).
+  - **Prevention:** e.g. a mic or room check before recording.
+  - **Response:** what the user sees, e.g. hold back the metrics, warn alongside them, or ask for a re-record in a quieter place.
+  - **Other fail states to cover in the same pass:** silence or near-silence, too short, mic blocked (already handled), transcription service down or slow.
+
+- [ ] **Next build: proposed work** (owner, 2026-11-17). Differs from the Build 3 roadmap row (acoustic features, one recommendation per recording, trends within prompt type); design to decide what Build 3 is.
+  - **Evaluate CrisperWhisper output:** what it returns beyond words and timestamps (e.g. per-word confidence) and which metrics that makes possible.
+  - **Expand the filler list:** er, ah, erm, like, well, so, you know, and other common ones. "Like", "well", "so" and "you know" are also real words, so they need classification (filler vs. real use); this ties to "Numbers, not AI text" (AI for classification is fine).
+  - **Track more metrics** and build them into a **speech-pattern profile** per user.
+  - **Sign-in and a real database with row-level security (RLS)**, leaving the shared demo. RLS is a database feature (Postgres, e.g. Supabase), not SQLite, so this reopens decision 11 (SQLite).
+  - **User profile + scoping:** who the user is and what they want to accomplish. Choices to be research-based.
+  - **Per-user cap on CrisperWhisper calls** (replaces or adds to the shared daily cap).
+  - **Profile page:** establishes the user's speech-pattern profile, then shows trends over time.
+  - **Does practice change speech?** Decide how to measure whether a user's metrics change across sessions or within a practice session, and what counts as a real change vs. noise.
+
+- [ ] **What is SoundSmarter?** (owner, 2026-11-17): a consumer self-improvement product, or a tool that builds a research repository on the circumstances under which people's filler and pause use changes (text vs. visual vs. audio prompts; describe vs. opinion vs. estimate vs. puzzle)? Or both: the consumer app as the data source. The answer shapes consent, data storage, the profile and the metrics.
+
+- [ ] **Evaluate content, not just delivery?** (owner, 2026-11-17; to explore in design/research before anything is built). "Sounding smart" is also what you say. Owner is unsure it fits the scope. Options, roughly from most to least defensible:
+  - **Structure of the response:** was the question answered? Was a reason given? Closer to interview training; may be out of scope.
+  - **Vocabulary suggestions:** easy to build; unclear whether it belongs.
+  - **Speaking well on an unfamiliar subject** ("how to talk about books you haven't read"): probably out of scope.
+  - Caveat: only some content can be shown to be right or wrong. Also touches "Numbers, not AI text", since content feedback tends to be AI-written prose.
+
 - [x] **Leading filler is never counted** (owner, Build 1 testing, every recording): the "uhh"/"umm" at the very start of a recording is missing from both the count and the transcript. *Resolved 2026-11-15 by test C:* the Deepgram model drops it (it happened on a phone recording too, no browser involved); CrisperWhisper and Scribe v3 both caught it. Fixed by the move to CrisperWhisper. Browser clipping not fully ruled out until test A/B runs.
 - [ ] **Standard A/B test for the underlying tech** (owner, 2026-11-08): test every audio or speech-to-text choice the same way, as a matter of course, not just Deepgram. Proposed protocol:
   - **A. Simultaneous capture:** record the same recording on the phone and in the browser at the same time; compare counts. Isolates browser recording settings (e.g. noise suppression).
