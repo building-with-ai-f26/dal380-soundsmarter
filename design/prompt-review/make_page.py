@@ -17,17 +17,8 @@ DESIGN = HERE.parent
 TEXT_CSV = DESIGN / "2026-11-21-prompts-text-draft.csv"
 AUDIO_CSV = DESIGN / "2026-11-21-audio-stimuli-draft.csv"
 FAMILIES = ["describe", "narrate", "argue", "invent", "explain"]
+HEADERS = {"argue": "Give at least two reasons."}  # shown above the prompt in the app; keep in step with FAMILY_HEADERS in prototype/index.html
 e = html.escape
-
-IMAGE_TEMPLATES = [  # from 2026-11-21-prompt-bank.md, "Image templates"
-    ("Describe", "one scene", "Describe this picture. Say what is happening and what stands out."),
-    ("Invent, before", "same scene", "Tell what happened just before this picture."),
-    ("Invent, after", "same scene", "Tell what happens next in this picture."),
-    ("Narrate", "picture sequence", "Tell the story shown in these pictures, from first to last."),
-    ("Argue", "pair of images", "Choose one of these two. Say which, and give two reasons."),
-    ("Explain, how it works", "diagram", "Explain how this works. Say what each part does."),
-    ("Explain, how to", "assembly or step diagram", "Explain how to put this together, step by step."),
-]
 
 
 def status_mark(s):
@@ -35,7 +26,9 @@ def status_mark(s):
 
 
 def main():
-    rows = list(csv.DictReader(TEXT_CSV.open()))
+    all_rows = list(csv.DictReader(TEXT_CSV.open()))
+    rows = [r for r in all_rows if r["status"] != "retired"]  # retired rows stay in the CSV, off the page
+    retired = len(all_rows) - len(rows)
     audio = list(csv.DictReader(AUDIO_CSV.open()))
     status = Counter(r["status"] for r in rows)
     long = [r for r in rows if int(r["words_on_screen"] or 0) > 30]
@@ -47,7 +40,7 @@ def main():
         "</style></head><body class=\"narrow\">",
         f'<div class="strip"><b>{datetime.now():%a %-d %b, %H:%M}</b><b>Text prompts {len(rows)}</b>'
         f'<b>Approved {status.get("approved", 0)}</b><b>Draft {status.get("draft", 0)}</b>'
-        f'<b>Audio scripts {len(audio)}</b>'
+        f'<b>Retired (hidden) {retired}</b><b>Audio scripts {len(audio)}</b>'
         + (f'<div class="c-bad">Over 30 words on screen: {", ".join(e(r["id"]) for r in long)}</div>' if long else "")
         + "</div>",
         '<p class="small">To approve or cut, tell pi in chat: for example "approve all describe except des-t-18, des-t-36" '
@@ -61,7 +54,9 @@ def main():
             first = vr[0]
             out.append(
                 f'<section class="box"><h2>{e(fam)} / text / {e(variant)}</h2>'
-                f'<p class="small">{len(vr)} prompts — {e(first["openness"])} — {e(first["beats"])} beats</p><ul class="rows">'
+                f'<p class="small">{len(vr)} prompts — {e(first["openness"])}'
+                + (f' — header in the app: <b>{e(HEADERS[fam])}</b>' if fam in HEADERS else "")
+                + '</p><ul class="rows">'
             )
             for r in vr:
                 out.append(
@@ -69,11 +64,6 @@ def main():
                     f'<span class="mk">{e(r["id"])}</span>{status_mark(r["status"])}</li>'
                 )
             out.append("</ul></section>")
-
-    out.append('<section class="box"><h2>Image templates (one stimulus serves several)</h2><ul class="rows">')
-    for fam, stim, text in IMAGE_TEMPLATES:
-        out.append(f'<li>{e(text)} — {e(fam)} — <span class="why">{e(stim)}</span></li>')
-    out.append('</ul><p class="small">No image files sourced yet; see 2026-11-21-stimuli-to-source.md.</p></section>')
 
     out.append('<section class="box"><h2>Audio scripts (later build)</h2><ul class="rows">')
     for a in audio:

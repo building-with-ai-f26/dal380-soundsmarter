@@ -424,7 +424,7 @@ The first list is settled and should not be relitigated. The second list is prop
 21. **Unusable audio (2026-11-21):** caught before a row is saved: no numbers, nothing stored, a re-record message. Before upload: too little sound or bad input level. After transcription: too few words, implausible words per second, or non-English text.
 22. **Prompt engine (2026-11-21):**
     - Five families: Describe, Narrate, Argue, Invent, Explain. Three modes: text, image, audio. Explain has no audio.
-    - Sources: `design/2026-11-21-prompts-text-draft.csv`, `design/2026-11-21-audio-stimuli-draft.csv`, and the templates in `design/2026-11-21-prompt-bank.md`. Only rows the owner marks approved are served.
+    - Sources: `design/2026-11-21-prompts-text-draft.csv` and `design/2026-11-21-audio-stimuli-draft.csv`. Only rows the owner marks approved are served.
     - Prompts and stimuli live in the database. Each stimulus carries its license and credit. A prompt whose stimulus file is missing is never served.
     - A user never sees the same prompt twice. Skips and discards count as seen.
     - Each recording stores: prompt id, family, mode, variant, stimulus id, position in the session, and prompts skipped or discarded before it.
@@ -453,6 +453,18 @@ The first list is settled and should not be relitigated. The second list is prop
     - **Definitions:** speaking rate = non-filler words per minute, first word start to last word end; articulation rate = the same minus silent pauses of 450 ms or more; a sentence-end pause follows a word ending in `.`, `?` or `!`; otherwise it is mid-sentence.
     - **Unusable audio thresholds:** fewer than 15 words; speaking rate outside 0.8–5 words per second; mostly near-silent or clipping (browser level check).
 26. **Filled share (2026-11-21):** filled hesitations ÷ (filled + silent hesitations). Silent hesitations are mid-sentence pauses of 450 ms or more; a filler with an adjacent pause counts as one filled hesitation. Stored in two versions: by count and by time. The map shows the count version, per family.
+27. **Prompt voice (2026-11-22, owner):**
+    - Prompts sound warm and human, and speak to the user as "you". The "no second person" rule covers app copy only, never prompts.
+    - Easy to talk about, difficult to describe: easy to take on emotionally, demanding in word choice. Ordinary discomfort (a group project, speaking to a crowd) is fine; the user can skip.
+    - Every question in a prompt must be one a person would sensibly ask. No question with an obvious answer ("what goes on in a kitchen").
+    - No fixed sentence pasted onto every prompt in a family.
+    - Stakes and constraints make a prompt answerable: a situation that gives a reason to answer (a prize, a guest, a choice of one) and a limit that gives the answer a shape, without boxing the speaker in.
+    - The number of beats is not fixed. It depends on what is being asked: a simple first beat (a kitchen is a kitchen) needs less thought, so the prompt can carry more.
+    - Invent / text / before ("Tell the story that ends this way") is retired as unwieldy. Hypotheticals ("If you had to...") replace it, as Invent / text / whatif.
+    - Argue: a plain question, no "Argue for or against:" lead-in, and not necessarily two-sided. A question with a range of answers gives more leeway ("How many days is ideal to work in office or on-site?"). "Give at least two reasons." is a header shown above every argue prompt, not part of each prompt.
+    - Invent / text / after *(provisional; see Questions for design)*: a line of fiction followed by a question about it. The user engages with the fictional world inventively and is not asked to continue the story in its narrative voice. Most small stories need a named character to anchor to; ones about an environment, an organism or a system (a town, a street, an orchestra) do not. ("Maryanne opened the top drawer of the old desk, and found a carefully folded note." Who wrote it, and what did it say?)
+    - Explain / procedure: just "Explain how...", with "you" where it reads naturally. No instruction about steps or common mistakes; the speaker decides how to teach it.
+    - This overrides rules 2 and 10 in §B3 of `design/2026-11-21-word-list-and-prompt-guidelines.md`.
 
 **Proposed, not yet objected to**
 
@@ -498,6 +510,10 @@ Raise these rather than resolve them.
 ## Questions for design
 
 Added by the coding agent for the next design review. Resolved items move into **Decisions made**.
+
+- [ ] **Invent story snippets need reshaping** (owner, 2026-11-22): the Invent / text / after prompts (`inv-t-01` to `inv-t-25`, a line of fiction plus a question) are not working. The owner will work out the principles more systematically before another pass; none is approved until then. The hypotheticals (Invent / text / whatif) are good and stay.
+- [ ] **A header for every family** (owner, 2026-11-22): each family will get a line above the prompt saying what kind of response is wanted. Wording to be decided. Only Argue has one so far ("Give at least two reasons.").
+- [ ] **Image and audio prompt wording** (owner, 2026-11-22): the old on-screen templates ("Describe this picture. Say what is happening and what stands out.") were deleted as not good. Image prompt wording comes with the next commit.
 
 - [ ] **Numbers, not AI text** (owner, 2026-11-15): minimize AI-generated text feedback; show the user numbers; a numbers-first look is a core design element, away from the "AI slop" look (after trying Yoodli, which drops fillers and gives generic AI feedback). *Owner, same day:* AI for **classification** is fine (e.g. "like" as filler vs. verb); AI-written **feedback prose** is what to minimize. This conflicts with the finished loop step 6 (LLM writes vocabulary suggestions, delivery notes and the recommendation) and Proposed decision 10 ("narration comes from the LLM"). Design to propose what survives, e.g. the recommendation becomes a templated line driven by the numbers.
 

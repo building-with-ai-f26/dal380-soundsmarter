@@ -1,216 +1,241 @@
 id,family,mode,variant,openness,beats,words_on_screen,stimulus_id,text,status
-des-t-01,describe,text,place,guided,2,16,,Describe the kitchen in a childhood home. Say what it looks like and what happens there.,draft
-des-t-02,describe,text,place,guided,2,13,,Describe a favorite room. Say what it looks like and what happens there.,draft
-des-t-03,describe,text,place,guided,2,16,,Describe the street outside the front door. Say what it looks like and what happens there.,draft
-des-t-04,describe,text,place,guided,2,13,,Describe a nearby park. Say what it looks like and what happens there.,draft
-des-t-05,describe,text,place,guided,2,15,,Describe a grocery store visited often. Say what it looks like and what happens there.,draft
-des-t-06,describe,text,place,guided,2,15,,Describe a school classroom from childhood. Say what it looks like and what happens there.,draft
-des-t-07,describe,text,place,guided,2,14,,Describe a desk or workplace. Say what it looks like and what happens there.,draft
-des-t-08,describe,text,place,guided,2,15,,Describe a favorite restaurant or cafe. Say what it looks like and what happens there.,draft
-des-t-09,describe,text,place,guided,2,18,,"Describe a station, bus stop or airport used often. Say what it looks like and what happens there.",draft
-des-t-10,describe,text,place,guided,2,18,,Describe a beach or lake visited more than once. Say what it looks like and what happens there.,draft
-des-t-11,describe,text,place,guided,2,13,,Describe a relative's house. Say what it looks like and what happens there.,draft
-des-t-12,describe,text,place,guided,2,15,,Describe a local library or bookstore. Say what it looks like and what happens there.,draft
-des-t-13,describe,text,place,guided,2,16,,"Describe a gym, court or playing field. Say what it looks like and what happens there.",draft
-des-t-14,describe,text,place,guided,2,16,,Describe the view from a bedroom window. Say what it looks like and what happens there.,draft
-des-t-15,describe,text,place,guided,2,17,,Describe a hotel or rental stayed in recently. Say what it looks like and what happens there.,draft
-des-t-16,describe,text,place,guided,2,19,,Describe a shop that sells only one kind of thing. Say what it looks like and what happens there.,draft
-des-t-17,describe,text,place,guided,2,15,,Describe a concert venue or theater. Say what it looks like and what happens there.,draft
-des-t-18,describe,text,place,guided,2,13,,Describe a waiting room. Say what it looks like and what happens there.,draft
-des-t-19,describe,text,place,guided,2,12,,Describe a playground. Say what it looks like and what happens there.,draft
-des-t-20,describe,text,place,guided,2,16,,Describe a street market or farmers market. Say what it looks like and what happens there.,draft
-des-t-21,describe,text,place,guided,2,14,,Describe a barbershop or salon. Say what it looks like and what happens there.,draft
-des-t-22,describe,text,place,guided,2,16,,"Describe a garage, shed or storage space. Say what it looks like and what happens there.",draft
-des-t-23,describe,text,place,guided,2,16,,Describe a main street or town square. Say what it looks like and what happens there.,draft
-des-t-24,describe,text,place,guided,2,13,,Describe a museum visited. Say what it looks like and what happens there.,draft
-des-t-25,describe,text,place,guided,2,15,,Describe a campsite or hiking trail. Say what it looks like and what happens there.,draft
-des-t-26,describe,text,object,guided,2,15,,Describe the oldest thing owned. Say what it looks like and how it is used.,draft
-des-t-27,describe,text,object,guided,2,16,,Describe a favorite piece of clothing. Say what it looks like and how it is used.,draft
-des-t-28,describe,text,object,guided,2,19,,Describe the contents of a bag carried every day. Say what it looks like and how it is used.,draft
-des-t-29,describe,text,object,guided,2,19,,"Describe a car, bike or other vehicle used often. Say what it looks like and how it is used.",draft
-des-t-30,describe,text,object,guided,2,17,,"Describe a favorite mug, glass or plate. Say what it looks like and how it is used.",draft
-des-t-31,describe,text,object,guided,2,14,,Describe a childhood toy. Say what it looks like and how it is used.,draft
-des-t-32,describe,text,object,guided,2,18,,Describe a piece of furniture with a history. Say what it looks like and how it is used.,draft
-des-t-33,describe,text,object,guided,2,17,,Describe a musical instrument seen up close. Say what it looks like and how it is used.,draft
-des-t-34,describe,text,object,guided,2,15,,Describe a tool used often. Say what it looks like and how it is used.,draft
-des-t-35,describe,text,object,guided,2,17,,Describe a gift that is still kept. Say what it looks like and how it is used.,draft
-des-t-36,describe,text,object,guided,2,18,,Describe the inside of the refrigerator at home. Say what it looks like and how it is used.,draft
-des-t-37,describe,text,object,guided,2,16,,Describe a favorite pair of shoes. Say what it looks like and how it is used.,draft
-des-t-38,describe,text,object,guided,2,19,,"Describe a watch, ring or other piece of jewelry. Say what it looks like and how it is used.",draft
-des-t-39,describe,text,object,guided,2,16,,Describe a photograph kept on display. Say what it looks like and how it is used.,draft
-des-t-40,describe,text,object,guided,2,16,,Describe a book cover remembered clearly. Say what it looks like and how it is used.,draft
-des-t-41,describe,text,object,guided,2,15,,Describe a phone home screen. Say what it looks like and how it is used.,draft
-des-t-42,describe,text,object,guided,2,19,,Describe a favorite board game or deck of cards. Say what it looks like and how it is used.,draft
-des-t-43,describe,text,object,guided,2,16,,Describe the kitchen appliance used most. Say what it looks like and how it is used.,draft
-des-t-44,describe,text,object,guided,2,17,,Describe a plant or tree known well. Say what it looks like and how it is used.,draft
-des-t-45,describe,text,object,guided,2,18,,Describe a pet or an animal seen often. Say what it looks like and how it is used.,draft
-des-t-46,describe,text,object,guided,2,20,,Describe a painting or poster on a wall at home. Say what it looks like and how it is used.,draft
-des-t-47,describe,text,object,guided,2,18,,Describe a coat worn in the worst weather. Say what it looks like and how it is used.,draft
-des-t-48,describe,text,object,guided,2,15,,Describe a lamp at home. Say what it looks like and how it is used.,draft
-des-t-49,describe,text,object,guided,2,17,,"Describe a game controller, remote or keyboard. Say what it looks like and how it is used.",draft
-des-t-50,describe,text,object,guided,2,19,,Describe a key ring and what is on it. Say what it looks like and how it is used.,draft
-nar-t-01,narrate,text,recount,guided,2,20,,Tell the story of a trip that did not go to plan. Say what went wrong and how it ended.,draft
-nar-t-02,narrate,text,recount,guided,2,24,,Tell the story of the first day at a new job or school. Say what happened first and what stood out by the end.,draft
-nar-t-03,narrate,text,recount,guided,2,17,,Tell the story of a meal that turned out badly. Say who was there and what happened.,draft
-nar-t-04,narrate,text,recount,guided,2,21,,Tell the story of the last time something important got lost. Say how it went missing and whether it turned up.,draft
-nar-t-05,narrate,text,recount,guided,2,17,,Tell the story of getting lost somewhere unfamiliar. Say how it happened and how it was resolved.,draft
-nar-t-06,narrate,text,recount,guided,2,20,,Tell the story of a time a stranger helped out. Say what the situation was and what the stranger did.,draft
-nar-t-07,narrate,text,recount,guided,2,22,,Tell the story of the best live event ever attended. Say what led up to it and the moment that stood out.,draft
-nar-t-08,narrate,text,recount,guided,2,21,,Tell the story of learning to drive or ride a bike. Say who taught it and one thing that went wrong.,draft
-nar-t-09,narrate,text,recount,guided,2,15,,Tell the story of a memorable birthday. Say what was planned and what actually happened.,draft
-nar-t-10,narrate,text,recount,guided,2,20,,Tell the story of a time the weather changed a plan. Say what the plan was and what happened instead.,draft
-nar-t-11,narrate,text,recount,guided,2,22,,Tell the story of moving into a new home. Say what the first day was like and one problem that came up.,draft
-nar-t-12,narrate,text,recount,guided,2,23,,Tell the story of a game or competition that came down to the end. Say what was at stake and how it finished.,draft
-nar-t-13,narrate,text,recount,guided,2,25,,Tell the story of the last time a piece of technology failed at a bad moment. Say what was happening and how it got fixed.,draft
-nar-t-14,narrate,text,recount,guided,2,20,,Tell the story of meeting someone who later became important. Say where it happened and what the first impression was.,draft
-nar-t-15,narrate,text,recount,guided,2,23,,Tell the story of a time a small mistake caused a bigger problem. Say what the mistake was and how it played out.,draft
-nar-t-16,narrate,text,recount,guided,2,21,,"Tell the story of a flight, train or bus that was badly delayed. Say what happened first and how it ended.",draft
-nar-t-17,narrate,text,recount,guided,2,18,,Tell the story of the first concert or show attended. Say what happened first and how it ended.,draft
-nar-t-18,narrate,text,recount,guided,2,18,,Tell the story of a time something broke at home. Say what happened first and how it ended.,draft
-nar-t-19,narrate,text,recount,guided,2,19,,"Tell the story of a surprise that worked, or did not. Say what happened first and how it ended.",draft
-nar-t-20,narrate,text,recount,guided,2,18,,Tell the story of a time of being very late. Say what happened first and how it ended.,draft
-nar-t-21,narrate,text,recount,guided,2,18,,Tell the story of a holiday meal that stood out. Say what happened first and how it ended.,draft
-nar-t-22,narrate,text,recount,guided,2,20,,Tell the story of a first attempt at cooking for other people. Say what happened first and how it ended.,draft
-nar-t-23,narrate,text,recount,guided,2,20,,Tell the story of a sports match played or watched in person. Say what happened first and how it ended.,draft
-nar-t-24,narrate,text,recount,guided,2,20,,Tell the story of a time a pet or animal caused trouble. Say what happened first and how it ended.,draft
-nar-t-25,narrate,text,recount,guided,2,20,,Tell the story of a move to a new city or neighborhood. Say what happened first and how it ended.,draft
-nar-t-26,narrate,text,recount,guided,2,15,,Tell the story of a school trip. Say what happened first and how it ended.,draft
-nar-t-27,narrate,text,recount,guided,2,18,,Tell the story of a time of being locked out. Say what happened first and how it ended.,draft
-nar-t-28,narrate,text,recount,guided,2,18,,Tell the story of a wedding or big party attended. Say what happened first and how it ended.,draft
-nar-t-29,narrate,text,recount,guided,2,17,,Tell the story of the purchase of something expensive. Say what happened first and how it ended.,draft
-nar-t-30,narrate,text,recount,guided,2,18,,Tell the story of a time the directions were wrong. Say what happened first and how it ended.,draft
-nar-t-31,narrate,text,recount,guided,2,17,,Tell the story of a night spent somewhere unexpected. Say what happened first and how it ended.,draft
-nar-t-32,narrate,text,recount,guided,2,20,,Tell the story of a first time on a plane or boat. Say what happened first and how it ended.,draft
-nar-t-33,narrate,text,recount,guided,2,20,,Tell the story of a joke or prank that went too far. Say what happened first and how it ended.,draft
-nar-t-34,narrate,text,recount,guided,2,18,,Tell the story of a power cut or a storm. Say what happened first and how it ended.,draft
-nar-t-35,narrate,text,recount,guided,2,18,,Tell the story of a group project that nearly failed. Say what happened first and how it ended.,draft
-nar-t-36,narrate,text,recount,guided,2,15,,Tell the story of a first job. Say what happened first and how it ended.,draft
-nar-t-37,narrate,text,recount,guided,2,17,,Tell the story of a time of winning something. Say what happened first and how it ended.,draft
-nar-t-38,narrate,text,recount,guided,2,21,,Tell the story of a time of speaking in front of a crowd. Say what happened first and how it ended.,draft
-nar-t-39,narrate,text,recount,guided,2,17,,Tell the story of a haircut that went wrong. Say what happened first and how it ended.,draft
-nar-t-40,narrate,text,recount,guided,2,15,,Tell the story of a road trip. Say what happened first and how it ended.,draft
-nar-t-41,narrate,text,recount,guided,2,19,,Tell the story of a time a child said something unforgettable. Say what happened first and how it ended.,draft
-nar-t-42,narrate,text,recount,guided,2,17,,Tell the story of a day spent entirely outdoors. Say what happened first and how it ended.,draft
-nar-t-43,narrate,text,recount,guided,2,21,,Tell the story of a chance meeting with someone not seen in years. Say what happened first and how it ended.,draft
-nar-t-44,narrate,text,recount,guided,2,20,,Tell the story of a time of fixing something without knowing how. Say what happened first and how it ended.,draft
-nar-t-45,narrate,text,recount,guided,2,19,,Tell the story of a first day in a foreign place. Say what happened first and how it ended.,draft
-nar-t-46,narrate,text,recount,guided,2,19,,Tell the story of a very long wait in a line. Say what happened first and how it ended.,draft
-nar-t-47,narrate,text,recount,guided,2,21,,Tell the story of a time of getting caught in rain or snow. Say what happened first and how it ended.,draft
-nar-t-48,narrate,text,recount,guided,2,19,,Tell the story of a celebration that almost did not happen. Say what happened first and how it ended.,draft
-nar-t-49,narrate,text,recount,guided,2,19,,Tell the story of an order or delivery that went wrong. Say what happened first and how it ended.,draft
-nar-t-50,narrate,text,recount,guided,2,20,,Tell the story of a visit to a place that had changed. Say what happened first and how it ended.,draft
-arg-t-01,argue,text,statement,open,2,18,,Argue for or against: Remote work is better than office work. Take one side and give two reasons.,draft
-arg-t-02,argue,text,statement,open,2,18,,Argue for or against: Every child should learn a musical instrument. Take one side and give two reasons.,draft
-arg-t-03,argue,text,statement,open,2,19,,Argue for or against: Tipping should be replaced by higher menu prices. Take one side and give two reasons.,draft
-arg-t-04,argue,text,statement,open,2,18,,Argue for or against: Books are better than their film versions. Take one side and give two reasons.,draft
-arg-t-05,argue,text,statement,open,2,20,,Argue for or against: Cities are better places to live than small towns. Take one side and give two reasons.,draft
-arg-t-06,argue,text,statement,open,2,19,,Argue for or against: Phones should be banned at the dinner table. Take one side and give two reasons.,draft
-arg-t-07,argue,text,statement,open,2,17,,Argue for or against: Homework does more harm than good. Take one side and give two reasons.,draft
-arg-t-08,argue,text,statement,open,2,20,,Argue for or against: Breakfast is the most important meal of the day. Take one side and give two reasons.,draft
-arg-t-09,argue,text,statement,open,2,16,,Argue for or against: Winter is better than summer. Take one side and give two reasons.,draft
-arg-t-10,argue,text,statement,open,2,16,,Argue for or against: Everyone should learn to cook. Take one side and give two reasons.,draft
-arg-t-11,argue,text,statement,open,2,20,,Argue for or against: A four-day work week would be better than five. Take one side and give two reasons.,draft
-arg-t-12,argue,text,statement,open,2,17,,Argue for or against: Dogs make better pets than cats. Take one side and give two reasons.,draft
-arg-t-13,argue,text,statement,open,2,16,,Argue for or against: Streaming has made music better. Take one side and give two reasons.,draft
-arg-t-14,argue,text,statement,open,2,20,,Argue for or against: It is better to be early than on time. Take one side and give two reasons.,draft
-arg-t-15,argue,text,statement,open,2,19,,Argue for or against: Travel is better alone than in a group. Take one side and give two reasons.,draft
-arg-t-16,argue,text,statement,open,2,18,,Argue for or against: Handwritten notes are better than typed ones. Take one side and give two reasons.,draft
-arg-t-17,argue,text,statement,open,2,16,,Argue for or against: Mornings are better than nights. Take one side and give two reasons.,draft
-arg-t-18,argue,text,statement,open,2,18,,Argue for or against: Everyone should live abroad for a year. Take one side and give two reasons.,draft
-arg-t-19,argue,text,statement,open,2,17,,Argue for or against: Cooking at home beats eating out. Take one side and give two reasons.,draft
-arg-t-20,argue,text,statement,open,2,18,,Argue for or against: Board games are better than video games. Take one side and give two reasons.,draft
-arg-t-21,argue,text,statement,open,2,20,,Argue for or against: A small wedding is better than a big one. Take one side and give two reasons.,draft
-arg-t-22,argue,text,statement,open,2,17,,Argue for or against: Paper books are better than e-readers. Take one side and give two reasons.,draft
-arg-t-23,argue,text,statement,open,2,18,,Argue for or against: Team sports teach more than individual sports. Take one side and give two reasons.,draft
-arg-t-24,argue,text,statement,open,2,24,,Argue for or against: It is better to be good at many things than great at one. Take one side and give two reasons.,draft
-arg-t-25,argue,text,statement,open,2,15,,Argue for or against: Open-plan offices should go. Take one side and give two reasons.,draft
-arg-t-26,argue,text,statement,open,2,20,,Argue for or against: Movies are better at home than in a theater. Take one side and give two reasons.,draft
-arg-t-27,argue,text,statement,open,2,20,,Argue for or against: Walking is the best way to see a city. Take one side and give two reasons.,draft
-arg-t-28,argue,text,statement,open,2,17,,Argue for or against: Practical gifts are the best gifts. Take one side and give two reasons.,draft
-arg-t-29,argue,text,statement,open,2,15,,Argue for or against: Children should have chores. Take one side and give two reasons.,draft
-arg-t-30,argue,text,statement,open,2,18,,Argue for or against: School should start later in the day. Take one side and give two reasons.,draft
-arg-t-31,argue,text,statement,open,2,18,,Argue for or against: Group vacations need one person in charge. Take one side and give two reasons.,draft
-arg-t-32,argue,text,statement,open,2,17,,Argue for or against: Music is better live than recorded. Take one side and give two reasons.,draft
-arg-t-33,argue,text,statement,open,2,22,,Argue for or against: It is better to plan a trip than to improvise it. Take one side and give two reasons.,draft
-arg-t-34,argue,text,statement,open,2,18,,Argue for or against: Leftovers are better than the original meal. Take one side and give two reasons.,draft
-arg-t-35,argue,text,statement,open,2,19,,Argue for or against: No meeting should run longer than thirty minutes. Take one side and give two reasons.,draft
-arg-t-36,argue,text,statement,open,2,18,,Argue for or against: Summer vacations from school are too long. Take one side and give two reasons.,draft
-arg-t-37,argue,text,statement,open,2,19,,Argue for or against: A long commute is worth a better home. Take one side and give two reasons.,draft
-arg-t-38,argue,text,statement,open,2,16,,Argue for or against: Coffee is better than tea. Take one side and give two reasons.,draft
-arg-t-39,argue,text,statement,open,2,17,,Argue for or against: Everyone should learn a second language. Take one side and give two reasons.,draft
-arg-t-40,argue,text,statement,open,2,20,,Argue for or against: Sequels are almost never as good as the original. Take one side and give two reasons.,draft
-arg-t-41,argue,text,statement,open,2,20,,"Argue for or against: It is better to buy fewer, more expensive things. Take one side and give two reasons.",draft
-arg-t-42,argue,text,statement,open,2,20,,"Argue for or against: Albums should be heard in order, start to finish. Take one side and give two reasons.",draft
-arg-t-43,argue,text,statement,open,2,18,,Argue for or against: Handmade gifts are better than bought ones. Take one side and give two reasons.,draft
-arg-t-44,argue,text,statement,open,2,17,,Argue for or against: Surprise parties are a bad idea. Take one side and give two reasons.,draft
-arg-t-45,argue,text,statement,open,2,17,,Argue for or against: Pizza is better with fewer toppings. Take one side and give two reasons.,draft
-arg-t-46,argue,text,statement,open,2,18,,Argue for or against: Email is better than a phone call. Take one side and give two reasons.,draft
-arg-t-47,argue,text,statement,open,2,17,,Argue for or against: Everyone should try living alone once. Take one side and give two reasons.,draft
-arg-t-48,argue,text,statement,open,2,17,,Argue for or against: Aquariums are more interesting than zoos. Take one side and give two reasons.,draft
-arg-t-49,argue,text,statement,open,2,18,,Argue for or against: Window seats are better than aisle seats. Take one side and give two reasons.,draft
-arg-t-50,argue,text,statement,open,2,18,,"Argue for or against: Old buildings should be repaired, not replaced. Take one side and give two reasons.",draft
-inv-t-01,invent,text,after,open,1,13,,"Continue this story: The train stopped between stations, and the lights went out.",draft
-inv-t-02,invent,text,after,open,1,17,,"Continue this story: Nobody had opened the shop on the corner for ten years, until this morning.",draft
-inv-t-03,invent,text,after,open,1,17,,Continue this story: The dog came home carrying a wallet that belonged to nobody in the house.,draft
-inv-t-04,invent,text,after,open,1,11,,Continue this story: At midnight the neighbor's piano started playing again.,draft
-inv-t-05,invent,text,after,open,1,14,,Continue this story: The letter was addressed to someone who had never lived there.,draft
-inv-t-06,invent,text,after,open,1,17,,"Continue this story: Halfway up the mountain, the guide admitted he had never been this way before.",draft
-inv-t-07,invent,text,after,open,1,16,,"Continue this story: The power came back on, but only in one house on the street.",draft
-inv-t-08,invent,text,after,open,1,15,,Continue this story: She found the key taped under the desk on her first day.,draft
-inv-t-09,invent,text,after,open,1,13,,"Continue this story: The ferry left on time, with one passenger too many.",draft
-inv-t-10,invent,text,after,open,1,12,,Continue this story: Every clock in the town showed a different time.,draft
-inv-t-11,invent,text,after,open,1,12,,Continue this story: The chef tasted the soup and went very quiet.,draft
-inv-t-12,invent,text,after,open,1,10,,Continue this story: The lost suitcase arrived three years late.,draft
-inv-t-13,invent,text,after,open,1,15,,Continue this story: The elevator opened onto a floor that was not on the panel.,draft
-inv-t-14,invent,text,after,open,1,18,,"Continue this story: On the last day of school, the teacher handed back a test nobody remembered taking.",draft
-inv-t-15,invent,text,after,open,1,12,,Continue this story: The new tenant paid a year's rent in coins.,draft
-inv-t-16,invent,text,after,open,1,14,,Continue this story: The radio switched itself on in the middle of the night.,draft
-inv-t-17,invent,text,after,open,1,13,,Continue this story: Two guests at the wedding were wearing the same disguise.,draft
-inv-t-18,invent,text,after,open,1,14,,"Continue this story: The map ended at the river, but the footprints did not.",draft
-inv-t-19,invent,text,after,open,1,15,,"Continue this story: When the tide went out, there was a door in the sand.",draft
-inv-t-20,invent,text,after,open,1,13,,Continue this story: The babysitter arrived an hour before anyone had called her.,draft
-inv-t-21,invent,text,after,open,1,14,,Continue this story: The last bus of the night was not on any schedule.,draft
-inv-t-22,invent,text,after,open,1,14,,Continue this story: The orchestra began a piece that was not in the program.,draft
-inv-t-23,invent,text,after,open,1,11,,Continue this story: He opened the fridge and found everything rearranged.,draft
-inv-t-24,invent,text,after,open,1,15,,Continue this story: The lighthouse keeper had not written in the log for nine days.,draft
-inv-t-25,invent,text,after,open,1,10,,Continue this story: The bakery sold out before it opened.,draft
-inv-t-26,invent,text,before,open,1,18,,Tell the story that ends this way: And that is why the piano is still in the garden.,draft
-inv-t-27,invent,text,before,open,1,16,,Tell the story that ends this way: Nobody at the office ever mentioned the goat again.,draft
-inv-t-28,invent,text,before,open,1,21,,Tell the story that ends this way: She kept the losing ticket in her wallet for the rest of her life.,draft
-inv-t-29,invent,text,before,open,1,18,,"Tell the story that ends this way: By morning, the bridge was open and the mayor was gone.",draft
-inv-t-30,invent,text,before,open,1,17,,Tell the story that ends this way: They never did find out who had paid the bill.,draft
-inv-t-31,invent,text,before,open,1,17,,Tell the story that ends this way: The dog was the only one who got a medal.,draft
-inv-t-32,invent,text,before,open,1,18,,"Tell the story that ends this way: And so the restaurant kept the name, spelling mistake and all.",draft
-inv-t-33,invent,text,before,open,1,16,,"Tell the story that ends this way: He returned the trophy the next day, without explanation.",draft
-inv-t-34,invent,text,before,open,1,16,,Tell the story that ends this way: The twins agreed never to borrow the boat again.,draft
-inv-t-35,invent,text,before,open,1,18,,Tell the story that ends this way: That was the last time anyone asked him to bring dessert.,draft
-inv-t-36,invent,text,before,open,1,19,,"Tell the story that ends this way: In the end, the tree stayed and the road went around it.",draft
-inv-t-37,invent,text,before,open,1,18,,Tell the story that ends this way: The teacher framed the note and hung it by the door.,draft
-inv-t-38,invent,text,before,open,1,20,,"Tell the story that ends this way: When the snow melted, the car was exactly where they had left it.",draft
-inv-t-39,invent,text,before,open,1,17,,Tell the story that ends this way: The cat came back with the key around its neck.,draft
-inv-t-40,invent,text,before,open,1,17,,"Tell the story that ends this way: After that, the choir always rehearsed with the windows shut.",draft
-inv-t-41,invent,text,before,open,1,17,,"Tell the story that ends this way: The whole village showed up, and nobody remembered the cake.",draft
-inv-t-42,invent,text,before,open,1,16,,Tell the story that ends this way: She mailed the shoes back with a thank-you card.,draft
-inv-t-43,invent,text,before,open,1,19,,"Tell the story that ends this way: It took three neighbors and a ladder, but the kite came down.",draft
-inv-t-44,invent,text,before,open,1,16,,Tell the story that ends this way: The parrot was never allowed near the telephone again.,draft
-inv-t-45,invent,text,before,open,1,19,,Tell the story that ends this way: They split the prize four ways and never spoke of the fifth.,draft
-inv-t-46,invent,text,before,open,1,17,,"Tell the story that ends this way: The museum hung it upside down, and no one noticed.",draft
-inv-t-47,invent,text,before,open,1,17,,"Tell the story that ends this way: He finally learned to swim, at the age of seventy.",draft
-inv-t-48,invent,text,before,open,1,18,,"Tell the story that ends this way: The train left on time, and so, for once, did they.",draft
-inv-t-49,invent,text,before,open,1,16,,Tell the story that ends this way: The recipe is still taped inside the cupboard door.,draft
-inv-t-50,invent,text,before,open,1,16,,"Tell the story that ends this way: The umbrella was returned ten years later, still wet.",draft
-exp-t-01,explain,text,procedure,guided,2,21,,Explain how to make a favorite breakfast. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-02,explain,text,procedure,guided,2,22,,Explain how to pack for a week-long trip. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-03,explain,text,procedure,guided,2,25,,Explain how to get from home to the nearest grocery store. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-04,explain,text,procedure,guided,2,23,,Explain how to teach a child to tie shoelaces. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-05,explain,text,procedure,guided,2,22,,Explain how to set up a new phone. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-06,explain,text,procedure,guided,2,25,,Explain how to make a good cup of coffee or tea. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-07,explain,text,procedure,guided,2,22,,Explain how to get through airport security quickly. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-08,explain,text,procedure,guided,2,22,,Explain how to wash a load of laundry. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-09,explain,text,procedure,guided,2,23,,Explain how to plan a dinner for six people. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-10,explain,text,procedure,guided,2,20,,Explain how to wrap a gift. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-11,explain,text,procedure,guided,2,25,,Explain how to find a good restaurant in an unfamiliar city. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-12,explain,text,procedure,guided,2,22,,Explain how to prepare for a job interview. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-13,explain,text,procedure,guided,2,24,,Explain how to play a simple card or board game. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-14,explain,text,procedure,guided,2,24,,Explain how to clean a kitchen after a big meal. Give the steps in order and name the step people most often get wrong.,draft
-exp-t-15,explain,text,procedure,guided,2,23,,Explain how to host a guest for a weekend. Give the steps in order and name the step people most often get wrong.,draft
+des-t-01,describe,text,place,guided,2,26,,"What did the kitchen look like in the home you grew up in? What's one detail you remember loving about it, or one you really disliked?",draft
+des-t-02,describe,text,place,guided,2,26,,"Which room do you spend the most time in? If I had to rebuild it from your description alone, what would I need to get right?",draft
+des-t-03,describe,text,place,guided,2,27,,A friend is coming to your place for the first time and their phone is dead. Describe your street so they'd know they're on the right one.,draft
+des-t-04,describe,text,place,guided,2,26,,"You've got one free hour and perfect weather. Which outdoor spot near you do you head for, and what can you see from where you sit?",draft
+des-t-05,describe,text,place,guided,2,24,,You're sending someone to your usual grocery store with a list of five things. Walk them through the store so they don't get lost.,draft
+des-t-06,describe,text,place,guided,2,20,,"Picture a classroom you sat in as a kid. Where was your seat, and what could you see from it?",draft
+des-t-07,describe,text,place,guided,2,23,,"If a stranger sat down at your desk or workspace right now, what would they figure out about you from what's on it?",draft
+des-t-08,describe,text,place,guided,2,27,,"You get to take one out-of-town guest to one restaurant or cafe near you. Where do you go, and what will they notice when they walk in?",draft
+des-t-09,describe,text,place,guided,2,23,,"Think of a station, bus stop or airport you know too well. What would you tell a first-timer to look out for there?",draft
+des-t-10,describe,text,place,guided,2,28,,"Think of a beach, lake or river you've been to more than once. Which spot on it would you claim as yours, and what does it look like?",draft
+des-t-11,describe,text,place,guided,2,26,,"Think of a relative's house you visited as a kid. What did it smell like, and which room were you not really supposed to go in?",draft
+des-t-12,describe,text,place,guided,2,25,,"You've got an afternoon to kill in a bookstore or library you know. Which corner do you end up in, and what's around you there?",draft
+des-t-13,describe,text,place,guided,2,27,,"Think of a gym, court or field where you've spent real time. What does it sound like, and what's the one thing about it that needs fixing?",draft
+des-t-14,describe,text,place,guided,2,24,,"What can you see from your bedroom window? If you could swap one thing in that view for anything else, what would you change?",draft
+des-t-15,describe,text,place,guided,2,19,,Think of the last hotel or rental you stayed in. What would your honest review say about the room?,draft
+des-t-16,describe,text,place,guided,2,28,,"Think of a shop that sells basically one kind of thing: a key shop, a cheese shop, a guitar shop. What's it like inside, and who shops there?",draft
+des-t-17,describe,text,place,guided,2,23,,What's the best venue you've ever seen a show in? Tell me what it looked like from where you were standing or sitting.,draft
+des-t-18,describe,text,place,guided,2,27,,You're stuck in a waiting room for an hour with a dead phone. Think of a real one you've been in: what is there to look at?,draft
+des-t-19,describe,text,place,guided,2,23,,"Think of a playground you knew as a kid. Which piece of equipment did everyone fight over, and which one was actually dangerous?",draft
+des-t-20,describe,text,place,guided,2,26,,You have $20 to spend at a street market or farmers market you know. Walk me past the stalls and tell me where the money goes.,draft
+des-t-21,describe,text,place,guided,2,20,,Think of the place you get your hair cut. What do you look at while you're stuck in the chair?,draft
+des-t-22,describe,text,place,guided,2,23,,"Think of a garage, shed or closet where things go to be forgotten. What's in there, and what's the one thing you'd rescue?",draft
+des-t-23,describe,text,place,guided,2,27,,"A film crew wants to shoot one scene in your town or neighborhood. Which street or square do you send them to, and what will they see?",draft
+des-t-24,describe,text,place,guided,2,26,,"You can take one thing home from any museum you've visited, no questions asked. What do you take, and what does it look like up close?",draft
+des-t-25,describe,text,place,guided,2,27,,"Think of a trail, campsite or outdoor spot you'd go back to. What's the view when you get there, and what does it take to reach it?",draft
+des-t-26,describe,text,object,guided,2,21,,"What's the oldest thing you own? If it went missing, how would you describe it so someone could pick it out?",draft
+des-t-27,describe,text,object,guided,2,23,,"What's one piece of clothing you'd wear every day if nobody noticed? Describe it for me, including what shape it's in by now.",draft
+des-t-28,describe,text,object,guided,2,22,,"If I emptied the bag or pockets you carry every day onto a table, what would I find? Which item needs explaining?",draft
+des-t-29,describe,text,object,guided,2,23,,"Think of the car, bike or other ride you use most. If you were selling it tomorrow, what would the honest listing say?",draft
+des-t-30,describe,text,object,guided,2,27,,"Everyone has one mug, glass or bowl they reach for first. What does yours look like, and what makes it better than the others in the cupboard?",draft
+des-t-31,describe,text,object,guided,2,24,,What toy from your childhood would you buy back today if you could? Tell me what it looked like and what it could do.,draft
+des-t-32,describe,text,object,guided,2,23,,Which piece of furniture in your home has been through the most? Tell me what it looks like and where the damage is.,draft
+des-t-33,describe,text,object,guided,2,21,,"If you could wake up tomorrow able to play any instrument, which one? Describe it as if I've never seen one.",draft
+des-t-34,describe,text,object,guided,2,25,,What's a tool or gadget you'd replace the same day if it broke? Tell me what it looks like and what you do with it.,draft
+des-t-35,describe,text,object,guided,2,18,,"What's a gift you've held on to for years? Describe it, and tell me where it lives now.",draft
+des-t-36,describe,text,object,guided,2,17,,"If I opened your refrigerator right now, what would I see? What's been in there the longest?",draft
+des-t-37,describe,text,object,guided,2,25,,Which pair of your shoes has the most miles on it? Tell me what they look like now compared with the day you got them.,draft
+des-t-38,describe,text,object,guided,2,29,,"Think of a watch, ring or other piece that you or someone close to you wears every day. What does it look like, and where did it come from?",draft
+des-t-39,describe,text,object,guided,2,25,,Which photo do you have out where people can see it? Tell me what's in the picture and what was happening just outside the frame.,draft
+des-t-40,describe,text,object,guided,2,24,,What book or album cover can you picture without looking it up? Describe it well enough that I could find it on a shelf.,draft
+des-t-41,describe,text,object,guided,2,23,,"Without looking, what's on your phone's home screen? Which app has earned its spot, and which one should you have deleted by now?",draft
+des-t-42,describe,text,object,guided,2,24,,"What game comes out when people are over: a board game, cards, something else? Describe what's in the box for someone who's never played.",draft
+des-t-43,describe,text,object,guided,2,23,,"You can keep only one appliance in your kitchen. Which one survives, and what does it look and sound like when it's running?",draft
+des-t-44,describe,text,object,guided,2,30,,"Think of a tree or plant you know well: in a yard, on a street, on a windowsill. What does it look like at its best, and at its worst?",draft
+des-t-45,describe,text,object,guided,2,27,,"Think of a pet or an animal you see all the time. If it got loose, how would you describe it so a stranger could spot it?",draft
+des-t-46,describe,text,object,guided,2,22,,What's hanging on your walls at home? Pick one thing and tell me what's in it and why it got the spot.,draft
+des-t-47,describe,text,object,guided,2,27,,"What do you put on when the weather is at its worst? Describe it, and tell me where it still lets the cold or the rain in.",draft
+des-t-48,describe,text,object,guided,2,25,,Which light in your home do you switch on first when it gets dark? Tell me what it looks like and what it lights up.,draft
+des-t-49,describe,text,object,guided,2,25,,"Think of a remote, game controller or keyboard you use all the time. Which buttons are worn out, and which have you never once pressed?",draft
+des-t-50,describe,text,object,guided,2,24,,"Take me through your key ring, one item at a time. What does each key open, and what's on there that isn't a key?",draft
+nar-t-01,narrate,text,recount,guided,2,20,,"Tell me about a trip that didn't go to plan. What went wrong first, and how did you get home?",draft
+nar-t-02,narrate,text,recount,guided,2,27,,"Think back to your first day at a new job or school. What's the first thing you remember, and who was the first person you talked to?",draft
+nar-t-03,narrate,text,recount,guided,2,21,,"What's the worst meal anyone has ever cooked for you? What was on the plate, and did you eat it anyway?",draft
+nar-t-04,narrate,text,recount,guided,2,22,,"Tell me about the last time you lost something you really needed. Where did you look, and did it ever turn up?",draft
+nar-t-05,narrate,text,recount,guided,2,23,,"Tell me about a time you got properly lost. Where were you trying to go, and how did you find your way back?",draft
+nar-t-06,narrate,text,recount,guided,2,22,,"Tell me about a time a stranger did you a favor. What did they do, and what do you remember about them?",draft
+nar-t-07,narrate,text,recount,guided,2,25,,"What's the best live event you've ever been to: a concert, a game, a show? What's the one moment from it you still think about?",draft
+nar-t-08,narrate,text,recount,guided,2,19,,"Who taught you to drive, or to ride a bike? Tell me about the lesson that went the worst.",draft
+nar-t-09,narrate,text,recount,guided,2,20,,"Tell me about a birthday you won't forget, yours or someone else's. What was the plan, and what actually happened?",draft
+nar-t-10,narrate,text,recount,guided,2,23,,"Tell me about a time the weather wrecked your plans. What were you supposed to be doing, and what did you do instead?",draft
+nar-t-11,narrate,text,recount,guided,2,27,,"Tell me about the day you moved into a place you've lived. What was the first night like, and what was the first thing to go wrong?",draft
+nar-t-12,narrate,text,recount,guided,2,28,,"Tell me about a game that came down to the very end, one you played in or watched. What was riding on it, and how did it finish?",draft
+nar-t-13,narrate,text,recount,guided,2,26,,"When did a piece of technology last fail you at the worst possible moment? What were you in the middle of, and how did you recover?",draft
+nar-t-14,narrate,text,recount,guided,2,23,,"Think of someone important to you who isn't family. Where did you first meet, and what did you make of them that day?",draft
+nar-t-15,narrate,text,recount,guided,2,22,,"Tell me about a small mistake that snowballed. What was the mistake, and how far did it get before someone caught it?",draft
+nar-t-16,narrate,text,recount,guided,2,20,,"What's the worst travel delay you've ever sat through? Where were you stuck, and how did you pass the time?",draft
+nar-t-17,narrate,text,recount,guided,2,22,,"What was the first concert or show you ever went to? Who took you, and what do you remember about the room?",draft
+nar-t-18,narrate,text,recount,guided,2,23,,"Tell me about a time something broke at home at a bad moment. What gave out, and who ended up dealing with it?",draft
+nar-t-19,narrate,text,recount,guided,2,25,,"Tell me about a surprise you planned, or one that was sprung on you. How was it kept secret, and what happened at the reveal?",draft
+nar-t-20,narrate,text,recount,guided,2,20,,"Tell me about a time you were spectacularly late. What were you late for, and what excuse did you give?",draft
+nar-t-21,narrate,text,recount,guided,2,23,,"Tell me about one holiday meal you remember better than the others. Who was at the table, and what made that year different?",draft
+nar-t-22,narrate,text,recount,guided,2,20,,"What's the first thing you ever cooked for other people? How did it come out, and what did they say?",draft
+nar-t-23,narrate,text,recount,guided,2,22,,"Tell me about a game or match you saw in person. Where were you sitting, and what's the play you remember best?",draft
+nar-t-24,narrate,text,recount,guided,2,26,,"Tell me about a time an animal outsmarted you: a pet, a pigeon, a raccoon. What did it do, and what did you do about it?",draft
+nar-t-25,narrate,text,recount,guided,2,24,,"Tell me about your first week in a new city or neighborhood. What did you have to figure out, and where did you eat?",draft
+nar-t-26,narrate,text,recount,guided,2,22,,"Where did your school take you on trips? Tell me about the one you remember best, and what happened on the bus.",draft
+nar-t-27,narrate,text,recount,guided,2,18,,When was the last time you got locked out of somewhere? How did you finally get back in?,draft
+nar-t-28,narrate,text,recount,guided,2,24,,"What's the best wedding or big party you've ever been to? What made it better than the rest, and how late did you stay?",draft
+nar-t-29,narrate,text,recount,guided,2,23,,What's the best thing you ever bought that you absolutely did not need? Tell me about the moment you decided to get it.,draft
+nar-t-30,narrate,text,recount,guided,2,18,,"When did directions last send you somewhere wrong? Where did you end up, and whose fault was it?",draft
+nar-t-31,narrate,text,recount,guided,2,19,,"Where's the strangest place you've ever fallen asleep? How did you end up there, and how did you sleep?",draft
+nar-t-32,narrate,text,recount,guided,2,22,,"Tell me about your first time on a plane or a boat. Where were you headed, and what surprised you about it?",draft
+nar-t-33,narrate,text,recount,guided,2,23,,"Tell me about a prank that worked, or one that went too far. Who was the target, and how did they take it?",draft
+nar-t-34,narrate,text,recount,guided,2,24,,"When did the power last go out on you? What were you doing when it happened, and how did you spend the hours after?",draft
+nar-t-35,narrate,text,recount,guided,2,20,,"Tell me about a group project that nearly fell apart. What was your job, and how did it get finished?",draft
+nar-t-36,narrate,text,recount,guided,2,17,,"What was your first job? Tell me about the boss, and about one shift you still remember.",draft
+nar-t-37,narrate,text,recount,guided,2,22,,"What's something you've won: a raffle, a trophy, a bet? Tell me how you won it and what happened to the prize.",draft
+nar-t-38,narrate,text,recount,guided,2,25,,"Tell me about a time you spoke in front of a crowd. What was the occasion, and what do you remember about the first minute?",draft
+nar-t-39,narrate,text,recount,guided,2,24,,"Tell me about the worst haircut you've ever had. How did you know it was no good, and how long before you fixed it?",draft
+nar-t-40,narrate,text,recount,guided,2,21,,"What's the best road trip you've taken? Who was in the car, and what was the best stop along the way?",draft
+nar-t-41,narrate,text,recount,guided,2,20,,"What's something a kid once said that you've never forgotten? Who was the kid, and how did the adults react?",draft
+nar-t-42,narrate,text,recount,guided,2,23,,"Tell me about a whole day you spent outside. Where were you, and what shape were you in by the end of it?",draft
+nar-t-43,narrate,text,recount,guided,2,21,,"Who's someone you ran into after years of not seeing them? Where were you, and what did you two talk about?",draft
+nar-t-44,narrate,text,recount,guided,2,22,,"Tell me about something you fixed with no idea what you were doing. What was broken, and has it broken again since?",draft
+nar-t-45,narrate,text,recount,guided,2,24,,"Tell me about your first meal in a place you'd never been before. Where were you, and how did you decide what to order?",draft
+nar-t-46,narrate,text,recount,guided,2,21,,"What's the longest you've ever waited in a line? What was at the end of it, and was it worth it?",draft
+nar-t-47,narrate,text,recount,guided,2,25,,"Tell me about a time you got caught in rain or snow. Where were you headed, and what did you look like when you arrived?",draft
+nar-t-48,narrate,text,recount,guided,2,17,,"Tell me about a celebration that almost didn't happen. What nearly stopped it, and who rescued it?",draft
+nar-t-49,narrate,text,recount,guided,2,25,,"Tell me about an order or delivery that showed up wrong. What did you ask for, what arrived, and what did you do about it?",draft
+nar-t-50,narrate,text,recount,guided,2,24,,"Tell me about going back to a place that had changed since you last saw it. What was different, and what did you miss?",draft
+arg-t-01,argue,text,statement,open,2,11,,How many days is ideal to work in office or on-site?,draft
+arg-t-02,argue,text,statement,open,2,14,,"At what age should a kid start learning a musical instrument, if at all?",draft
+arg-t-03,argue,text,statement,open,2,17,,"How much should you tip at a sit-down restaurant, and when is it fine to leave nothing?",draft
+arg-t-04,argue,text,statement,open,2,12,,How faithful should a movie be to the book it's based on?,draft
+arg-t-05,argue,text,statement,open,2,18,,"How big is the ideal place to live: a big city, a small town, or somewhere in between?",draft
+arg-t-06,argue,text,statement,open,2,13,,When is it okay to have your phone out at the dinner table?,draft
+arg-t-07,argue,text,statement,open,2,9,,How much homework should a ten-year-old get each night?,draft
+arg-t-08,argue,text,statement,open,2,11,,Which meal of the day could you most easily give up?,draft
+arg-t-09,argue,text,statement,open,2,11,,"What's the right order for the four seasons, best to worst?",draft
+arg-t-10,argue,text,statement,open,2,10,,What's the minimum every adult should know how to cook?,draft
+arg-t-11,argue,text,statement,open,2,15,,"How many days should the work week be, and how long should each day run?",draft
+arg-t-12,argue,text,statement,open,2,10,,What's the best pet for someone who's never had one?,draft
+arg-t-13,argue,text,statement,open,2,15,,How much better or worse is listening to music now than it was before streaming?,draft
+arg-t-14,argue,text,statement,open,2,15,,"How early should you show up to a dinner, a flight, and a job interview?",draft
+arg-t-15,argue,text,statement,open,2,9,,What's the ideal number of people to travel with?,draft
+arg-t-16,argue,text,statement,open,2,8,,When is a handwritten note worth the trouble?,draft
+arg-t-17,argue,text,statement,open,2,7,,What's the best hour of the day?,draft
+arg-t-18,argue,text,statement,open,2,12,,How long should someone live away from the place they grew up?,draft
+arg-t-19,argue,text,statement,open,2,14,,How many nights a week is it reasonable to eat out or order in?,draft
+arg-t-20,argue,text,statement,open,2,11,,What's the best kind of game for a group of four?,draft
+arg-t-21,argue,text,statement,open,2,9,,What's the right number of guests for a wedding?,draft
+arg-t-22,argue,text,statement,open,2,13,,"Paper, screen or audio: what's the best way to get through a book?",draft
+arg-t-23,argue,text,statement,open,2,11,,What's the best sport for a kid to grow up playing?,draft
+arg-t-24,argue,text,statement,open,2,12,,How many things should a person try to be really good at?,draft
+arg-t-25,argue,text,statement,open,2,18,,"What's the ideal setup for getting work done: your own office, a shared room, a cafe, the couch?",draft
+arg-t-26,argue,text,statement,open,2,11,,"Which movies need a theater, and which are better at home?",draft
+arg-t-27,argue,text,statement,open,2,12,,What's the best way to see a city you've never been to?,draft
+arg-t-28,argue,text,statement,open,2,11,,What's the best gift you can give someone for under $30?,draft
+arg-t-29,argue,text,statement,open,2,11,,"At what age should kids start doing chores, and which ones?",draft
+arg-t-30,argue,text,statement,open,2,7,,What time should the school day start?,draft
+arg-t-31,argue,text,statement,open,2,14,,"Who should be in charge on a group vacation: one person, everyone, or nobody?",draft
+arg-t-32,argue,text,statement,open,2,13,,How close to the record should a band sound when they play live?,draft
+arg-t-33,argue,text,statement,open,2,11,,How much of a trip should be planned before you leave?,draft
+arg-t-34,argue,text,statement,open,2,10,,What food is better as leftovers than it was fresh?,draft
+arg-t-35,argue,text,statement,open,2,9,,How long should a meeting be allowed to run?,draft
+arg-t-36,argue,text,statement,open,2,8,,How long should summer vacation from school last?,draft
+arg-t-37,argue,text,statement,open,2,11,,What's the longest commute you'd accept for a home you love?,draft
+arg-t-38,argue,text,statement,open,2,13,,How many cups of coffee or tea a day is the right number?,draft
+arg-t-39,argue,text,statement,open,2,16,,How well do you need to speak a language before you can say you speak it?,draft
+arg-t-40,argue,text,statement,open,2,8,,How many sequels should a good movie get?,draft
+arg-t-41,argue,text,statement,open,2,12,,When is it worth paying more for the expensive version of something?,draft
+arg-t-42,argue,text,statement,open,2,16,,"How should an album be listened to: in order, on shuffle, or just the best songs?",draft
+arg-t-43,argue,text,statement,open,2,11,,When is a handmade gift better than one from a store?,draft
+arg-t-44,argue,text,statement,open,2,12,,How much warning should someone get before a party in their honor?,draft
+arg-t-45,argue,text,statement,open,2,9,,What's the right number of toppings on a pizza?,draft
+arg-t-46,argue,text,statement,open,2,9,,When should you call instead of sending a message?,draft
+arg-t-47,argue,text,statement,open,2,12,,How long should a person live alone before living with someone else?,draft
+arg-t-48,argue,text,statement,open,2,19,,"What's the best place to take a visitor for an afternoon: a zoo, an aquarium, a museum, a park?",draft
+arg-t-49,argue,text,statement,open,2,14,,"What's the best seat on a plane, and how much extra is it worth?",draft
+arg-t-50,argue,text,statement,open,2,12,,How old does a building have to be before it's worth saving?,draft
+inv-t-01,invent,text,after,open,2,19,,"“Priya's train stopped between stations, and the lights went out.” What stopped it, and what does she do next?",draft
+inv-t-02,invent,text,after,open,2,24,,"“Nobody had opened the shop on the corner for ten years, until Dolores did this morning.” Who is Dolores, and what is she selling?",draft
+inv-t-03,invent,text,after,open,2,23,,"“Biscuit trotted home carrying a wallet that belonged to nobody in the house.” Whose wallet is it, and where did Biscuit find it?",draft
+inv-t-04,invent,text,after,open,2,18,,"“At midnight, Ingrid heard the piano next door start playing again.” Who's playing, and why only at midnight?",draft
+inv-t-05,invent,text,after,open,2,26,,"“The letter in Grace's mailbox was addressed to someone who had never lived there.” Who was it meant for, and what does Grace do with it?",draft
+inv-t-06,invent,text,after,open,2,28,,"“Halfway up the mountain, Rafael the guide admitted he had never been this way before.” Why did he take the job, and how does the group get down?",draft
+inv-t-07,invent,text,after,open,2,26,,"“The power came back on, but only in one house on the street.” What's different about that house, and what do the neighbors do about it?",draft
+inv-t-08,invent,text,after,open,2,23,,"“Maryanne opened the top drawer of the old desk, and found a carefully folded note.” Who wrote it, and what did it say?",draft
+inv-t-09,invent,text,after,open,2,23,,"“Captain Ruiz's ferry left on time, with one passenger too many.” Who is the extra passenger, and where are they trying to go?",draft
+inv-t-10,invent,text,after,open,2,25,,"“Since the storm, the town's clocks all showed different times.” What did the storm do to them, and how does anyone get anywhere on time?",draft
+inv-t-11,invent,text,after,open,2,20,,"“Chef Marguerite tasted the soup and went very quiet.” What's in the soup, and what does she do about it?",draft
+inv-t-12,invent,text,after,open,2,20,,"“Anton's lost suitcase turned up on his doorstep, three years late.” Where has it been, and what's in it now?",draft
+inv-t-13,invent,text,after,open,2,25,,"“The elevator opened onto a floor that wasn't on the panel, and Rosa stepped out.” What's on that floor, and who does she meet there?",draft
+inv-t-14,invent,text,after,open,2,25,,"“On the last day of school, Ms. Abara handed back a test nobody remembered taking.” What was the test on, and how did everyone do?",draft
+inv-t-15,invent,text,after,open,2,24,,"“Mrs. Lindqvist's new tenant paid a year's rent in coins.” Where did the coins come from, and what does the tenant do all day?",draft
+inv-t-16,invent,text,after,open,2,20,,"“Imani's radio switched itself on in the middle of the night.” What was it playing, and who was it for?",draft
+inv-t-17,invent,text,after,open,2,23,,"“Beatrice noticed that two guests at the wedding were wearing the same disguise.” Who are they hiding from, and what does Beatrice do?",draft
+inv-t-18,invent,text,after,open,2,20,,"“Sanjay's map ended at the river, but the footprints did not.” Who left the footprints, and where do they lead?",draft
+inv-t-19,invent,text,after,open,2,21,,"“When the tide went out, there was a door in the sand.” What's behind the door, and who finds out first?",draft
+inv-t-20,invent,text,after,open,2,24,,"“Wanda, the babysitter, arrived an hour before anyone had called her.” How did she know, and what does she know that the family doesn't?",draft
+inv-t-21,invent,text,after,open,2,19,,"“The last bus of the night was not on any schedule.” Where does it go, and who rides it?",draft
+inv-t-22,invent,text,after,open,2,22,,"“The orchestra began a piece that was not in the program.” Whose idea was it, and how does the audience take it?",draft
+inv-t-23,invent,text,after,open,2,16,,"“Jerome opened the fridge and found everything rearranged.” Who rearranged it, and what's the new system?",draft
+inv-t-24,invent,text,after,open,2,26,,"“Edith, the lighthouse keeper, had not written in the log for nine days.” What happened on the first day, and what will her next entry say?",draft
+inv-t-25,invent,text,after,open,2,15,,"“Fatima's bakery sold out before it opened.” Who bought everything, and what's it all for?",draft
+inv-t-26,invent,text,before,open,1,18,,Tell the story that ends this way: And that is why the piano is still in the garden.,retired
+inv-t-27,invent,text,before,open,1,16,,Tell the story that ends this way: Nobody at the office ever mentioned the goat again.,retired
+inv-t-28,invent,text,before,open,1,21,,Tell the story that ends this way: She kept the losing ticket in her wallet for the rest of her life.,retired
+inv-t-29,invent,text,before,open,1,18,,"Tell the story that ends this way: By morning, the bridge was open and the mayor was gone.",retired
+inv-t-30,invent,text,before,open,1,17,,Tell the story that ends this way: They never did find out who had paid the bill.,retired
+inv-t-31,invent,text,before,open,1,17,,Tell the story that ends this way: The dog was the only one who got a medal.,retired
+inv-t-32,invent,text,before,open,1,18,,"Tell the story that ends this way: And so the restaurant kept the name, spelling mistake and all.",retired
+inv-t-33,invent,text,before,open,1,16,,"Tell the story that ends this way: He returned the trophy the next day, without explanation.",retired
+inv-t-34,invent,text,before,open,1,16,,Tell the story that ends this way: The twins agreed never to borrow the boat again.,retired
+inv-t-35,invent,text,before,open,1,18,,Tell the story that ends this way: That was the last time anyone asked him to bring dessert.,retired
+inv-t-36,invent,text,before,open,1,19,,"Tell the story that ends this way: In the end, the tree stayed and the road went around it.",retired
+inv-t-37,invent,text,before,open,1,18,,Tell the story that ends this way: The teacher framed the note and hung it by the door.,retired
+inv-t-38,invent,text,before,open,1,20,,"Tell the story that ends this way: When the snow melted, the car was exactly where they had left it.",retired
+inv-t-39,invent,text,before,open,1,17,,Tell the story that ends this way: The cat came back with the key around its neck.,retired
+inv-t-40,invent,text,before,open,1,17,,"Tell the story that ends this way: After that, the choir always rehearsed with the windows shut.",retired
+inv-t-41,invent,text,before,open,1,17,,"Tell the story that ends this way: The whole village showed up, and nobody remembered the cake.",retired
+inv-t-42,invent,text,before,open,1,16,,Tell the story that ends this way: She mailed the shoes back with a thank-you card.,retired
+inv-t-43,invent,text,before,open,1,19,,"Tell the story that ends this way: It took three neighbors and a ladder, but the kite came down.",retired
+inv-t-44,invent,text,before,open,1,16,,Tell the story that ends this way: The parrot was never allowed near the telephone again.,retired
+inv-t-45,invent,text,before,open,1,19,,Tell the story that ends this way: They split the prize four ways and never spoke of the fifth.,retired
+inv-t-46,invent,text,before,open,1,17,,"Tell the story that ends this way: The museum hung it upside down, and no one noticed.",retired
+inv-t-47,invent,text,before,open,1,17,,"Tell the story that ends this way: He finally learned to swim, at the age of seventy.",retired
+inv-t-48,invent,text,before,open,1,18,,"Tell the story that ends this way: The train left on time, and so, for once, did they.",retired
+inv-t-49,invent,text,before,open,1,16,,Tell the story that ends this way: The recipe is still taped inside the cupboard door.,retired
+inv-t-50,invent,text,before,open,1,16,,"Tell the story that ends this way: The umbrella was returned ten years later, still wet.",retired
+inv-t-51,invent,text,whatif,open,2,29,,"If someone wanted to play a $1,000 game of hide and seek against you, and you could choose the location, where would you play? Would you hide, or seek?",draft
+inv-t-52,invent,text,whatif,open,2,29,,"If you had to cook one dish with at least 4 ingredients to win a million-dollar game show prize, what would you make? Tell me how you'd make it.",draft
+inv-t-53,invent,text,whatif,open,2,25,,"If you were given a food truck and $5,000 to get it started, what would you sell? Where would you park it on opening day?",draft
+inv-t-54,invent,text,whatif,open,2,29,,"If you could add one room to your home, free, but it could only be used for one thing, what would that room be for? What goes in it?",draft
+inv-t-55,invent,text,whatif,open,2,22,,"If you had to survive 24 hours locked inside any store, which store would you pick? How would you spend the night?",draft
+inv-t-56,invent,text,whatif,open,2,26,,"You've been handed the keys to a theme park for one night, and you can bring three people. Who comes, and what do you do first?",draft
+inv-t-57,invent,text,whatif,open,2,24,,"If you had to teach a one-hour class tomorrow with no time to prepare, what would you teach? How would you start the lesson?",draft
+inv-t-58,invent,text,whatif,open,2,26,,"If a stranger offered you $10,000 to give up one food forever, which food could you live without? Which food would cost them a lot more?",draft
+inv-t-59,invent,text,whatif,open,2,26,,"You have to enter a talent show next week, and the winner gets a free trip anywhere. What's your act, and how do you rehearse it?",draft
+inv-t-60,invent,text,whatif,open,2,25,,"If you could put up one billboard anywhere, and it had to stay up for a year, where would it go? What would it say?",draft
+inv-t-61,invent,text,whatif,open,2,18,,You're opening a restaurant with exactly five things on the menu. What are they? What's the place called?,draft
+inv-t-62,invent,text,whatif,open,2,28,,"If you had to plan a perfect day for a visitor with only $40 to spend, where would you take them? What's the one stop you'd never skip?",draft
+inv-t-63,invent,text,whatif,open,2,24,,"You get to invent a new holiday, and everyone gets the day off. What is it celebrating, and what does everybody do that day?",draft
+inv-t-64,invent,text,whatif,open,2,28,,"If you had to get across your town as fast as possible without a car, with $500 on the line, how would you do it? Describe the route.",draft
+inv-t-65,invent,text,whatif,open,2,25,,"If you could bring one extinct or imaginary animal home as a pet, which one? Where would it sleep, and what would the neighbors say?",draft
+inv-t-66,invent,text,whatif,open,2,24,,"You've been given an empty storefront on a busy street, rent-free for a year. What do you open? What does it look like inside?",draft
+inv-t-67,invent,text,whatif,open,2,26,,"If you had to spend a year living in a different decade, which one would you choose? What would you do on your first day there?",draft
+inv-t-68,invent,text,whatif,open,2,23,,You have ten minutes to pack one bag for a month somewhere you've never been. What goes in first? What gets left behind?,draft
+inv-t-69,invent,text,whatif,open,2,22,,"If you had to host a dinner for three famous people, living or dead, who's at the table? What are you serving?",draft
+inv-t-70,invent,text,whatif,open,2,23,,"If you could make one small rule that everyone had to follow, nothing serious, what would it be? How would you enforce it?",draft
+inv-t-71,invent,text,whatif,open,2,20,,You're designing a treehouse with no budget and no building codes. What's in it? How do you get up there?,draft
+inv-t-72,invent,text,whatif,open,2,27,,"If you had to pick one song to play every time you walked into a room for a year, which song? Which rooms would be a problem?",draft
+inv-t-73,invent,text,whatif,open,2,26,,"A game show gives you 60 seconds in a grocery store, and you keep what you grab. Where do you run first? What do you skip?",draft
+inv-t-74,invent,text,whatif,open,2,25,,"If you were handed a boat and a free month, where would you take it? Who would you bring, and who would do the cooking?",draft
+inv-t-75,invent,text,whatif,open,2,26,,"If you had to compete in a contest against a ten-year-old, and you got to choose the contest, what would you pick? How would it go?",draft
+exp-t-01,explain,text,procedure,guided,1,7,,Explain how you make your favorite breakfast.,draft
+exp-t-02,explain,text,procedure,guided,1,8,,Explain how you pack for a week-long trip.,draft
+exp-t-03,explain,text,procedure,guided,1,12,,Explain how to get from your home to the nearest grocery store.,draft
+exp-t-04,explain,text,procedure,guided,1,6,,Explain how to tie your shoes.,draft
+exp-t-05,explain,text,procedure,guided,1,8,,Explain how to set up a new phone.,draft
+exp-t-06,explain,text,procedure,guided,1,11,,Explain how you make a good cup of coffee or tea.,draft
+exp-t-07,explain,text,procedure,guided,1,8,,Explain how to get through airport security quickly.,draft
+exp-t-08,explain,text,procedure,guided,1,8,,Explain how you do a load of laundry.,draft
+exp-t-09,explain,text,procedure,guided,1,9,,Explain how you'd plan a dinner for six people.,draft
+exp-t-10,explain,text,procedure,guided,1,6,,Explain how to wrap a gift.,draft
+exp-t-11,explain,text,procedure,guided,1,13,,Explain how you find a good restaurant in a city you don't know.,draft
+exp-t-12,explain,text,procedure,guided,1,8,,Explain how you'd prepare for a job interview.,draft
+exp-t-13,explain,text,procedure,guided,1,12,,Explain how to play a simple card or board game you know.,draft
+exp-t-14,explain,text,procedure,guided,1,10,,Explain how you clean a kitchen after a big meal.,draft
+exp-t-15,explain,text,procedure,guided,1,9,,Explain how you'd host a guest for a weekend.,draft

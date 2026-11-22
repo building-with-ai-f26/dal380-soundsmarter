@@ -102,6 +102,8 @@ Audio as a mode has the thinnest precedent: heard-story retell is established; d
 
 ### B3. Writing rules
 
+*Changed 2026-11-22 by the owner (HANDOFF.md decision 27):* prompts are warm, human and address the user as "you". They are easy to talk about and difficult to describe. Every question must be one a person would sensibly ask. The fixed opening verb in rule 2 and the fixed number of beats in rule 10 no longer apply; the 30-word limit in rule 2 stays.
+
 1. One task per prompt. A prompt that asks for a description and then an opinion is two tasks and cannot be compared with either.
 2. 30 words or fewer on screen. Fixed opening verb per task ("Describe", "Explain how", "Retell", "Argue for or against") so the task is recognised at a glance.
 3. Answerable by any fluent adult without special knowledge and without preparation. Specific beats general: "the last meal cooked for someone else" over "a favorite food". (Owner's Nov 9 lesson: "learn any skill overnight" was dropped as too hard to start.)
