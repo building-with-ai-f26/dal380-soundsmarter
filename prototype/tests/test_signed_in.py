@@ -20,6 +20,10 @@ from supa import Supa  # noqa: E402
 
 PROMPT = {"id": "des-t-01", "family": "describe", "mode": "text", "variant": "place",
           "stimulus_id": None, "text": "Describe a kitchen."}
+IMAGE_PROMPT = {"id": "arg-i-01", "family": "argue", "mode": "image", "variant": "pair",
+                "stimulus_id": "img-arg-01", "text": ""}
+STIMULUS = {"id": "img-arg-01", "kind": "pair", "files": ["img-arg-01-a.jpg", "img-arg-01-b.jpg"],
+            "title": "Cat | Dog", "credit": "Generated image"}
 NYRA = {"language": "en", "verbatim": {"text": "um a kitchen", "words": [
     {"word": "[UM]", "start": 1.0, "end": 1.3}, {"word": " a", "start": 1.4, "end": 1.5},
     {"word": " kitchen.", "start": 1.5, "end": 2.0}]}}
@@ -33,6 +37,8 @@ class FakeSupabase:
         self.sent_today = sent_today
         self.consented = True
         self.key_works = True
+        self.prompts = [PROMPT]
+        self.files_in_bucket = set()
 
     def __call__(self, request: httpx.Request) -> httpx.Response:
         self.calls.append(request)
@@ -45,6 +51,8 @@ class FakeSupabase:
             if body["data"]["signup_code"] != "GOOD":
                 return httpx.Response(500, json={"msg": "Database error saving new user"})
             return httpx.Response(200, json={"access_token": "t", "refresh_token": "r", "user": {"email": body["email"]}})
+        if path.startswith("/storage/v1/object/public/stimuli/"):
+            return httpx.Response(200 if path.rsplit("/", 1)[-1] in self.files_in_bucket else 400)
         table = path.rsplit("/", 1)[-1]
         if request.method == "POST" and not self.key_works:
             return httpx.Response(401, json={"message": "Invalid API key"})
@@ -56,7 +64,9 @@ class FakeSupabase:
         if table == "consents":
             return httpx.Response(200, json=[{"id": 1}] if self.consented else [])
         if table == "prompts":
-            return httpx.Response(200, json=[PROMPT])
+            return httpx.Response(200, json=self.prompts)
+        if table == "stimuli":
+            return httpx.Response(200, json=[STIMULUS])
         if table == "prompt_events" and "event" in q:  # the daily-cap count
             return httpx.Response(200, json=[{"id": i} for i in range(self.sent_today)])
         return httpx.Response(200, json=[])
@@ -173,3 +183,26 @@ def test_signup_needs_consent_and_a_valid_code(fake):
     assert c.post("/api/signup", json={**base, "signup_code": "BAD", "consent": True}).status_code == 403
     ok = c.post("/api/signup", json={**base, "consent": True})
     assert ok.status_code == 200 and ok.json()["access_token"] == "t"
+
+
+def test_an_image_prompt_comes_with_its_pictures_and_item_names(fake):
+    fake.prompts = [IMAGE_PROMPT]
+    fake.files_in_bucket = {"img-arg-01-a.jpg", "img-arg-01-b.jpg"}
+    r = TestClient(server.app).get("/api/prompt", headers={"Authorization": "Bearer user-token"})
+    assert r.status_code == 200 and r.json()["id"] == "arg-i-01"
+    assert r.json()["images"] == [
+        {"url": "https://x.supabase.co/storage/v1/object/public/stimuli/img-arg-01-a.jpg", "label": "Cat"},
+        {"url": "https://x.supabase.co/storage/v1/object/public/stimuli/img-arg-01-b.jpg", "label": "Dog"}]
+    assert r.json()["credit"] == "Generated image"
+
+
+def test_a_prompt_whose_file_is_missing_is_never_served(fake):
+    fake.prompts = [IMAGE_PROMPT, PROMPT]
+    fake.files_in_bucket = {"img-arg-01-a.jpg"}  # the second picture was never uploaded
+    for _ in range(5):
+        fake.inserted.clear()
+        r = TestClient(server.app).get("/api/prompt", headers={"Authorization": "Bearer user-token"})
+        assert r.status_code == 200 and r.json()["id"] == "des-t-01"
+        assert [row["prompt_id"] for _, row in fake.inserted] == ["des-t-01"]  # the image prompt isn't marked as seen
+    fake.prompts = [IMAGE_PROMPT]
+    assert TestClient(server.app).get("/api/prompt", headers={"Authorization": "Bearer user-token"}).status_code == 404

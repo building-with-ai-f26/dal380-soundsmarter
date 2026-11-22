@@ -1,0 +1,31 @@
+id,kind,files,title,creator,year,source_url,license,credit,status
+img-arg-01,pair,img-arg-01-a.jpg|img-arg-01-b.jpg,Cat | Dog,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-02,pair,img-arg-02-a.jpg|img-arg-02-b.jpg,Swings | Slide,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-03,pair,img-arg-03-a.jpg|img-arg-03-b.jpg,Peanut butter | Jelly,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-04,pair,img-arg-04-a.jpg|img-arg-04-b.jpg,Coffee | Tea,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-05,pair,img-arg-05-a.jpg|img-arg-05-b.jpg,Beach | Mountains,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-06,pair,img-arg-06-a.jpg|img-arg-06-b.jpg,Pancakes | Waffles,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-07,pair,img-arg-07-a.jpg|img-arg-07-b.jpg,Pizza | Burger,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-08,pair,img-arg-08-a.jpg|img-arg-08-b.jpg,Bicycle | Car,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-09,pair,img-arg-09-a.jpg|img-arg-09-b.jpg,Book | Television,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-10,pair,img-arg-10-a.jpg|img-arg-10-b.jpg,Train | Airplane,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-11,pair,img-arg-11-a.jpg|img-arg-11-b.jpg,Ice cream | Cake,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-arg-12,pair,img-arg-12-a.jpg|img-arg-12-b.jpg,Bath | Shower,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-01,scene,img-des-01.jpg,Farmers market,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-02,scene,img-des-02.jpg,Kitchen mid-meal,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-03,scene,img-des-03.jpg,Playground,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-04,scene,img-des-04.jpg,Train platform,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-05,scene,img-des-05.jpg,Bike repair workshop,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-06,scene,img-des-06.jpg,Campsite at dusk,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-07,scene,img-des-07.jpg,Harbor,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-08,scene,img-des-08.jpg,Classroom,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-09,scene,img-des-09.jpg,Laundromat,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-10,scene,img-des-10.jpg,Busy beach,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-11,scene,img-des-11.jpg,Garden center,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-des-12,scene,img-des-12.jpg,Cafe terrace,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-inv-01,scene,img-inv-01.jpg,Cat over the fence,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-inv-02,scene,img-inv-02.jpg,The plate,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-inv-03,scene,img-inv-03.jpg,Oranges in the crosswalk,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-inv-04,scene,img-inv-04.jpg,The sofa,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-inv-05,scene,img-inv-05.jpg,The guitar,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved
+img-inv-06,scene,img-inv-06.jpg,The last umbrella,OpenAI GPT Image 2.5 Sunburst,2026,,generated,Generated image,approved

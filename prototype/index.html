@@ -83,6 +83,12 @@
 
   /* record */
   .prompt-header { font-size: 17px; font-weight: 500; color: var(--purple); margin-bottom: 10px; }
+  /* image prompts: one picture, or an argue pair side by side with each item's name underneath */
+  .stimulus { display: flex; gap: 12px; margin-bottom: 6px; }
+  .stimulus figure { flex: 1; min-width: 0; }
+  .stimulus img { display: block; width: 100%; max-height: 52vh; object-fit: contain; }
+  .stimulus figcaption { text-align: center; font-size: 17px; font-weight: 700; margin-top: 6px; }
+  .credit { font-size: 12px; color: var(--grey); margin-bottom: 14px; }
   .prompt { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 40px; }
   .fillbar { height: 6px; background: var(--rule); margin-bottom: 10px; position: relative; }
   .fillbar .fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--purple); }
@@ -261,6 +267,8 @@
 
   <!-- 3 · RECORD: soft fill bar 0-60 s, no numerals; tick + check at 30 s -->
   <section class="screen hidden" id="s-record">
+    <div class="stimulus hidden" id="stimulus"></div>
+    <p class="credit hidden" id="credit"></p>
     <p class="prompt-header hidden" id="prompt-header"></p>
     <p class="prompt" id="prompt"></p>
     <div class="fillbar" role="progressbar" aria-label="Recording time, 60 second limit">
@@ -356,8 +364,16 @@ const PROMPTS = [
   "Explain something you’re weirdly good at: a party trick, a shortcut, a household fix. How did you get good at it, and how would you teach it?",
   "Describe a tradition your family or friends have that would sound strange to an outsider. How did it start?",
 ];
-// A line shown above every prompt of a family (signed-in prompts only)
-const FAMILY_HEADERS = { argue: "Give at least two reasons." };
+// A line shown above every prompt of a family and mode (signed-in prompts only).
+// Owner's wording (2026-11-22). Keep in step with HEADERS and IMAGE_HEADERS in
+// design/prompt-review/make_page.py.
+const HEADERS = {
+  "argue/text": "Make your case. Be specific.",
+  "argue/image": "Make your case for either. Be specific.",
+  "invent/image": "What's going on here? What will happen next?",
+  "describe/image": "What do you notice about this picture?",
+};
+const headerFor = (p) => HEADERS[`${p.family}/${p.mode}`] || "";
 // Random order each page load (Fisher-Yates shuffle); Skip/Next then cycle through it
 for (let i = PROMPTS.length - 1; i > 0; i--) {
   const j = Math.floor(Math.random() * (i + 1));
@@ -499,6 +515,15 @@ async function showAccount() {
 async function fetchPrompt(family) {
   const q = family ? "?family=" + encodeURIComponent(family) : "";
   current = await authJSON("/api/prompt" + q);
+  // Image prompts: wait until every picture has fully loaded before the record
+  // screen appears and recording starts, so prep time runs from a visible image.
+  current.imgEls = await Promise.all((current.images || []).map((im) => new Promise((resolve, reject) => {
+    const el = new Image();
+    el.onload = () => resolve(el);
+    el.onerror = () => reject(new Error("A picture didn't load. Try again."));
+    el.alt = im.label || "Prompt picture";
+    el.src = im.url;
+  })));
 }
 
 async function startSignedIn(family) {
@@ -536,10 +561,20 @@ async function startTake() {
     audio: { noiseSuppression: false, autoGainControl: false, echoCancellation: false },
   });
   show("s-record");
-  $("prompt").textContent = signedIn() ? current.text : PROMPTS[index];
-  const header = signedIn() ? FAMILY_HEADERS[current.family] : null;
-  $("prompt-header").textContent = header || "";
+  $("prompt").textContent = signedIn() ? current.text : PROMPTS[index];  // empty for an image prompt
+  const header = signedIn() ? headerFor(current) : "";
+  $("prompt-header").textContent = header;
   $("prompt-header").classList.toggle("hidden", !header);
+  const images = signedIn() ? current.images || [] : [];
+  $("stimulus").replaceChildren(...images.map((im, i) => {
+    const fig = document.createElement("figure");
+    fig.append(current.imgEls[i]);  // the already-loaded picture
+    if (im.label) { const cap = document.createElement("figcaption"); cap.textContent = im.label; fig.append(cap); }
+    return fig;
+  }));
+  $("stimulus").classList.toggle("hidden", !images.length);
+  $("credit").textContent = signedIn() ? current.credit || "" : "";
+  $("credit").classList.toggle("hidden", !$("credit").textContent);
   // Each recording keeps its own audio chunks, so a skipped one can finish
   // stopping in the background without mixing into the next.
   const r = new MediaRecorder(stream);
@@ -587,7 +622,7 @@ async function onStopped(r) {
   if (audioUrl) URL.revokeObjectURL(audioUrl);
   audioUrl = URL.createObjectURL(lastBlob);  // playback stays in the browser
   if (signedIn()) {  // nothing is sent until the user chooses Send
-    $("review-prompt").textContent = current.text;
+    $("review-prompt").textContent = current.text || headerFor(current);
     show("s-review");
     return;
   }

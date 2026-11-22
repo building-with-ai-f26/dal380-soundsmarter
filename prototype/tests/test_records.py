@@ -31,6 +31,31 @@ def test_families_stay_even_and_never_repeat_back_to_back():
     assert set(counts.values()) == {2}
 
 
+def test_baseline_is_one_text_and_one_image_where_a_family_has_images():
+    prompts = [{"id": f"{f[:3]}-t{n}", "family": f, "mode": "text"} for f in records.FAMILIES for n in range(4)]
+    prompts += [{"id": f"{f[:3]}-i{n}", "family": f, "mode": "image"} for f in ("describe", "argue") for n in range(4)]
+    for seed in range(20):  # the order within a family is random, so try many runs
+        rng = random.Random(seed)
+        events, recs = [], []
+        for _ in range(records.BASELINE_SIZE):
+            p = records.choose_prompt(prompts, events, recs, rng=rng)
+            events.append({"prompt_id": p["id"]})
+            recs.append({"family": p["family"], "mode": p["mode"]})
+        modes = {f: sorted(r["mode"] for r in recs if r["family"] == f) for f in records.FAMILIES}
+        assert modes["describe"] == modes["argue"] == ["image", "text"]
+        assert modes["narrate"] == modes["invent"] == modes["explain"] == ["text", "text"]
+
+
+def test_a_skip_during_baseline_keeps_the_mode_still_owed():
+    prompts = [{"id": f"des-t{n}", "family": "describe", "mode": "text"} for n in range(3)]
+    prompts += [{"id": f"des-i{n}", "family": "describe", "mode": "image"} for n in range(3)]
+    recs = [{"family": "describe", "mode": "text"}]  # text is done, so image is owed
+    events = [{"prompt_id": "des-t0"}, {"prompt_id": "des-i0"}]  # des-i0 was skipped
+    for seed in range(10):
+        p = records.choose_prompt(prompts, events, recs, family="describe", rng=random.Random(seed))
+        assert p["mode"] == "image" and p["id"] != "des-i0"
+
+
 def test_skip_stays_in_family_until_it_runs_out():
     events = [{"prompt_id": "des-0"}, {"prompt_id": "des-1"}]
     assert records.choose_prompt(PROMPTS, events, [], family="describe")["id"] == "des-2"

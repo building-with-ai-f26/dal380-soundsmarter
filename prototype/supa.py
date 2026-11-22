@@ -122,6 +122,16 @@ class Supa:
             return r.json()
         raise SupaError(502, f"Database read failed ({table}, {r.status_code}).")
 
+    # ---------------- stimulus files (public Storage bucket 'stimuli') ----------------
+
+    def file_url(self, path: str) -> str:
+        """The public address of a stimulus file. Anyone with the link can view it."""
+        return f"{self.url}/storage/v1/object/public/stimuli/{path}"
+
+    async def file_exists(self, path: str) -> bool:
+        r = await self._call("HEAD", f"/storage/v1/object/public/stimuli/{path}")
+        return r.status_code == 200
+
     # ---------------- database (as the server; bypasses RLS) ----------------
 
     async def check_can_write(self) -> None:

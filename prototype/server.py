@@ -207,6 +207,26 @@ async def me(request: Request):
     }
 
 
+async def stimulus_for(token: str, prompt: dict) -> dict | None:
+    """The images an image prompt shows, or None if any file is missing from the bucket.
+
+    A pair's title holds the two item names ("Cat | Dog"), shown under the images.
+    """
+    found = await supa.select(token, "stimuli", {"select": "id,kind,files,title,credit", "id": f"eq.{prompt['stimulus_id']}"})
+    if not found or not found[0]["files"]:
+        return None
+    stim = found[0]
+    for path in stim["files"]:
+        if not await supa.file_exists(path):
+            return None
+    labels = [s.strip() for s in (stim.get("title") or "").split("|")] if stim["kind"] == "pair" else []
+    return {
+        "images": [{"url": supa.file_url(path), "label": labels[i] if i < len(labels) else ""}
+                   for i, path in enumerate(stim["files"])],
+        "credit": stim.get("credit") or "",
+    }
+
+
 @app.get("/api/prompt")
 async def next_prompt(request: Request, family: str | None = None):
     """Serve the next prompt and record that it was seen."""
@@ -214,8 +234,17 @@ async def next_prompt(request: Request, family: str | None = None):
     user = await supa_call(supa.user(token))
     prompts = await supa_call(supa.select(token, "prompts", {"select": "id,family,mode,variant,text,stimulus_id"}))
     events = await supa_call(supa.select(token, "prompt_events", {"select": "prompt_id"}))
-    recs = await supa_call(supa.select(token, "recordings", {"select": "family", "order": "created_at.asc"}))
-    prompt = records.choose_prompt(prompts, events, recs, family=family)
+    recs = await supa_call(supa.select(token, "recordings", {"select": "family,mode", "order": "created_at.asc"}))
+    # A prompt whose stimulus file is missing is never served (decision 22): drop it and choose again.
+    while True:
+        prompt = records.choose_prompt(prompts, events, recs, family=family)
+        if prompt is None or not prompt.get("stimulus_id"):
+            break
+        stimulus = await supa_call(stimulus_for(token, prompt))
+        if stimulus:
+            prompt = {**prompt, **stimulus}
+            break
+        prompts = [p for p in prompts if p["id"] != prompt["id"]]
     if prompt is None:
         raise HTTPException(404, "No new prompts left. More are coming.")
     await supa_call(supa.insert_as_server("prompt_events", {
@@ -240,8 +269,11 @@ async def my_recordings(request: Request):
     token = bearer(request)
     recs = await supa_call(supa.select(token, "recordings", {
         "select": "id,created_at,prompt_id,family,mode,metrics", "order": "created_at.desc"}))
-    prompts = await supa_call(supa.select(token, "prompts", {"select": "id,text"}))
-    text = {p["id"]: p["text"] for p in prompts}
+    prompts = await supa_call(supa.select(token, "prompts", {"select": "id,text,stimulus_id"}))
+    stimuli = await supa_call(supa.select(token, "stimuli", {"select": "id,title"}))
+    title = {s["id"]: s["title"] for s in stimuli}
+    # An image prompt has no text of its own: list it by its picture's title instead.
+    text = {p["id"]: p["text"] or f"Image: {title.get(p.get('stimulus_id')) or 'picture'}" for p in prompts}
     show_numbers = len(recs) >= records.BASELINE_SIZE
     return [{
         "created_at": r["created_at"], "family": r["family"], "mode": r["mode"],

@@ -40,6 +40,10 @@ def choose_prompt(prompts: list[dict], events: list[dict], recordings: list[dict
     events:     the user's prompt events; any event means "seen" (never served twice)
     recordings: the user's recordings, oldest first (for keeping families even)
     family:     after a skip or discard, stay in this family if it has prompts left
+
+    Baseline (the first BASELINE_SIZE recordings, 2 per family): where a family
+    has an image prompt, its two recordings are one text and one image, in
+    either order. Otherwise both are text.
     """
     rng = rng or random.Random()
     seen = {e["prompt_id"] for e in events}
@@ -47,10 +51,19 @@ def choose_prompt(prompts: list[dict], events: list[dict], recordings: list[dict
     if not unseen:
         return None
 
+    def pick(fam: str) -> dict:
+        pool = [p for p in unseen if p["family"] == fam]
+        if len(recordings) < BASELINE_SIZE:
+            done = {r.get("mode", "text") for r in recordings if r["family"] == fam}
+            has_image = any(p.get("mode", "text") == "image" for p in pool)
+            wanted = [m for m in (("text", "image") if has_image else ("text",)) if m not in done]
+            narrowed = [p for p in pool if p.get("mode", "text") in wanted]
+            pool = narrowed or pool  # nothing left in the wanted mode: any prompt in the family will do
+        return rng.choice(pool)
+
     if family:
-        same = [p for p in unseen if p["family"] == family]
-        if same:
-            return rng.choice(same)
+        if any(p["family"] == family for p in unseen):
+            return pick(family)
         # that family has run out for this user: fall through to the normal rotation
 
     # Rotate families so counts stay even: the family with the fewest recordings
@@ -65,8 +78,7 @@ def choose_prompt(prompts: list[dict], events: list[dict], recordings: list[dict
     last = recordings[-1]["family"] if recordings else None
     if len(tied) > 1 and last in tied:
         tied.remove(last)
-    pick_family = rng.choice(tied)
-    return rng.choice([p for p in unseen if p["family"] == pick_family])
+    return pick(rng.choice(tied))
 
 
 def session_slot(last_recording: dict | None, now: datetime) -> tuple[int, int]:
