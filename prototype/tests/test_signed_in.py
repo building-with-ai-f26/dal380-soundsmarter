@@ -1,7 +1,8 @@
 """Signed-in flow through the server, with Supabase and the speech service faked.
 
-Checks what gets stored for a recording, the daily cap, consent, and that every
-database call carries the user's own token (so RLS applies). No network.
+Checks what gets stored for a recording, the daily cap, consent, and who writes:
+reads carry the user's own token (so RLS applies); rows are added only by the
+server, with its secret key and the user id it verified. No network.
 """
 
 import json
@@ -30,6 +31,7 @@ class FakeSupabase:
     def __init__(self, sent_today=0):
         self.calls, self.inserted = [], []
         self.sent_today = sent_today
+        self.consented = True
 
     def __call__(self, request: httpx.Request) -> httpx.Response:
         self.calls.append(request)
@@ -46,6 +48,8 @@ class FakeSupabase:
         if request.method == "POST":
             self.inserted.append((table, json.loads(request.content)))
             return httpx.Response(201, json=[json.loads(request.content)])
+        if table == "consents":
+            return httpx.Response(200, json=[{"id": 1}] if self.consented else [])
         if table == "prompts":
             return httpx.Response(200, json=[PROMPT])
         if table == "prompt_events" and "event" in q:  # the daily-cap count
@@ -56,7 +60,8 @@ class FakeSupabase:
 @pytest.fixture
 def fake(monkeypatch):
     f = FakeSupabase()
-    monkeypatch.setattr(server, "supa", Supa("https://x.supabase.co", "sb_publishable_test", httpx.MockTransport(f)))
+    monkeypatch.setattr(server, "supa", Supa("https://x.supabase.co", "sb_publishable_test", httpx.MockTransport(f),
+                                               secret="sb_secret_test"))
 
     async def fake_nyra(audio, content_type):
         return NYRA
@@ -82,11 +87,55 @@ def test_recording_is_stored_with_metrics_and_transcription_but_no_audio(fake):
     assert not any(isinstance(v, (bytes, bytearray)) for v in row.values())
 
 
-def test_every_database_call_uses_the_users_token(fake):
+def test_reads_use_the_users_token_and_writes_use_the_server_key(fake):
     post_recording(TestClient(server.app))
-    for req in fake.calls:
+    reads = [r for r in fake.calls if r.method == "GET"]
+    writes = [r for r in fake.calls if r.method == "POST"]
+    assert reads and len(writes) == 2
+    for req in reads:
         assert req.headers["apikey"] == "sb_publishable_test"
         assert req.headers["authorization"] == "Bearer user-token"
+    for req in writes:
+        assert req.headers["apikey"] == "sb_secret_test"
+        assert req.headers["authorization"] == "Bearer sb_secret_test"
+
+
+def test_rows_are_stamped_with_the_verified_user_not_one_the_browser_names(fake):
+    c = TestClient(server.app)
+    auth = {"Authorization": "Bearer user-token"}
+    post_recording(c)
+    assert c.get("/api/prompt", headers=auth).status_code == 200
+    r = c.post("/api/prompt-event", headers=auth, json={"prompt_id": "des-t-01", "event": "skipped", "user_id": "someone-else"})
+    assert r.status_code == 200
+    assert [row["user_id"] for _, row in fake.inserted] == ["u1"] * 4
+
+
+def test_no_consent_means_nothing_is_transcribed_or_stored(fake, monkeypatch):
+    fake.consented = False
+
+    async def must_not_run(audio, content_type):
+        raise AssertionError("transcription ran without consent")
+    monkeypatch.setattr(server, "send_to_nyra", must_not_run)
+    assert post_recording(TestClient(server.app)).status_code == 403
+    assert fake.inserted == []
+
+
+def test_without_the_secret_key_nothing_is_transcribed_or_stored(fake, monkeypatch):
+    server.supa.secret = ""
+
+    async def must_not_run(audio, content_type):
+        raise AssertionError("transcription ran although nothing could be saved")
+    monkeypatch.setattr(server, "send_to_nyra", must_not_run)
+    assert post_recording(TestClient(server.app)).status_code == 503
+    assert TestClient(server.app).get("/api/prompt", headers={"Authorization": "Bearer user-token"}).status_code == 503
+    assert fake.inserted == []
+
+
+def test_signed_out_requests_cannot_add_prompt_events(fake):
+    c = TestClient(server.app)
+    r = c.post("/api/prompt-event", headers={"Authorization": "Bearer nope"}, json={"prompt_id": "des-t-01", "event": "skipped"})
+    assert r.status_code == 401
+    assert fake.inserted == []
 
 
 def test_daily_cap_blocks_before_any_transcription(fake):

@@ -211,13 +211,15 @@ async def me(request: Request):
 async def next_prompt(request: Request, family: str | None = None):
     """Serve the next prompt and record that it was seen."""
     token = bearer(request)
+    user = await supa_call(supa.user(token))
     prompts = await supa_call(supa.select(token, "prompts", {"select": "id,family,mode,variant,text,stimulus_id"}))
     events = await supa_call(supa.select(token, "prompt_events", {"select": "prompt_id"}))
     recs = await supa_call(supa.select(token, "recordings", {"select": "family", "order": "created_at.asc"}))
     prompt = records.choose_prompt(prompts, events, recs, family=family)
     if prompt is None:
         raise HTTPException(404, "No new prompts left. More are coming.")
-    await supa_call(supa.insert(token, "prompt_events", {"prompt_id": prompt["id"], "event": "served"}))
+    await supa_call(supa.insert_as_server("prompt_events", {
+        "user_id": user["id"], "prompt_id": prompt["id"], "event": "served"}))
     return prompt
 
 
@@ -226,8 +228,9 @@ async def prompt_event(request: Request, body: PromptEvent):
     """Record a skip (during recording) or a discard (after stopping)."""
     if body.event not in records.SKIP_EVENTS:
         raise HTTPException(400, "Unknown event")
-    token = bearer(request)
-    await supa_call(supa.insert(token, "prompt_events", {"prompt_id": body.prompt_id, "event": body.event}))
+    user = await supa_call(supa.user(bearer(request)))
+    await supa_call(supa.insert_as_server("prompt_events", {
+        "user_id": user["id"], "prompt_id": body.prompt_id, "event": body.event}))
     return {"ok": True}
 
 
@@ -249,7 +252,13 @@ async def my_recordings(request: Request):
 
 async def transcribe_signed_in(request: Request):
     token = bearer(request)
-    await supa_call(supa.user(token))  # rejects a bad or expired token before any cost
+    user = await supa_call(supa.user(token))  # rejects a bad or expired token before any cost
+    if not supa.can_write:
+        raise HTTPException(503, "Saving is not set up on this server.")
+    # Nothing is stored without consent (decision 14). Sign-up always writes a
+    # consent row; this check replaces the database rule removed in migration 002.
+    if not await supa_call(supa.select(token, "consents", {"select": "id", "limit": "1"})):
+        raise HTTPException(403, "Consent is required before a recording can be saved.")
     prompt_id = request.headers.get("x-prompt-id", "")
     found = await supa_call(supa.select(token, "prompts", {"select": "*", "id": f"eq.{prompt_id}"}))
     if not found:
@@ -271,9 +280,11 @@ async def transcribe_signed_in(request: Request):
         "select": "prompt_id,event,created_at", "order": "created_at.desc", "limit": "100"}))
     session_no, position = records.session_slot(last[0] if last else None, now)
 
-    await supa_call(supa.insert(token, "prompt_events", {"prompt_id": prompt["id"], "event": "sent"}))
-    await supa_call(supa.insert(token, "recordings", {
-        "prompt_id": prompt["id"], "family": prompt["family"], "mode": prompt["mode"],
+    # Written by the server, never by the browser, so every stored row is one we measured.
+    await supa_call(supa.insert_as_server("prompt_events", {
+        "user_id": user["id"], "prompt_id": prompt["id"], "event": "sent"}))
+    await supa_call(supa.insert_as_server("recordings", {
+        "user_id": user["id"], "prompt_id": prompt["id"], "family": prompt["family"], "mode": prompt["mode"],
         "variant": prompt["variant"], "stimulus_id": prompt.get("stimulus_id"),
         "session_no": session_no, "position_in_session": position,
         "skipped_before": records.skipped_before(events),

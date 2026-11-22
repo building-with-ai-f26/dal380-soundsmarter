@@ -13,7 +13,7 @@
 - **Product source of truth:** [`HANDOFF.md`](./HANDOFF.md). Read it before building. Product decisions are made in design review and by the owner; the agent merges approved changes, builds, and never changes a product decision on its own. Put anything that needs deciding under "Questions for design" at the end of HANDOFF.md.
 
 ## 2. Commands
-All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_KEY` in the repo-root `.env` (CrisperWhisper via Nyra's API, from Build 2; Build 1 used Deepgram).
+All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_KEY` in the repo-root `.env` (CrisperWhisper via Nyra's API, from Build 2; Build 1 used Deepgram). Sign-in and stored records also need `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and `SUPABASE_SECRET_KEY` (see `.env.example`); the secret key is server-only.
 - **Install dependencies:** `uv sync`
 - **Run locally:** `uv run uvicorn server:app --reload --port 8001`, then open http://localhost:8001 (port 8000 is the logbook board)
 - **Run deterministic tests:** `uv run pytest`

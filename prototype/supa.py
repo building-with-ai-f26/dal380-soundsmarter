@@ -4,12 +4,15 @@ Everything goes through Supabase's two web APIs with plain HTTP (httpx), no SDK:
   - Auth  (/auth/v1/...): sign up, sign in, refresh, "who is this token?"
   - REST  (/rest/v1/<table>): read and add rows
 
-Every database call carries the *user's own* access token, so row-level
-security (RLS) in the database decides what they can see and add. This server
-never holds Supabase's secret key.
+Reads carry the *user's own* access token, so row-level security (RLS) in the
+database decides what they can see. Writes are different: users cannot add
+rows themselves (migration 002). Only this server can, using Supabase's secret
+key, and only after it has checked who the user is. That way a stored
+recording is always one this server measured.
 
 Settings (repo-root .env locally = the DEV project; Render = the PROD project):
-  SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY  (public by design)
+  SUPABASE_SECRET_KEY                     (server only; bypasses RLS; never in the browser or git)
 """
 
 import os
@@ -25,18 +28,24 @@ class SupaError(Exception):
 
 
 class Supa:
-    def __init__(self, url: str, key: str, transport: httpx.AsyncBaseTransport | None = None):
+    def __init__(self, url: str, key: str, transport: httpx.AsyncBaseTransport | None = None, secret: str = ""):
         self.url = (url or "").rstrip("/")
         self.key = key or ""
+        self.secret = secret or ""  # server-only key for writes
         self.transport = transport  # tests pass a fake one; None = real network
 
     @classmethod
     def from_env(cls):
-        return cls(os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_PUBLISHABLE_KEY", ""))
+        return cls(os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_PUBLISHABLE_KEY", ""),
+                   secret=os.getenv("SUPABASE_SECRET_KEY", ""))
 
     @property
     def configured(self) -> bool:
         return bool(self.url and self.key)
+
+    @property
+    def can_write(self) -> bool:
+        return bool(self.configured and self.secret)
 
     def _headers(self, token: str | None = None) -> dict:
         h = {"apikey": self.key}
@@ -113,9 +122,18 @@ class Supa:
             return r.json()
         raise SupaError(502, f"Database read failed ({table}, {r.status_code}).")
 
-    async def insert(self, token: str, table: str, row: dict) -> dict:
-        r = await self._call("POST", f"/rest/v1/{table}", token, json=row,
-                             headers={"Prefer": "return=representation"})
+    # ---------------- database (as the server; bypasses RLS) ----------------
+
+    async def insert_as_server(self, table: str, row: dict) -> None:
+        """Add a row with the secret key. The caller must put a verified user_id in the row.
+
+        The secret key is only allowed to add rows to prompt_events and recordings
+        (migration 003), not read them, so we ask for nothing back.
+        """
+        if not self.can_write:
+            raise SupaError(503, "Saving is not set up on this server.")
+        r = await self._call("POST", f"/rest/v1/{table}", json=row, headers={
+            "apikey": self.secret, "Authorization": f"Bearer {self.secret}", "Prefer": "return=minimal"})
         if r.status_code == 201:
-            return r.json()[0]
+            return
         raise SupaError(502, f"Database write failed ({table}, {r.status_code}).")
