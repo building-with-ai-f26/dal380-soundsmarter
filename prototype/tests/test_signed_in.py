@@ -32,6 +32,7 @@ class FakeSupabase:
         self.calls, self.inserted = [], []
         self.sent_today = sent_today
         self.consented = True
+        self.key_works = True
 
     def __call__(self, request: httpx.Request) -> httpx.Response:
         self.calls.append(request)
@@ -45,6 +46,10 @@ class FakeSupabase:
                 return httpx.Response(500, json={"msg": "Database error saving new user"})
             return httpx.Response(200, json={"access_token": "t", "refresh_token": "r", "user": {"email": body["email"]}})
         table = path.rsplit("/", 1)[-1]
+        if request.method == "POST" and not self.key_works:
+            return httpx.Response(401, json={"message": "Invalid API key"})
+        if request.method == "POST" and json.loads(request.content) == {}:  # the "does the key work?" check
+            return httpx.Response(400, json={"code": "23502", "message": "null value in column"})
         if request.method == "POST":
             self.inserted.append((table, json.loads(request.content)))
             return httpx.Response(201, json=[json.loads(request.content)])
@@ -91,7 +96,7 @@ def test_reads_use_the_users_token_and_writes_use_the_server_key(fake):
     post_recording(TestClient(server.app))
     reads = [r for r in fake.calls if r.method == "GET"]
     writes = [r for r in fake.calls if r.method == "POST"]
-    assert reads and len(writes) == 2
+    assert reads and len(writes) == 3  # the key check, the 'sent' event, the recording
     for req in reads:
         assert req.headers["apikey"] == "sb_publishable_test"
         assert req.headers["authorization"] == "Bearer user-token"
@@ -128,6 +133,17 @@ def test_without_the_secret_key_nothing_is_transcribed_or_stored(fake, monkeypat
     monkeypatch.setattr(server, "send_to_nyra", must_not_run)
     assert post_recording(TestClient(server.app)).status_code == 503
     assert TestClient(server.app).get("/api/prompt", headers={"Authorization": "Bearer user-token"}).status_code == 503
+    assert fake.inserted == []
+
+
+def test_a_broken_secret_key_stops_before_transcription(fake, monkeypatch):
+    fake.key_works = False  # set, but wrong or revoked
+
+    async def must_not_run(audio, content_type):
+        raise AssertionError("transcription ran although nothing could be saved")
+    monkeypatch.setattr(server, "send_to_nyra", must_not_run)
+    r = post_recording(TestClient(server.app))
+    assert r.status_code == 503 and "Nothing was sent" in r.json()["detail"]
     assert fake.inserted == []
 
 

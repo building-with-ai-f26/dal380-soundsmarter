@@ -253,8 +253,7 @@ async def my_recordings(request: Request):
 async def transcribe_signed_in(request: Request):
     token = bearer(request)
     user = await supa_call(supa.user(token))  # rejects a bad or expired token before any cost
-    if not supa.can_write:
-        raise HTTPException(503, "Saving is not set up on this server.")
+    await supa_call(supa.check_can_write())  # a missing or broken key stops here, before Nyra is paid
     # Nothing is stored without consent (decision 14). Sign-up always writes a
     # consent row; this check replaces the database rule removed in migration 002.
     if not await supa_call(supa.select(token, "consents", {"select": "id", "limit": "1"})):

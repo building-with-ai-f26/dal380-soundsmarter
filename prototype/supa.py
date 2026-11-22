@@ -124,6 +124,21 @@ class Supa:
 
     # ---------------- database (as the server; bypasses RLS) ----------------
 
+    async def check_can_write(self) -> None:
+        """Make sure the secret key really works, before anything is paid for.
+
+        Sends an empty recording, which the database always turns down because
+        required fields are missing, so no row is ever created. What matters
+        is *why* it was turned down: 401 or 403 means the key is wrong, revoked
+        or not allowed to add rows (migration 003 not run).
+        """
+        if not self.can_write:
+            raise SupaError(503, "Saving is not set up on this server.")
+        r = await self._call("POST", "/rest/v1/recordings", json={}, headers={
+            "apikey": self.secret, "Authorization": f"Bearer {self.secret}", "Prefer": "return=minimal"})
+        if r.status_code in (401, 403):
+            raise SupaError(503, "Saving isn't working on this server right now. Nothing was sent for analysis.")
+
     async def insert_as_server(self, table: str, row: dict) -> None:
         """Add a row with the secret key. The caller must put a verified user_id in the row.
 
