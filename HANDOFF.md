@@ -445,7 +445,7 @@ The first list is settled and should not be relitigated. The second list is prop
     - **Send/Discard** applies to signed-in users; demo-code visitors keep the instant flow.
     - **Sign-up** needs a personal sign-up code supplied by the owner, separate from the existing demo codes. Codes live in a Supabase table (`signup_codes`); a database check at sign-up rejects a missing or used code, so the publishable key alone can't create accounts. One code = one account.
     - **Caps:** 20 recordings a day per signed-in account (sent + rejected both count). Demo codes keep the current shared daily cap, unchanged.
-    - **Image stimuli:** single scenes first, pulled from museum open-access collections (public domain), license and credit recorded; the owner approves each image.
+    - **Image stimuli:** see decision 28. *(Changed 2026-11-22 by the owner; was single scenes from museum open-access collections.)*
     - **Account deletion:** not in Build 3; a known gap.
     - **Copy:** consent: "SoundSmarter stores the transcript, word timings and metrics of every recording sent. Audio is not stored. ☐ I agree." English only: "SoundSmarter works in English only. Recordings in other languages are not analysed."
     - **Prompt approval:** the owner reviews `design/prompt-review/index.html` (built from the CSVs) and approves in chat; the agent edits the CSV `status` column and regenerates the database seed.
@@ -461,10 +461,30 @@ The first list is settled and should not be relitigated. The second list is prop
     - Stakes and constraints make a prompt answerable: a situation that gives a reason to answer (a prize, a guest, a choice of one) and a limit that gives the answer a shape, without boxing the speaker in.
     - The number of beats is not fixed. It depends on what is being asked: a simple first beat (a kitchen is a kitchen) needs less thought, so the prompt can carry more.
     - Invent / text / before ("Tell the story that ends this way") is retired as unwieldy. Hypotheticals ("If you had to...") replace it, as Invent / text / whatif.
-    - Argue: a plain question, no "Argue for or against:" lead-in, and not necessarily two-sided. A question with a range of answers gives more leeway ("How many days is ideal to work in office or on-site?"). "Give at least two reasons." is a header shown above every argue prompt, not part of each prompt.
+    - Argue: a plain question, no "Argue for or against:" lead-in, and not necessarily two-sided. A question with a range of answers gives more leeway ("How many days is ideal to work in office or on-site?"). A header shown above every argue prompt, not part of each prompt, says what is wanted: "Make your case. Be specific." for text, "Make your case for either. Be specific." for image pairs. *(Changed 2026-11-22 by the owner; was "Give at least two reasons.")*
     - Invent / text / after *(provisional; see Questions for design)*: a line of fiction followed by a question about it. The user engages with the fictional world inventively and is not asked to continue the story in its narrative voice. Most small stories need a named character to anchor to; ones about an environment, an organism or a system (a town, a street, an orchestra) do not. ("Maryanne opened the top drawer of the old desk, and found a carefully folded note." Who wrote it, and what did it say?)
     - Explain / procedure: just "Explain how...", with "you" where it reads naturally. No instruction about steps or common mistakes; the speaker decides how to teach it.
     - This overrides rules 2 and 10 in §B3 of `design/2026-11-21-word-list-and-prompt-guidelines.md`.
+28. **Image prompts (2026-11-22, owner):** replaces the "Image stimuli" bullet in decision 25.
+    - An image must carry 30-60 seconds of speech. Anything answerable in one sentence is out.
+    - No busy classic paintings.
+    - Invent images show an action between at least two parties, so the speaker can give each one's motives. Each person has a specific, readable expression (a surprised diner, a stressed cyclist); blank smiles are out, because eyes lock on faces.
+    - Argue images are two pictures side by side, competing or adjacent, each item's name underneath. They are simple line drawings with a few flat colors, as far from a photorealistic generated look as possible.
+    - Build 3 images are generated, for Argue, Invent and Describe. Wikimedia Commons later. Invent and Describe use generated photographs for this build only, as a stopgap; the owner does not like the look.
+    - Every image is square, so it stays readable on a phone. No legible text or logos, no recognizable people or places, nothing distressing.
+    - Made with OpenAI GPT Image 2.5 Sunburst through OpenRouter (`design/stimuli/generate_images.py`; every image, its generation prompt and its cost are logged in `design/stimuli/generated.csv`). License "generated", credit "Generated image".
+    - Build 3 set: 12 argue pairs, 6 invent scenes, 12 describe scenes (`design/2026-11-22-stimuli-image.csv`, `design/2026-11-22-prompts-image.csv`). Files live in each project's `stimuli` bucket.
+    - An image prompt has no text of its own. A header line per family and mode says what is wanted. Invent / image: "What's going on here? What will happen next?" (owner, 2026-11-22). Describe / image: "What do you notice about this picture?" (owner, 2026-11-22). Argue / image: "Make your case for either. Be specific."
+    - Baseline (decision 19): where a family has an approved image prompt, its two recordings are one text and one image, in either order. Otherwise two text.
+    - Prep time for an image prompt starts when the image has finished loading: the record screen appears, and recording starts, only then.
+    - Before serving an image prompt the server checks its files are in the bucket; if one is missing the prompt is not served.
+29. **Build 3 approvals (2026-11-22, owner):** from the owner's prompt review (`design/prompt-review/index.html`; his notes and rewordings are in `design/2026-11-22-prompt-review-comments.md`). Everything not denied or held back is approved.
+    - Approved: all 30 image prompts, and 176 text prompts. 206 in all. The owner reworded 23 text prompts in the review.
+    - Denied, configuration conflict (asks for two different tasks, against rule 1; list and reasons in `design/2026-11-22-rule1-conflicts.md`): `des-t-13`, `des-t-14`, `des-t-15`, `des-t-30`, `des-t-38`, `des-t-39`, `des-t-46`, `nar-t-36`, `inv-t-52`, `inv-t-64`. Three others were fixed by the owner and approved: `des-t-01`, `des-t-25`, `des-t-41`. ("What does it look like, and where did it come from?" counts as a conflict: a description, then a recount.)
+    - Denied, bad prompt: `des-t-16`, `des-t-48`.
+    - Denied until the next build: Invent / text / after, `inv-t-01` to `inv-t-25` (story snippets, to be reshaped).
+    - Held back: `des-t-03` and `exp-t-03`.
+    - The 16 borderline prompts and the 7 argue prompts that ask for several answers stay approved, flagged on the review page.
 
 **Proposed, not yet objected to**
 
@@ -511,10 +531,11 @@ Raise these rather than resolve them.
 
 Added by the coding agent for the next design review. Resolved items move into **Decisions made**.
 
-- [ ] **Invent story snippets need reshaping** (owner, 2026-11-22): the Invent / text / after prompts (`inv-t-01` to `inv-t-25`, a line of fiction plus a question) are not working. The owner will work out the principles more systematically before another pass; none is approved until then. The hypotheticals (Invent / text / whatif) are good and stay.
+- [ ] **Invent story snippets need reshaping** (owner, 2026-11-22): the Invent / text / after prompts (`inv-t-01` to `inv-t-25`, a line of fiction plus a question) are not working. They are denied for Build 3 and move to the next build. The owner will work out the principles more systematically before another pass; his first rewordings of five of them (`inv-t-03`, `06`, `07`, `08`, `11`) are saved in the CSV. The hypotheticals (Invent / text / whatif) are good and stay.
 - [ ] **Rule 1, one task per prompt** (owner, 2026-11-22): many of the reworded prompts ask for two things, which rule 1 in §B3 of the guidelines forbids; decision 27 did not override it. The owner decides in the pending prompt review whether rule 1 goes or the prompts change. Conflicts are listed in `design/2026-11-22-rule1-conflicts.md`.
-- [ ] **A header for every family** (owner, 2026-11-22): each family will get a line above the prompt saying what kind of response is wanted. Wording to be decided. Only Argue has one so far ("Give at least two reasons.").
-- [ ] **Image and audio prompt wording** (owner, 2026-11-22): the old on-screen templates ("Describe this picture. Say what is happening and what stands out.") were deleted as not good. Image prompt wording is still to be written.
+- [ ] **A header for every family** (owner, 2026-11-22): each family will get a line above the prompt saying what kind of response is wanted. Wording to be decided. Argue (text and image) and the Invent and Describe image prompts have one so far.
+- [ ] **Image and audio prompt wording** (owner, 2026-11-22): the old on-screen templates ("Describe this picture. Say what is happening and what stands out.") were deleted as not good. Image prompts now use header lines (decision 28). Audio wording is still to be written.
+- [ ] **Invent and Describe images** (owner, 2026-11-22): the generated photographs are a stopgap. Find an alternative to the photorealistic look.
 
 - [ ] **Numbers, not AI text** (owner, 2026-11-15): minimize AI-generated text feedback; show the user numbers; a numbers-first look is a core design element, away from the "AI slop" look (after trying Yoodli, which drops fillers and gives generic AI feedback). *Owner, same day:* AI for **classification** is fine (e.g. "like" as filler vs. verb); AI-written **feedback prose** is what to minimize. This conflicts with the finished loop step 6 (LLM writes vocabulary suggestions, delivery notes and the recommendation) and Proposed decision 10 ("narration comes from the LLM"). Design to propose what survives, e.g. the recommendation becomes a templated line driven by the numbers.
 

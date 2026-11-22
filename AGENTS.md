@@ -26,13 +26,16 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
   - `fillers.py`: counts "um"/"uh" in the transcript
   - `metrics.py`: word count, fillers per 100 words, prep time, pauses
   - `access.py`: invite codes and daily cap for the shared demo
+  - `supa.py`: talks to Supabase (sign-in, reading and saving records, stimulus files)
+  - `records.py`: rules for signed-in users (which prompt next, sessions, daily cap)
+  - `db/`: database migrations, the seed built from the prompt CSVs (`make_seed.py`), and `check_direct_write.py`
   - `analytics_proxy.py`: relays PostHog events so ad blockers don't drop them
   - `tests/`: unit tests for `access`, `analytics_proxy`, `fillers`, `metrics` (`uv run pytest`)
 - `docs/index.html`: Product Page (PRD + build log), served by GitHub Pages
 - `HANDOFF.md`: product source of truth. Read before building
 - `README.md`: front page of the GitHub repo, for human visitors
 - `tests/` (repo root): verification guidance for Build 4, not test code
-- `design/`: design briefs, mockups, logo
+- `design/`: design briefs, mockups, logo; the prompt and stimulus CSVs (source of truth for prompts); `design/stimuli/` generates and reviews images
 - `experiments/stt-compare/`: speech-to-text comparison (test C); reference, not app code
 - `journal/`: optional weekly build notes
 - `Intent.md`, `Plan.md`: class kit files; their content lives on the Product Page (pointers only)

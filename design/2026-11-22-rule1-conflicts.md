@@ -1,5 +1,7 @@
 # Prompts in conflict with rule 1 (one task per prompt)
 
+*The owner's term for these is a "configuration conflict" (2026-11-22).*
+
 *2026-11-22. For the owner's prompt review. Nothing here is decided.*
 
 Rule 1 (guidelines §B3): "One task per prompt. A prompt that asks for a description and then an opinion is two tasks and cannot be compared with either." HANDOFF decision 27 overrides rules 2 and 10, not rule 1.
@@ -57,9 +59,9 @@ This list is the coding agent's reading of the 215 live drafts in `2026-11-21-pr
 
 **Invent, with a pull toward procedure (1).** `inv-t-59` (how you'd rehearse the act)
 
-## Argue: several answers under one "Give at least two reasons." (7)
+## Argue: several answers under one header (7)
 
-Not a mix of tasks, but each asks for more than one position, so "two reasons" is unclear.
+Not a mix of tasks, but each asks for more than one position, so a single instruction above it is unclear. (The header was "Give at least two reasons." when this list was made; from 2026-11-22 it is "Make your case for either. Be specific.")
 
 | ID | Asks for |
 |---|---|
