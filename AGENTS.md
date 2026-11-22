@@ -15,7 +15,7 @@
 ## 2. Commands
 All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_KEY` in the repo-root `.env` (CrisperWhisper via Nyra's API, from Build 2; Build 1 used Deepgram).
 - **Install dependencies:** `uv sync`
-- **Run locally:** `uv run uvicorn server:app --reload`, then open http://localhost:8000
+- **Run locally:** `uv run uvicorn server:app --reload --port 8001`, then open http://localhost:8001 (port 8000 is the logbook board)
 - **Run deterministic tests:** `uv run pytest`
 - **Run model evals:** none yet (Build 4)
 

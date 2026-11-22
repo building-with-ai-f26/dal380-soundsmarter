@@ -412,6 +412,47 @@ The first list is settled and should not be relitigated. The second list is prop
 9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt (fixed bank of 5) → record → transcribe → filler count. *(Changed 2026-11-05: speaking rate and prep time moved to build 2.)*
 10. Prep time = prompt reveal → first spoken word, from the STT first-word timestamp; framed neutrally.
 11. The build 2 front end ships the five-page design of 2026-11-15 (see **Build 2 front end** below). No built-in education in build 2: no recommendation line, no trend chart on results.
+12. **Build 3 storage (2026-11-21):** hosted Postgres on Supabase replaces SQLite (proposed decision 11 below). Two projects: `soundsmarter-dev` (local `.env`) and `soundsmarter-prod` (Render). Schema lives in `prototype/db/migrations/`, run in dev first, then prod. RLS on every table; each user reads and adds only their own rows.
+13. **Sign-in (2026-11-21):** email + password, email confirmation off (Supabase's built-in mailer only reaches team addresses). No password reset for now.
+14. **What is stored per recording (2026-11-21):** metrics and the full transcription response (words + timestamps), so metrics can be recomputed. No audio. A recording is saved only after the user accepts the consent notice at sign-up.
+15. **Demo-code visitors (2026-11-21):** keep the instant-results flow; nothing is saved for them. Records exist only for signed-in users.
+16. **Build 3 scope (2026-11-21, owner):** decisions 16–24 supersede `design/2026-11-21-build3-brief.md` wherever they differ.
+17. **Consent (2026-11-21):** consent is required to create an account; no consent, no account. Decision 14 stands: every signed-in recording stores metrics and the full transcription response, no audio.
+18. **English only (2026-11-21):** stated before sign-up and before the first recording.
+19. **Baseline (2026-11-21):** the first 10 recordings, 2 per family, families interleaved. During baseline the user gets playback and transcript, no numbers. After the 10th, the baseline map appears. From the 11th on, each result is shown against the user's baseline for that family.
+20. **Send or Discard (2026-11-21):** nothing goes to transcription until the user confirms. After stopping, the user chooses Send or Discard. Discard gives a new prompt from the same family, costs nothing, and is recorded like a skip.
+21. **Unusable audio (2026-11-21):** caught before a row is saved: no numbers, nothing stored, a re-record message. Before upload: too little sound or bad input level. After transcription: too few words, implausible words per second, or non-English text.
+22. **Prompt engine (2026-11-21):**
+    - Five families: Describe, Narrate, Argue, Invent, Explain. Three modes: text, image, audio. Explain has no audio.
+    - Sources: `design/2026-11-21-prompts-text-draft.csv`, `design/2026-11-21-audio-stimuli-draft.csv`, and the templates in `design/2026-11-21-prompt-bank.md`. Only rows the owner marks approved are served.
+    - Prompts and stimuli live in the database. Each stimulus carries its license and credit. A prompt whose stimulus file is missing is never served.
+    - A user never sees the same prompt twice. Skips and discards count as seen.
+    - Each recording stores: prompt id, family, mode, variant, stimulus id, position in the session, and prompts skipped or discarded before it.
+    - For audio prompts, prep time runs from the end of the clip.
+23. **Metrics stored per recording (2026-11-21):**
+    - Fillers, repetitions, cut-offs, mid-sentence pauses, sentence-end pauses, speaking rate, articulation rate, prep time.
+    - Repairs: each unbroken run of cutoff, disfluent and repetition tokens.
+    - CrisperWhisper "correction" count: stored, never displayed.
+    - Raw counts by form for the word list in `design/2026-11-21-word-list-and-prompt-guidelines.md` (tiers 1 and 2), with a word-list version number.
+24. **Pages (2026-11-21):** in the current style: sign-up with consent, sign-in, account, baseline map, trends within family.
+25. **Build 3 follow-ups (2026-11-21, owner):**
+    - **Scope:** text and image prompts this build; audio prompts and the baseline/trends pages after, if time runs out. Baseline uses text and image prompts.
+    - **Comparisons** (baseline map, results vs. baseline, trends) are by family × mode.
+    - **A family that runs out** of unseen prompts for a user stops being served to that user.
+    - **Session:** a new session starts after 30 minutes with no recording (for "position in the session").
+    - **Language:** transcription is no longer forced to English; a recording the service detects as non-English is rejected as unusable.
+    - **Background sending:** after Send, the next prompt starts automatically, with no extra click, while the previous recording is analysed in the background. *(Changed 2026-11-22 by the owner; was an optional "next prompt" link.)*
+    - **Send/Discard** applies to signed-in users; demo-code visitors keep the instant flow.
+    - **Sign-up** needs a personal sign-up code supplied by the owner, separate from the existing demo codes. Codes live in a Supabase table (`signup_codes`); a database check at sign-up rejects a missing or used code, so the publishable key alone can't create accounts. One code = one account.
+    - **Caps:** 20 recordings a day per signed-in account (sent + rejected both count). Demo codes keep the current shared daily cap, unchanged.
+    - **Image stimuli:** single scenes first, pulled from museum open-access collections (public domain), license and credit recorded; the owner approves each image.
+    - **Account deletion:** not in Build 3; a known gap.
+    - **Copy:** consent: "SoundSmarter stores the transcript, word timings and metrics of every recording sent. Audio is not stored. ☐ I agree." English only: "SoundSmarter works in English only. Recordings in other languages are not analysed."
+    - **Prompt approval:** the owner reviews `design/prompt-review/index.html` (built from the CSVs) and approves in chat; the agent edits the CSV `status` column and regenerates the database seed.
+    - **Stimulus files** live in a public Supabase Storage bucket in each project.
+    - **Definitions:** speaking rate = non-filler words per minute, first word start to last word end; articulation rate = the same minus silent pauses of 450 ms or more; a sentence-end pause follows a word ending in `.`, `?` or `!`; otherwise it is mid-sentence.
+    - **Unusable audio thresholds:** fewer than 15 words; speaking rate outside 0.8–5 words per second; mostly near-silent or clipping (browser level check).
+26. **Filled share (2026-11-21):** filled hesitations ÷ (filled + silent hesitations). Silent hesitations are mid-sentence pauses of 450 ms or more; a filler with an adjacent pause counts as one filled hesitation. Stored in two versions: by count and by time. The map shows the count version, per family.
 
 **Proposed, not yet objected to**
 
@@ -437,7 +478,7 @@ Raise these rather than resolve them.
 - [ ] Prompt bank (build 1 uses a fixed bank of 5; prompt generation later): how many prompts, who writes them, how many per type. The three-beat structure needs to be consistent across the bank or the metrics drift.
 - [ ] Listen before metrics: is playback mandatory before the numbers appear, or optional?
 - [ ] Playback: raw audio, or with fillers and hesitation pauses highlighted on a waveform?
-- [ ] Multi-user accounts, or single-user for the demo?
+- [x] Multi-user accounts, or single-user for the demo? *Multi-user with sign-in, 2026-11-21 (decision 13).*
 - [ ] Is a particular LLM provider required for the recommendation call?
 
 **Tuning defaults (proposed values, all adjustable)**

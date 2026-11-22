@@ -37,3 +37,6 @@ out/
 
 # Local-only notes
 NOTES.md
+
+# image candidates: local only; approved files go to Supabase Storage
+design/stimuli/candidates/

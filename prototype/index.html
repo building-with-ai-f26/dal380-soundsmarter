@@ -124,6 +124,30 @@
   .results-actions { margin-top: 44px; }
   .notice { font-size: 14px; color: var(--grey); max-width: 52ch; margin: 40px auto 0; line-height: 1.5; text-wrap: balance; }
 
+  /* accounts (Build 3) */
+  .account-links { margin-top: 22px; font-size: 16px; }
+  .account-links .linklike { margin: 0 8px; }
+  .form { max-width: 26em; margin: 0 auto; text-align: left; }
+  .form label { display: block; font-weight: 700; font-size: 16px; margin: 18px 0 6px; }
+  .form input[type=email], .form input[type=password], .form input[type=text] {
+    font-family: inherit; font-size: 18px; width: 100%; padding: 10px 12px;
+    border: 1px solid var(--ink); background: #fff; border-radius: 0;
+  }
+  .form input:focus { outline: 2px solid var(--purple); outline-offset: 2px; }
+  .form .consent { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 16px; line-height: 1.5; margin-top: 22px; }
+  .form .consent input { margin-top: 5px; width: 18px; height: 18px; flex: none; }
+  .form .actions { margin-top: 26px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .english { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+  .error { color: #b00020; }
+  .acct-facts { display: flex; gap: 16px; flex-wrap: wrap; margin: 6px 0 30px; }
+  .rec-list { list-style: none; margin-top: 30px; border-top: 1px solid var(--ink); }
+  .rec-list li { padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 16px; }
+  .rec-list .when { font-weight: 700; margin-right: 8px; }
+  .rec-list .nums { margin-top: 4px; }
+  .topnav { display: flex; justify-content: flex-end; gap: 16px; margin: -18px 0 18px; }
+  .bg-note { font-size: 15px; margin-bottom: 18px; }
+  .review-actions { display: flex; gap: 22px; align-items: center; margin-top: 30px; }
+
   /* phones: desktop-first design, kept usable on small screens */
   @media (max-width: 560px) {
     main { padding: 24px 18px 40px; }
@@ -154,6 +178,10 @@
     <span>SoundSmarter</span>
   </div>
   <div class="rule2 hidden" id="rule2"><span class="y"></span><span class="b"></span></div>
+  <!-- Signed-in only: link back to the account page -->
+  <div class="topnav hidden" id="topnav"><button class="linklike" id="to-account">Account</button></div>
+  <!-- Signed-in only: outcome of a response analysed in the background -->
+  <p class="bg-note hidden" id="bg-note"></p>
 
   <!-- 1 · LANDING (owner copy, verbatim) -->
   <section class="screen landing" id="s-landing">
@@ -168,13 +196,63 @@
       <input id="code-input" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Demo code">
       <button class="primary" type="submit">OK</button>
     </form>
+    <!-- Build 3: accounts (sign-up needs a personal code from the owner) -->
+    <p class="account-links"><button class="linklike" id="go-signin">Sign in</button> · <button class="linklike" id="go-signup">Create account</button></p>
     <!-- Recording + analytics notice (owner-approved draft, 2026-11-16) -->
     <p class="notice">This demo records your voice to measure your speech. It also uses PostHog to record how you use the page, including screen replays.</p>
   </section>
 
-  <!-- 2 · START (owner copy, verbatim) -->
+  <!-- SIGN UP (owner copy, 2026-11-21: consent + English only) -->
+  <section class="screen intro hidden" id="s-signup">
+    <h1>Create Account</h1>
+    <form class="form ph-no-capture" id="signup-form">
+      <p class="english">SoundSmarter works in English only. Recordings in other languages are not analysed.</p>
+      <label for="su-email">Email</label>
+      <input type="email" id="su-email" autocomplete="email" required>
+      <label for="su-password">Password (at least 8 characters)</label>
+      <input type="password" id="su-password" autocomplete="new-password" minlength="8" required>
+      <label for="su-code">Sign-up code</label>
+      <input type="text" id="su-code" autocomplete="off" spellcheck="false" required>
+      <label class="consent"><input type="checkbox" id="su-consent" required>
+        <span>SoundSmarter stores the transcript, word timings and metrics of every recording sent. Audio is not stored. I agree.</span></label>
+      <div class="actions">
+        <button class="primary" type="submit" id="su-submit">Create Account</button>
+        <button class="linklike" type="button" id="su-to-signin">Have an account? Sign in</button>
+      </div>
+      <p class="message error" id="su-error"></p>
+    </form>
+  </section>
+
+  <!-- SIGN IN -->
+  <section class="screen intro hidden" id="s-signin">
+    <h1>Sign In</h1>
+    <form class="form ph-no-capture" id="signin-form">
+      <label for="si-email">Email</label>
+      <input type="email" id="si-email" autocomplete="email" required>
+      <label for="si-password">Password</label>
+      <input type="password" id="si-password" autocomplete="current-password" required>
+      <div class="actions">
+        <button class="primary" type="submit" id="si-submit">Sign In</button>
+        <button class="linklike" type="button" id="si-to-signup">Create account</button>
+      </div>
+      <p class="message error" id="si-error"></p>
+    </form>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section class="screen hidden" id="s-account">
+    <h1 class="ph-no-capture" id="acct-email" style="font-size:28px;margin-bottom:10px"></h1>
+    <div class="acct-facts"><span class="bbox" id="acct-baseline"></span><span class="bbox" id="acct-today"></span></div>
+    <button class="primary start" id="acct-record">Record A Response</button>
+    <p class="message" id="acct-msg"></p>
+    <ul class="rec-list ph-no-capture" id="acct-list"></ul>
+    <p class="results-actions"><button class="linklike" id="signout">Sign out</button></p>
+  </section>
+
+  <!-- 2 · START (owner copy, verbatim; English-only line added 2026-11-21) -->
   <section class="screen intro hidden" id="s-intro">
     <h1>Record A Response</h1>
+    <p class="english">SoundSmarter works in English only. Recordings in other languages are not analysed.</p>
     <p class="instructions">A prompt will appear and recording will begin.<br>At least 30 seconds of audio are needed.</p>
     <button class="primary start" id="start">START</button>
     <p class="message" id="mic"></p>
@@ -194,13 +272,25 @@
     </div>
   </section>
 
+  <!-- SEND OR DISCARD (signed-in): nothing goes to transcription until Send -->
+  <section class="screen hidden" id="s-review">
+    <p class="prompt" id="review-prompt"></p>
+    <p>Send this response for analysis, or discard it and get a new prompt.</p>
+    <div class="review-actions">
+      <button class="primary" id="send">Send</button>
+      <button id="discard">Discard</button>
+    </div>
+  </section>
+
   <!-- 4 · ANALYZE: countdown from 10; flips to Results when analysis returns -->
   <section class="screen analyze hidden" id="s-analyze">
     <div class="analyze-actions">
       <button class="primary" id="results-btn" disabled>Analyzing (10)</button>
+      <!-- Signed-in: carry on while this one is analysed in the background -->
+      <p class="account-links hidden" id="bg-next-wrap"><button class="linklike" id="bg-next">Next prompt while this one is analysed</button></p>
       <p class="message" id="analyze-error"></p>
     </div>
-    <div class="facts">
+    <div class="facts" id="facts">
       <p>Most common filler words:<br>
         <span class="f">um</span> <span class="f">uh</span> <span class="f">like</span>
         <span class="f">you know</span> <span class="f">so</span> <span class="f">I mean</span>
@@ -215,7 +305,9 @@
 
   <!-- 5 · RESULTS -->
   <section class="screen hidden" id="s-results">
-    <div class="cards">
+    <!-- Signed-in, during baseline: playback and transcript, no numbers -->
+    <p class="bbox hidden" id="baseline-note" style="margin-bottom:30px"></p>
+    <div class="cards" id="cards">
       <div class="card-fillers">
         <div><span class="cf-num" id="total"></span> <span class="cf-label" id="total-label"></span></div>
         <div class="cf-chips"><span class="ybox" id="ums"></span><span class="ybox" id="uhs"></span></div>
@@ -236,7 +328,7 @@
     <div class="transcript ph-no-capture">
       <h3 id="word-count"></h3>
       <p id="transcript"></p>
-      <p class="legend"><span class="f">filler</span> <span class="p">silent pause</span></p>
+      <p class="legend" id="legend"><span class="f">filler</span> <span class="p">silent pause</span></p>
     </div>
 
     <div class="results-actions">
@@ -275,19 +367,161 @@ const COUNTDOWN = 10;     // analysis usually takes ~8-10 s
 let CODE = new URLSearchParams(location.search).get("code") || "";
 let takesLeft = null;  // null = no per-code limit
 
-let index = 0, stream = null, recorder = null, chunks = [], discard = false;
+let index = 0, stream = null, recorder = null;
 let recTimer = null, waitTimer = null, takeStartedAt = 0, audioUrl = null;
+let lastBlob = null, lastMime = "", lastSeconds = 0;
 const $ = (id) => document.getElementById(id);
-// Named analytics events for the funnel (no transcript or audio is ever sent)
+// Named analytics events for the funnel (no transcript, audio or email is ever sent)
 const track = (event, props) => window.posthog && posthog.capture(event, props);
 // Plural unless exactly 1 (owner: "0 Ums")
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+// ---------- accounts (Build 3) ----------
+// The session (tokens from Supabase, via our server) lives in this browser only.
+let session = JSON.parse(localStorage.getItem("ss_session") || "null");
+let current = null;      // signed-in: the prompt being answered {id, family, text, ...}
+let baselineLeft = null; // signed-in: recordings still needed before numbers appear
+const signedIn = () => !!session;
+const ACCOUNT_SCREENS = ["s-landing", "s-signin", "s-signup"];
+
+function saveSession(s) {
+  session = s ? { ...s, expires_at: Date.now() + (s.expires_in - 60) * 1000 } : null;
+  if (session) localStorage.setItem("ss_session", JSON.stringify(session));
+  else localStorage.removeItem("ss_session");
+}
+
+async function postJSON(url, body) {
+  const resp = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.detail || `Error ${resp.status}`);
+  return data;
+}
+
+// fetch() with the user's token; refreshes it when it's about to run out
+async function authFetch(url, opts = {}) {
+  if (!session) throw new Error("Signed out");
+  if (Date.now() > session.expires_at) {
+    try { saveSession({ ...(await postJSON("/api/refresh", { refresh_token: session.refresh_token })) }); }
+    catch { signOut("Signed out. Please sign in again."); throw new Error("Signed out"); }
+  }
+  const headers = { ...(opts.headers || {}), Authorization: `Bearer ${session.access_token}` };
+  const resp = await fetch(url, { ...opts, headers });
+  if (resp.status === 401) { signOut("Signed out. Please sign in again."); throw new Error("Signed out"); }
+  return resp;
+}
+
+async function authJSON(url, opts) {
+  const resp = await authFetch(url, opts);
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.detail || `Error ${resp.status}`);
+  return data;
+}
+
+function signOut(message) {
+  saveSession(null);
+  current = null;
+  show("s-signin");
+  $("si-error").textContent = message || "";
+}
+
+$("signup-form").onsubmit = async (e) => {
+  e.preventDefault();
+  $("su-error").textContent = "";
+  if (!$("su-consent").checked) { $("su-error").textContent = "Consent is required to create an account."; return; }
+  $("su-submit").disabled = true;
+  try {
+    saveSession(await postJSON("/api/signup", {
+      email: $("su-email").value, password: $("su-password").value,
+      signup_code: $("su-code").value, consent: true,
+    }));
+    track("account_created");
+    await showAccount();
+  } catch (err) { $("su-error").textContent = err.message; }
+  $("su-submit").disabled = false;
+};
+
+$("signin-form").onsubmit = async (e) => {
+  e.preventDefault();
+  $("si-error").textContent = "";
+  $("si-submit").disabled = true;
+  try {
+    saveSession(await postJSON("/api/signin", { email: $("si-email").value, password: $("si-password").value }));
+    track("signed_in");
+    await showAccount();
+  } catch (err) { $("si-error").textContent = err.message; }
+  $("si-submit").disabled = false;
+};
+
+const FAMILY_NAMES = { describe: "Describe", narrate: "Narrate", argue: "Argue", invent: "Invent", explain: "Explain" };
+const fmtDate = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+
+async function showAccount() {
+  show("s-account");
+  $("acct-msg").textContent = "";
+  try {
+    const me = await authJSON("/api/me");
+    $("acct-email").textContent = me.email;
+    baselineLeft = Math.max(0, me.baseline_size - me.recordings);
+    $("acct-baseline").textContent = baselineLeft > 0
+      ? `Baseline: ${me.recordings} of ${me.baseline_size} recordings`
+      : `Baseline complete (${me.recordings} recordings)`;
+    $("acct-today").textContent = `Today: ${me.today} of ${me.daily_cap}`;
+    $("acct-record").disabled = me.today >= me.daily_cap;
+    if (me.today >= me.daily_cap) $("acct-msg").textContent = `That's today's ${me.daily_cap} recordings. More tomorrow.`;
+    const list = $("acct-list");
+    list.textContent = "";
+    for (const r of await authJSON("/api/recordings")) {
+      const li = document.createElement("li");
+      const when = document.createElement("span");
+      when.className = "when";
+      when.textContent = `${fmtDate(r.created_at)} \u00b7 ${FAMILY_NAMES[r.family] || r.family}`;
+      li.append(when, r.prompt);
+      if (r.metrics) {
+        const nums = document.createElement("div");
+        nums.className = "nums";
+        const prep = r.metrics.prep_s === null ? "no speech" : `${r.metrics.prep_s.toFixed(1)} s prep`;
+        nums.textContent = `${plural(r.metrics.total, "filler")} \u00b7 ${r.metrics.fillers_per_100.toFixed(1)} per 100 words \u00b7 ${prep}`;
+        li.append(nums);
+      }
+      list.append(li);
+    }
+    if (!list.children.length) list.innerHTML = "<li>No recordings yet.</li>";
+  } catch (err) {
+    if (signedIn()) $("acct-msg").textContent = "Error: " + err.message;
+  }
+}
+
+// Ask the server for the next prompt (same family after a skip or discard)
+async function fetchPrompt(family) {
+  const q = family ? "?family=" + encodeURIComponent(family) : "";
+  current = await authJSON("/api/prompt" + q);
+}
+
+async function startSignedIn(family) {
+  try {
+    await fetchPrompt(family);
+    await startTake();
+  } catch (err) {
+    if (!signedIn()) return;
+    await showAccount();
+    $("acct-msg").textContent = err.name === "NotAllowedError"
+      ? "Couldn't use your microphone. Allow microphone access for this site, then reload."
+      : "Error: " + err.message;
+  }
+}
+
+function bgNote(text) {
+  $("bg-note").textContent = text;
+  $("bg-note").classList.toggle("hidden", !text);
+}
 
 function show(id) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("hidden", s.id !== id));
   const landing = id === "s-landing";
   $("wordmark").classList.toggle("hidden", landing);
   $("rule2").classList.toggle("hidden", landing);
+  $("topnav").classList.toggle("hidden", !signedIn() || ACCOUNT_SCREENS.includes(id) || id === "s-account");
+  if (ACCOUNT_SCREENS.includes(id)) bgNote("");
   window.scrollTo(0, 0);
 }
 
@@ -298,14 +532,17 @@ async function startTake() {
     audio: { noiseSuppression: false, autoGainControl: false, echoCancellation: false },
   });
   show("s-record");
-  $("prompt").textContent = PROMPTS[index];
-  chunks = []; discard = false;
-  recorder = new MediaRecorder(stream);
-  recorder.ondataavailable = (e) => chunks.push(e.data);
-  recorder.onstop = onStopped;
-  recorder.start();
+  $("prompt").textContent = signedIn() ? current.text : PROMPTS[index];
+  // Each recording keeps its own audio chunks, so a skipped one can finish
+  // stopping in the background without mixing into the next.
+  const r = new MediaRecorder(stream);
+  r.chunks = [];
+  r.ondataavailable = (e) => r.chunks.push(e.data);
+  r.onstop = () => onStopped(r);
+  r.start();
+  recorder = r;
   takeStartedAt = Date.now();
-  track("take_started", { prompt_index: index });
+  track("take_started", signedIn() ? { family: current.family, mode: current.mode } : { prompt_index: index });
   renderClock(0);
   clearInterval(recTimer);
   recTimer = setInterval(() => {
@@ -328,43 +565,67 @@ function stopTake() {
 }
 
 // ---------- analyze ----------
-async function onStopped() {
-  if (discard) return startTake();  // skip: throw away audio, new prompt
-  const seconds = Math.round((Date.now() - takeStartedAt) / 1000);
-  track("take_stopped", { seconds });
-  const blob = new Blob(chunks, { type: recorder.mimeType });
+// Throw away the current recording (skip, or leaving for the account page)
+function dropTake() {
+  if (recorder) recorder.dropped = true;
+  stopTake();
+}
+
+async function onStopped(r) {
+  if (r.dropped) return;  // skipped: audio thrown away; the skip handler starts the next prompt
+  lastSeconds = Math.round((Date.now() - takeStartedAt) / 1000);
+  track("take_stopped", { seconds: lastSeconds });
+  lastMime = r.mimeType;
+  lastBlob = new Blob(r.chunks, { type: r.mimeType });
   if (audioUrl) URL.revokeObjectURL(audioUrl);
-  audioUrl = URL.createObjectURL(blob);  // playback stays in the browser
-  startCountdown();
+  audioUrl = URL.createObjectURL(lastBlob);  // playback stays in the browser
+  if (signedIn()) {  // nothing is sent until the user chooses Send
+    $("review-prompt").textContent = current.text;
+    show("s-review");
+    return;
+  }
+  analyse(lastBlob, lastMime, lastSeconds, null);
+}
+
+// Send one recording. Signed-in users may move on before it comes back.
+async function analyse(blob, mimeType, seconds, prompt) {
+  const inBaseline = signedIn() && baselineLeft !== null && baselineLeft > 0;
+  startCountdown(inBaseline);
   const analysisStartedAt = Date.now();
+  let movedOn = false;
+  $("bg-next").onclick = () => { movedOn = true; clearInterval(waitTimer); startSignedIn(); };
   try {
-    const resp = await fetch("/transcribe", {
-      method: "POST",
-      headers: { "Content-Type": recorder.mimeType.split(";")[0], "X-Access-Code": CODE },
-      body: blob,
-    });
+    const headers = { "Content-Type": mimeType.split(";")[0] };
+    let resp;
+    if (prompt) resp = await authFetch("/transcribe", { method: "POST", headers: { ...headers, "X-Prompt-Id": prompt.id }, body: blob });
+    else resp = await fetch("/transcribe", { method: "POST", headers: { ...headers, "X-Access-Code": CODE }, body: blob });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.detail || resp.status);
     if (takesLeft !== null) takesLeft -= 1;
-    fillResults(data);
-    clearInterval(waitTimer);
-    $("results-btn").textContent = "Results";
-    $("results-btn").disabled = false;
-    // analysis_ms vs. seconds: data for sizing the countdown to the take length
+    if (prompt) baselineLeft = Math.max(0, data.baseline_size - data.recordings);
     track("analysis_done", { fillers: data.total, um: data.breakdown.um, uh: data.breakdown.uh, seconds,
-      analysis_ms: Date.now() - analysisStartedAt });
-  } catch (err) {
+      analysis_ms: Date.now() - analysisStartedAt, background: movedOn });
+    if (movedOn) { bgNote("Previous response saved."); return; }
+    fillResults(data, inBaseline);
     clearInterval(waitTimer);
+    $("results-btn").textContent = inBaseline ? "Transcript" : "Results";
+    $("results-btn").disabled = false;
+  } catch (err) {
     track("transcribe_failed", { error: String(err.message).slice(0, 100) });
+    if (movedOn) { bgNote("Previous response wasn't saved: " + err.message); return; }
+    clearInterval(waitTimer);
     $("results-btn").textContent = "Record Next Response";
     $("results-btn").disabled = false;
-    $("results-btn").onclick = () => { nextPrompt(); startTake(); };
+    $("results-btn").onclick = () => { if (signedIn()) startSignedIn(); else { nextPrompt(); startTake(); } };
     $("analyze-error").textContent = "Error: " + err.message;
   }
 }
 
-function startCountdown() {
+function startCountdown(inBaseline) {
   show("s-analyze");
+  // During baseline the placeholder averages are numbers too: hide them
+  $("facts").classList.toggle("hidden", inBaseline);
+  $("bg-next-wrap").classList.toggle("hidden", !signedIn());
   const btn = $("results-btn");
   btn.disabled = true;
   btn.onclick = showResults;
@@ -380,14 +641,22 @@ function startCountdown() {
 }
 
 // ---------- results ----------
-function fillResults(data) {
+function fillResults(data, inBaseline) {
+  // Baseline (signed-in, first 10): playback and plain transcript only, no numbers or highlights
+  $("cards").classList.toggle("hidden", inBaseline);
+  $("legend").classList.toggle("hidden", inBaseline);
+  $("baseline-note").classList.toggle("hidden", !inBaseline);
+  if (inBaseline) $("baseline-note").textContent = baselineLeft > 0
+    ? `Baseline: ${data.recordings} of ${data.baseline_size}. Numbers appear after ${data.baseline_size} recordings.`
+    : "Baseline complete. Numbers appear from the next recording.";
+
   $("total").textContent = data.total;
   $("total-label").textContent = data.total === 1 ? "Filler" : "Fillers";
   $("ums").textContent = plural(data.breakdown.um, "Um");
   $("uhs").textContent = plural(data.breakdown.uh, "Uh");
   $("rate").textContent = `${data.fillers_per_100.toFixed(1)} fillers per 100 words`;
   $("prep").textContent = data.prep_s === null ? "No speech detected" : `${data.prep_s.toFixed(1)} seconds prep time`;
-  $("word-count").textContent = `Transcription (${plural(data.word_count, "word")})`;
+  $("word-count").textContent = inBaseline ? "Transcription" : `Transcription (${plural(data.word_count, "word")})`;
 
   // Transcript: fillers highlighted yellow, silent pauses as blue duration chips
   const p = $("transcript");
@@ -395,11 +664,12 @@ function fillResults(data) {
   if (!data.tokens.length) p.textContent = "(no speech detected)";
   data.tokens.forEach((t) => {
     if ("pause" in t) {
+      if (inBaseline) return;
       const chip = document.createElement("span");
       chip.className = "p";
       chip.textContent = `${t.pause.toFixed(1)}\u00a0s`;
       p.append(chip, " ");
-    } else if (t.filler) {
+    } else if (t.filler && !inBaseline) {
       const f = document.createElement("span");
       f.className = "f";
       f.textContent = t.text;
@@ -451,7 +721,6 @@ async function checkAccess() {
     $("ok").classList.add("hidden");
     $("code-form").classList.remove("hidden");
     $("code-input").value = "";
-    $("code-input").focus();
     return;
   }
   if (!resp.ok) { $("access").textContent = data.detail; return; }
@@ -467,7 +736,6 @@ $("code-form").onsubmit = async (e) => {
   await checkAccess();
   if (!$("ok").disabled) show("s-intro");  // valid code: straight on to Start
 };
-checkAccess();
 
 function nextPrompt() { index = (index + 1) % PROMPTS.length; }
 
@@ -482,8 +750,35 @@ $("start").onclick = async () => {
   }
 };
 $("stop").onclick = stopTake;
-$("skip").onclick = () => { track("prompt_skipped", { prompt_index: index }); discard = true; nextPrompt(); stopTake(); };
-$("next").onclick = () => { $("audio").pause(); nextPrompt(); startTake(); };
+$("skip").onclick = async () => {
+  dropTake();
+  if (!signedIn()) { track("prompt_skipped", { prompt_index: index }); nextPrompt(); return startTake(); }
+  track("prompt_skipped", { family: current.family });
+  try { await authJSON("/api/prompt-event", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt_id: current.id, event: "skipped" }) }); } catch (err) { /* still move on */ }
+  startSignedIn(current.family);
+};
+$("next").onclick = () => { $("audio").pause(); if (signedIn()) return startSignedIn(); nextPrompt(); startTake(); };
+
+// Signed-in: Send or Discard after stopping
+$("send").onclick = () => { track("response_sent"); analyse(lastBlob, lastMime, lastSeconds, current); };
+$("discard").onclick = async () => {
+  track("response_discarded", { family: current.family });
+  try { await authJSON("/api/prompt-event", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt_id: current.id, event: "discarded" }) }); } catch (err) { /* still move on */ }
+  startSignedIn(current.family);
+};
+
+$("go-signin").onclick = () => show("s-signin");
+$("go-signup").onclick = () => show("s-signup");
+$("su-to-signin").onclick = () => show("s-signin");
+$("si-to-signup").onclick = () => show("s-signup");
+$("to-account").onclick = () => { $("audio").pause(); dropTake(); showAccount(); };
+$("acct-record").onclick = () => { bgNote(""); startSignedIn(); };
+$("signout").onclick = () => { track("signed_out"); signOut(""); };
+
+// Start: signed-in users go straight to their account; everyone else sees the landing page
+if (signedIn()) showAccount(); else checkAccess();
 </script>
 </body>
 </html>
