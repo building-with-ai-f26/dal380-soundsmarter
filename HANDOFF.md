@@ -53,6 +53,14 @@ Each build is due Monday at noon, New York time.
 | **4 · Nov 30** — Test: domain evals or user replays | Evidence it works | Evals: hand-labeled recordings (collected from build 2) vs. app counts for fillers and pauses; tester sessions. |
 | **5 · Dec 7** — Ship | Live URL + 2-minute video | Cloud deploy; crutch word and vocabulary features if time allows. |
 
+*Changed 2026-11-23 by the owner (design review for the Build 3 Product Page, `docs/index.html`):*
+- **Build 3 as shipped** is accounts, stored records, the prompt engine and the baseline (decisions 12–29), not the Build 3 row above. Acoustic features and the per-recording recommendation are put off; no build is assigned to them.
+- **Riskiest assumption** is now baseline completion: that a speaker will record 10 responses before seeing a number. Test: count the accounts that reach 10 recordings. Not yet tested. Accurate detection is carried from Build 2: pause and filled-share numbers have not been checked against a hand count.
+- **Need state:** speakers who say "um" and "uh" or pause when speaking off-the-cuff don't know how often they do it, or how it shifts with what they are asked to talk about. One recording can't show a pattern.
+- **Success test:** a signed-in user completes the 10 baseline recordings without help and sees the baseline table.
+- **New non-goals:** clinical or diagnostic use; languages other than English.
+- **Not reconciled:** the Product Page's target user ("speakers who want to develop awareness of their extemporaneous speech patterns", PRD 2026-11-16) and **Target user** above (young professionals who speak under pressure) still differ.
+
 ### Build 1 detail (due Nov 9)
 
 A throwaway prototype: the smallest working interaction.
