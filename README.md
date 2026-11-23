@@ -14,9 +14,9 @@
 1. **Account.** Create an account with a personal sign-up code and agree to what is stored: the transcript, word timings and metrics of every recording. Audio is not stored. English only.
 2. **Prompt.** One of 206 prompts in five families: Describe, Narrate, Argue, Invent, Explain. Text, or an image.
 3. **Record.** 30 to 60 seconds in the browser, then Send or Discard.
-4. **Analyze.** Nyra Labs CrisperWhisper 2 keeps every filler and times every word. The app computes the numbers in code. Unusable recordings are rejected.
+4. **Analyze.** Nyra Labs CrisperWhisper 2 keeps every filler and times every word. The app computes the numbers in code. For accounts, unusable recordings are rejected.
 5. **Baseline.** The first 10 recordings give playback and a transcription, no numbers.
-6. **Results.** After the 10th, a baseline table by family and mode. From the 11th, each recording's numbers beside the baseline.
+6. **Results.** After the 10th, the Account page shows a baseline table by family and mode. From the 11th, each recording's numbers appear beside the baseline.
 
 Demo-code visitors get a shorter version: 12 prompts, numbers straight away, nothing stored.
 
@@ -34,7 +34,7 @@ Demo-code visitors get a shorter version: 12 prompts, numbers straight away, not
 
 Needs Python and [uv](https://docs.astral.sh/uv/).
 
-1. Copy `.env.example` to `.env` and fill in `NYRA_API_KEY`. For accounts, also fill in the three `SUPABASE_` values from your own Supabase project, and run the files in `prototype/db/migrations/` there in order. Without them the demo flow still works.
+1. Copy `.env.example` to `.env` and fill in `NYRA_API_KEY`. Without anything else, the demo flow works. For accounts, also fill in the three `SUPABASE_` values from your own Supabase project, then in that project: run the files in `prototype/db/migrations/` in order, load `prototype/db/seed/prompts.sql`, add a row to `signup_codes`, and upload the prompt images to a public `stimuli` bucket (image prompts are skipped without them).
 2. `cd prototype && uv sync`
 3. `uv run uvicorn server:app --reload --port 8001`, then open http://localhost:8001
 4. Tests: `uv run pytest`
