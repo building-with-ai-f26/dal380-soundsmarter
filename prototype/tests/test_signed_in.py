@@ -109,6 +109,8 @@ def test_recording_is_stored_with_metrics_and_transcription_but_no_audio(fake):
     assert row["transcription"] == NYRA
     assert row["metrics"]["total"] == 1 and "tokens" not in row["metrics"]
     assert (row["session_no"], row["position_in_session"], row["prep_from"]) == (1, 1, "reveal")
+    assert (row["metrics_version"], row["word_list_version"]) == (2, 2)
+    assert row["metrics"]["speaking_rate_wpm"] and row["metrics"]["word_forms"]["tier1"]["um"] == 1
     assert not any(isinstance(v, (bytes, bytearray)) for v in row.values())
 
 

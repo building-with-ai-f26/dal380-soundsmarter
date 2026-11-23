@@ -24,13 +24,14 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
   - `server.py`: web server; receives a recording, calls Nyra, returns results
   - `index.html`: the whole front end (all screens, PostHog setup)
   - `fillers.py`: counts "um"/"uh" in the transcript
-  - `metrics.py`: word count, fillers per 100 words, prep time, pauses
+  - `metrics.py`: every number computed from a transcription (shown: word count, fillers per 100 words, prep time, pauses; stored: rates, repairs, filled share and more)
+  - `wordlist.py`: the words and phrases counted by form in every recording
   - `access.py`: invite codes and daily cap for the shared demo
   - `supa.py`: talks to Supabase (sign-in, reading and saving records, stimulus files)
   - `records.py`: rules for signed-in users (which prompt next, sessions, daily cap)
   - `db/`: database migrations, the seed built from the prompt CSVs (`make_seed.py`), and `check_direct_write.py`
   - `analytics_proxy.py`: relays PostHog events so ad blockers don't drop them
-  - `tests/`: unit tests for `access`, `analytics_proxy`, `fillers`, `metrics` (`uv run pytest`)
+  - `tests/`: unit tests for `access`, `analytics_proxy`, `fillers`, `metrics`, `records` and the signed-in flow (`uv run pytest`)
 - `docs/index.html`: Product Page (PRD + build log), served by GitHub Pages
 - `HANDOFF.md`: product source of truth. Read before building
 - `README.md`: front page of the GitHub repo, for human visitors

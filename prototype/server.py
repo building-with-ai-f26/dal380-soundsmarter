@@ -23,6 +23,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 import records
+import wordlist
 from access import AccessDenied, Gate
 from analytics_proxy import router as analytics_router
 from fillers import count_fillers
@@ -42,8 +43,8 @@ STT_MODEL = NYRA_FIELDS["model"]
 MAX_AUDIO_BYTES = 2_000_000  # a 60 s recording is ~1 MB; refuse anything much bigger
 
 CONSENT_VERSION = "2026-11-21"  # bump when the consent wording on the sign-up page changes
-METRICS_VERSION = 1             # bump when a metric definition changes
-WORD_LIST_VERSION = 1           # bump when the counted word list changes
+METRICS_VERSION = 2             # bump when a metric definition changes. 1 = fillers, rate and prep time only
+WORD_LIST_VERSION = wordlist.VERSION  # bump (in wordlist.py) when the counted word list changes
 
 app = FastAPI()
 app.include_router(analytics_router)  # /ingest/... -> PostHog (gets past ad blockers)

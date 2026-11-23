@@ -434,6 +434,7 @@ The first list is settled and should not be relitigated. The second list is prop
     - Repairs: each unbroken run of cutoff, disfluent and repetition tokens.
     - CrisperWhisper "correction" count: stored, never displayed.
     - Raw counts by form for the word list in `design/2026-11-21-word-list-and-prompt-guidelines.md` (tiers 1 and 2), with a word-list version number.
+    - *(Built 2026-11-22, Slice B. Metrics version 2 and word-list version 2; rows stored earlier stay version 1, with no backfill. Code: `prototype/metrics.py`, `prototype/wordlist.py`. Readings the owner approved: the labels come from the speech service's own alignment list; a filler ends a repair run; word-list counts are raw, every use of the form, so "like" includes "I like dogs" and the "like" inside "I feel like"; the filler number shown to the user is still um and uh only, and er, erm and ah are counted by form but not shown. The results page is unchanged.)*
 24. **Pages (2026-11-21):** in the current style: sign-up with consent, sign-in, account, baseline map, trends within family.
 25. **Build 3 follow-ups (2026-11-21, owner):**
     - **Scope:** text and image prompts this build; audio prompts and the baseline/trends pages after, if time runs out. Baseline uses text and image prompts.
@@ -452,7 +453,7 @@ The first list is settled and should not be relitigated. The second list is prop
     - **Stimulus files** live in a public Supabase Storage bucket in each project.
     - **Definitions:** speaking rate = non-filler words per minute, first word start to last word end; articulation rate = the same minus silent pauses of 450 ms or more; a sentence-end pause follows a word ending in `.`, `?` or `!`; otherwise it is mid-sentence.
     - **Unusable audio thresholds:** fewer than 15 words; speaking rate outside 0.8–5 words per second; mostly near-silent or clipping (browser level check).
-26. **Filled share (2026-11-21):** filled hesitations ÷ (filled + silent hesitations). Silent hesitations are mid-sentence pauses of 450 ms or more; a filler with an adjacent pause counts as one filled hesitation. Stored in two versions: by count and by time. The map shows the count version, per family.
+26. **Filled share (2026-11-21):** filled hesitations ÷ (filled + silent hesitations). Silent hesitations are mid-sentence pauses of 450 ms or more; a filler with an adjacent pause counts as one filled hesitation. Stored in two versions: by count and by time. The map shows the count version, per family. *(Built 2026-11-22. By time: seconds spent in filled hesitations, meaning each filler plus any pause touching it, divided by that plus the seconds of silent mid-sentence pauses. A pause that touches a filler belongs to the filled hesitation and is not counted as silent.)*
 27. **Prompt voice (2026-11-22, owner):**
     - Prompts sound warm and human, and speak to the user as "you". The "no second person" rule covers app copy only, never prompts.
     - Easy to talk about, difficult to describe: easy to take on emotionally, demanding in word choice. Ordinary discomfort (a group project, speaking to a crowd) is fine; the user can skip.
@@ -532,6 +533,7 @@ Raise these rather than resolve them.
 Added by the coding agent for the next design review. Resolved items move into **Decisions made**.
 
 - [ ] **Invent story snippets need reshaping** (owner, 2026-11-22): the Invent / text / after prompts (`inv-t-01` to `inv-t-25`, a line of fiction plus a question) are not working. They are denied for Build 3 and move to the next build. The owner will work out the principles more systematically before another pass; his first rewordings of five of them (`inv-t-03`, `06`, `07`, `08`, `11`) are saved in the CSV. The hypotheticals (Invent / text / whatif) are good and stay.
+- [ ] **Word forms in context** (owner, 2026-11-22): the stored word-list counts are raw (every "like", whatever its use). Telling a filler use from an ordinary one is for the next build, in the context layer.
 - [ ] **Rule 1, one task per prompt** (owner, 2026-11-22): many of the reworded prompts ask for two things, which rule 1 in §B3 of the guidelines forbids; decision 27 did not override it. The owner decides in the pending prompt review whether rule 1 goes or the prompts change. Conflicts are listed in `design/2026-11-22-rule1-conflicts.md`.
 - [ ] **A header for every family** (owner, 2026-11-22): each family will get a line above the prompt saying what kind of response is wanted. Wording to be decided. Argue (text and image) and the Invent and Describe image prompts have one so far.
 - [ ] **Image and audio prompt wording** (owner, 2026-11-22): the old on-screen templates ("Describe this picture. Say what is happening and what stands out.") were deleted as not good. Image prompts now use header lines (decision 28). Audio wording is still to be written.
