@@ -1,12 +1,16 @@
 # SoundSmarter — Handoff
 
-*As of 2026-11-05 · living document*
+*As of 2026-11-23 (Build 3) · living document · first written 2026-11-05*
 
 ## Context
 
-SoundSmarter is an app that records 30–60 seconds of extemporaneous speech, analyzes it, and returns metrics plus one recommendation. No code exists yet.
+SoundSmarter is an app that records 30–60 seconds of extemporaneous speech, analyzes it, and returns measured metrics.
 
-This file is the handoff for the coding agent implementing build 1. It fixes the product decisions, defines the metrics, and names the technical choices with their trade-offs. Items under **Decisions made** are settled. Items under **Open questions** are not — ask rather than pick. Provenance is marked throughout: what the product owner stated vs. what was proposed in design discussion and not yet confirmed.
+**Where things stand (2026-11-23).** Build 3 is live at https://soundsmarter-demo.onrender.com/: accounts with consent, 206 prompts in five families, Send or Discard, unusable-audio rejection, stored metrics (version 3), and a 10-recording baseline with a baseline table. The current decisions are 12–29 under **Decisions made**, the dated note under the **Roadmap**, and the open items under **Questions for design**. The Product Page (`docs/index.html`) carries the current PRD; `SECURITY.md` carries the Build 3 security audit.
+
+**How to read the older sections.** Target user, Problem, Before / after, The finished loop, Pipeline, Metrics spec, Session record and Technical choices were written on 2026-11-05, before any code existed. They are kept as the original design. Where a later dated note or numbered decision differs, the later one wins. The recommendation, acoustic features and AI-written feedback described there have not been built.
+
+This file began as the handoff for the coding agent implementing build 1. It fixes the product decisions, defines the metrics, and names the technical choices with their trade-offs. Items under **Decisions made** are settled. Items under **Open questions** are not — ask rather than pick. Provenance is marked throughout: what the product owner stated vs. what was proposed in design discussion and not yet confirmed.
 
 **How this file is maintained.** This is the single source of truth; git history holds every version. Product decisions are made in design review and by the owner. The coding agent merges approved changes, builds, and never changes product decisions on its own. Anything it needs decided goes under **Questions for design** at the end.
 

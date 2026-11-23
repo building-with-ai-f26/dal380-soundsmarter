@@ -171,4 +171,4 @@ The fixes in PR #12 were deployed to Render by the owner on 2026-11-23. Re-check
 
 Not re-checked live: the 5 MB refusal (the host turned the test request away before it reached the app) and the sign-in limit (it would need 30 failed sign-ins).
 
-The sign-out fix is in a later change and needs one more deploy.
+The sign-out fix (PR #13) was deployed by the owner later the same morning. The live page was confirmed to carry it, and the owner checked by hand, on a local run, that the sign-in fields are empty after signing out.
