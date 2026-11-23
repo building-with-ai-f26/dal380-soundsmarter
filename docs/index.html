@@ -70,13 +70,13 @@
     .demo-notes { margin: 0; padding-left: 18px; font-size: 15px; }
     .demo-notes li { margin: 0; }
 
-    /* app screens: screenshots are 1920x940; frame crops to the app's centre column */
+    /* app screens: screenshots are 3024 px wide (a 1512 px window at 2x); frame crops to the centre 720 px */
     .screen { margin-top: 0; }
     .subtabs { display: flex; }
     .subtabs .toggle { display: flex; width: 100%; border-top: 0; }
     .subtabs .toggle button { flex: 1; padding: 5px 4px; }
     .frame { display: block; overflow: hidden; border: 1px solid var(--ink); aspect-ratio: 720 / var(--h); margin-top: 8px; background: var(--paper); }
-    .frame img { display: block; width: calc(1920 / 720 * 100%); margin-left: calc(-600 / 720 * 100%); }
+    .frame img { display: block; width: calc(1512 / 720 * 100%); margin-left: calc(-396 / 720 * 100%); }
     .toggle { display: inline-flex; border: 1px solid var(--ink); }
     .toggle button {
       font-family: inherit; font-size: 14px; border: 0; background: var(--paper); color: var(--ink);
@@ -95,6 +95,7 @@
     .dock-shot img { width: 100%; height: 110px; object-fit: cover; object-position: top left; display: block; border: 1px solid var(--ink); }
     .panel.split .scroll { border-bottom: 1px solid var(--line); }
     .panel.split .dock { border-top: 0; }
+    .dock[hidden] { display: none; }
 
     /* PRD */
     .callout { background: var(--blue); padding: 12px 16px; font-weight: 700; font-size: 17px; text-shadow: none; }
@@ -181,39 +182,39 @@
     <!-- LEFT: product showcase -->
     <div class="panel" id="live-demo">
       <h2>Product Showcase</h2>
-      <p class="status"><strong>Current Status:</strong> Build 2 live hosted by Render</p>
+      <p class="status"><strong>Current Status:</strong> Build 3 live hosted by Render (merged in <a href="https://github.com/building-with-ai-f26/dal380-soundsmarter/pull/10" target="_blank" rel="noopener">PR #10</a>)</p>
       <div class="demo-row">
         <a class="btn" href="https://soundsmarter-demo.onrender.com/" target="_blank" rel="noopener" onclick="window.posthog && posthog.capture('clicked_try_product')">Demo the Product →</a>
         <ul class="demo-notes">
-          <li>Demo code required</li>
+          <li>Demo code: numbers straight away, nothing stored</li>
+          <li>Account: needs a personal sign-up code</li>
           <li>First load may take ~30 seconds</li>
         </ul>
       </div>
 
-      <div class="toggle tabs" role="tablist"><button type="button" role="tab" data-screen="landing" aria-pressed="true">Landing</button><button type="button" role="tab" data-screen="start" aria-pressed="false">Start</button><button type="button" role="tab" data-screen="record" aria-pressed="false">Record</button><button type="button" role="tab" data-screen="analyze" aria-pressed="false">Analysis</button><button type="button" role="tab" data-screen="results" aria-pressed="false">Results</button></div>
+      <div class="toggle tabs" role="tablist"><button type="button" role="tab" data-screen="landing" aria-pressed="true">Landing</button><button type="button" role="tab" data-screen="record" aria-pressed="false">Record</button><button type="button" role="tab" data-screen="send" aria-pressed="false">Send</button><button type="button" role="tab" data-screen="unusable" aria-pressed="false">Too quiet</button><button type="button" role="tab" data-screen="account" aria-pressed="false">Account</button></div>
       <div class="screens">
           <div class="screen" data-screen="landing">
-            <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Landing Page states"><button type="button" data-src="images/build2-1-landing-1.png" aria-pressed="true">Code needed</button><button type="button" data-src="images/build2-1-landing-2.png" aria-pressed="false">Code entered</button></div></div>
-            <a class="frame" style="--h:640" href="images/build2-1-landing-1.png" target="_blank" rel="noopener"><img src="images/build2-1-landing-1.png" alt="Landing Page" /></a>
-            <p class="caption">User sees this page first, and is asked to enter a demo code to begin.</p>
-          </div>
-          <div class="screen" data-screen="start" hidden>
-            <a class="frame" style="--h:420" href="images/build2-1-start.png" target="_blank" rel="noopener"><img src="images/build2-1-start.png" alt="Start Page" /></a>
-            <p class="caption">User is instructed how to use the app, and what is required of them.</p>
+            <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Landing Page states"><button type="button" data-src="images/build3-landing.png" aria-pressed="true">Code needed</button><button type="button" data-src="images/build3-landing-sign-in.png" aria-pressed="false">Sign in</button></div></div>
+            <a class="frame" style="--h:740" href="images/build3-landing.png" target="_blank" rel="noopener"><img src="images/build3-landing.png" alt="Landing Page" /></a>
+            <p class="caption">User sees this page first, and enters a demo code, signs in or creates an account.</p>
           </div>
           <div class="screen" data-screen="record" hidden>
-            <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Record Page states"><button type="button" data-src="images/build2-1-recording-1.png" aria-pressed="true">Under 30 s</button><button type="button" data-src="images/build2-1-recording-2.png" aria-pressed="false">30 s reached</button></div></div>
-            <a class="frame" style="--h:360" href="images/build2-1-recording-1.png" target="_blank" rel="noopener"><img src="images/build2-1-recording-1.png" alt="Record Page" /></a>
-            <p class="caption">Displays a prompt, begins recording and indicates time elapsed, shows when the minimum 30 seconds have been recorded, allows for prompt skipping, and allows user to move to analysis page.</p>
+            <a class="frame" style="--h:360" href="images/build3-record-text.png" target="_blank" rel="noopener"><img src="images/build3-record-text.png" alt="Record Page" /></a>
+            <p class="caption">Displays a prompt, begins recording and indicates time elapsed, shows when the minimum 30 seconds have been recorded, and allows for prompt skipping. Image prompts are not shown here, to keep them fresh for testers.</p>
           </div>
-          <div class="screen" data-screen="analyze" hidden>
-            <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Analyze Page states"><button type="button" data-src="images/build2-1-analysis-1.png" aria-pressed="true">Analyzing</button><button type="button" data-src="images/build2-1-analysis-2.png" aria-pressed="false">Done</button></div></div>
-            <a class="frame" style="--h:720" href="images/build2-1-analysis-1.png" target="_blank" rel="noopener"><img src="images/build2-1-analysis-1.png" alt="Analysis Page" /></a>
-            <p class="caption">Holding location while AI is called, displays ticking-down time until results can be viewed, provides basic context to evaluate metrics that user will see on the results page. Allows user to move to results page when analysis is complete.</p>
+          <div class="screen" data-screen="send" hidden>
+            <a class="frame" style="--h:380" href="images/build3-send.png" target="_blank" rel="noopener"><img src="images/build3-send.png" alt="Send or Discard Page" /></a>
+            <p class="caption">After stopping, user chooses Send or Discard. Nothing is transcribed until Send. Discard gives a new prompt.</p>
           </div>
-          <div class="screen" data-screen="results" hidden>
-            <a class="frame" style="--h:880" href="images/build2-1-results.png" target="_blank" rel="noopener"><img src="images/build2-1-results.png" alt="Results Page" /></a>
-            <p class="caption">Shows the metrics, filler word usage, fillers per 100 words, prep time length. Then allows for playback and shows transcript with pauses and fillers indicated. Allows for a new recording to be made.</p>
+          <div class="screen" data-screen="unusable" hidden>
+            <a class="frame" style="--h:330" href="images/build3-too-quiet.png" target="_blank" rel="noopener"><img src="images/build3-too-quiet.png" alt="Too Quiet Page" /></a>
+            <p class="caption">A recording that is too quiet is caught in the browser before anything is sent. User records the same prompt again.</p>
+          </div>
+          <div class="screen" data-screen="account" hidden>
+            <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Account Page states"><button type="button" data-src="images/build3-account-no-baseline.png" aria-pressed="true">During baseline</button><button type="button" data-src="images/build3-account-with-baseline.png" aria-pressed="false">Baseline complete</button></div></div>
+            <a class="frame" style="--h:750" href="images/build3-account-no-baseline.png" target="_blank" rel="noopener"><img src="images/build3-account-no-baseline.png" alt="Account Page" /></a>
+            <p class="caption">Shows baseline progress, recordings sent today against the daily limit of 20, and the list of recordings. After the 10th recording, shows the baseline table by family and mode.</p>
           </div>
       </div>
 
@@ -224,7 +225,8 @@
           <ul>
             <li>PostHog tracks the app and this page.</li>
             <li>Data is relayed through the app's own server so ad blockers don't drop events.</li>
-            <li>App events tracked: pageviews, clicks, recording started, stopped, prompt skipped, analysis done, results shown, playback, mic blocked, transcription failed. Session replay available.</li>
+            <li>App events tracked: pageviews, clicks, account created, signed in, signed out, forced sign-out, recording started, stopped, prompt skipped, response sent, response discarded, recording unusable, analysis done, results shown, playback, mic blocked, transcription failed.</li>
+            <li>Session replay available. It leaves out the sign-up and sign-in forms, the account email, the list of recordings and the transcription.</li>
           </ul>
           <a href="images/posthog-1.png" target="_blank" rel="noopener"><img class="analytics-shot" src="images/posthog-1.png" alt="PostHog dashboard with SoundSmarter events" /></a>
         </div>
@@ -242,40 +244,54 @@
         <p>Speakers who want to develop awareness of their extemporaneous speech patterns through metric analysis.</p>
 
         <h3 class="tight">Need State</h3>
-        <p>Speakers who use filler words like "Um" and "Uh" or who take pauses when speaking off-the-cuff aren't aware of how frequently or noticeably they are doing so. There's no existing tool to easily capture those metrics.</p>
-        <p class="callout">SoundSmarter records and tracks audio to help speakers build awareness of filler word use and pause length.</p>
+        <p>Speakers who say "um" and "uh" or pause when speaking off-the-cuff don't know how often they do it, or how it shifts with what they are asked to talk about. One recording can't show a pattern.</p>
+        <p class="callout">SoundSmarter measures fillers and pauses across five kinds of prompts, sets a personal baseline, and tracks each new recording against it.</p>
 
         <h3>Core Workflow</h3>
         <ol>
-          <li><strong>Prompt:</strong> User receives a short prompt, randomized from a bank of 12. Option to skip.</li>
-          <li><strong>Record:</strong> User records their response, unlocking the stop button at 30 seconds of audio, with maximum 60 seconds. Fill bar shows time elapsed without numbers and indicates when 30 seconds is reached.</li>
-          <li><strong>Analyze:</strong> Nyra Labs CrisperWhisper 2 AI speech-to-text product that keeps every filler and times every word. While it calls, the screen shows reference metrics for user comparison.</li>
-          <li><strong>Results:</strong> Numbers return: filler count, fillers per 100 words, prep time (time to first sound), along with pausable playback of the recording and the transcription with fillers and pauses marked. No AI feedback is given, just numerical metrics.</li>
+          <li><strong>Account:</strong> User creates an account with a personal sign-up code and agrees that the transcript, word timings and metrics of every recording are stored. Audio is not stored. English only.</li>
+          <li><strong>Prompt:</strong> One of 206 prompts in five families: Describe, Narrate, Argue, Invent, Explain. Text, or an image for Describe, Argue and Invent. No prompt is shown twice. Option to skip.</li>
+          <li><strong>Record:</strong> 30 seconds minimum, 60 maximum. After stopping, the user chooses Send or Discard. Nothing is transcribed until Send.</li>
+          <li><strong>Analyze:</strong> Nyra Labs CrisperWhisper 2 keeps every filler and times every word. A recording that is near-silent, clipped, under 15 words, implausibly fast or slow, or not in English is rejected: the recording is not stored and the user records the same prompt again.</li>
+          <li><strong>Baseline:</strong> The first 10 recordings, two per family. The user gets playback and the transcription. No numbers.</li>
+          <li><strong>Results:</strong> After the 10th recording the Account page shows a table by family and mode: fillers per 100 words, filled share (the share of hesitations filled with um or uh rather than left silent), mid-sentence pauses per 100 words, speaking rate and prep time, each as the baseline and the average since. From the 11th, the results page shows that recording's numbers with the baseline beside fillers per 100 words and prep time.</li>
         </ol>
-        <p><strong>Success test:</strong> A user can complete the workflow without help and receive back an accurate filler count.</p>
+        <p>Demo-code visitors keep the Build 2 flow: 12 prompts, numbers straight away, nothing stored.</p>
+        <p><strong>Success test:</strong> A signed-in user completes the 10 baseline recordings without help and sees the baseline table.</p>
 
         <h3>Scope</h3>
         <div class="indent">
-          <p>Core Workflow loop.</p>
+          <p>Core Workflow loop for signed-in users, plus the Build 2 demo flow.</p>
           <p><strong>Out of Scope (Non-Goals)</strong></p>
           <ul>
             <li>Recommendation based on metrics</li>
             <li>Grammar correction, vocabulary, pronunciation. Not a language learning tool.</li>
+            <li>Clinical or diagnostic use</li>
+            <li>Languages other than English</li>
+          </ul>
+          <p><strong>Not in this build</strong></p>
+          <ul>
+            <li>Audio prompts</li>
+            <li>Acoustic features (pitch, loudness)</li>
+            <li>Telling a filler "like" from an ordinary "like". Word forms are counted and stored, not shown.</li>
+            <li>Account deletion and password reset</li>
           </ul>
         </div>
 
         <h3>Tech Stack</h3>
         <p><strong>Simple Architecture</strong></p>
         <div class="flow">
-          <div class="node"><strong>Browser</strong><span>Records the response</span></div>
+          <div class="node"><strong>Browser</strong><span>Records the response; checks the sound level before sending</span></div>
           <div class="edge"></div>
-          <div class="node"><strong>App server</strong><span>Python (FastAPI), hosted on Render</span></div>
+          <div class="node"><strong>App server</strong><span>Python (FastAPI), hosted on Render. Checks sign-in and consent; confirms it can save before paying for transcription</span></div>
           <div class="edge"></div>
-          <div class="node ai"><strong>Nyra Labs CrisperWhisper 2</strong><span>Verbatim transcript + word timings</span></div>
+          <div class="node ai"><strong>Nyra Labs CrisperWhisper 2</strong><span>Verbatim transcript, word timings, detected language</span></div>
           <div class="edge"></div>
-          <div class="node"><strong>App server</strong><span>Computes metrics: fillers, fillers per 100 words, prep time, pauses of 450 ms+</span></div>
+          <div class="node"><strong>App server</strong><span>Rejects unusable recordings; computes metrics (version 3)</span></div>
           <div class="edge"></div>
-          <div class="node"><strong>Browser</strong><span>Results page</span></div>
+          <div class="node"><strong>Supabase</strong><span>Sign-in, Postgres with row-level security, prompt images. Only the server writes recordings</span></div>
+          <div class="edge"></div>
+          <div class="node"><strong>Browser</strong><span>Results and Account pages</span></div>
         </div>
         <div class="flow-side">
           <span class="side-label">Analytics</span>
@@ -285,32 +301,27 @@
         </div>
 
         <h3>Riskiest Assumption</h3>
-        <p><strong>Accurate Detection:</strong> That filler words can be detected accurately enough to trust. Speech-to-text tools often clean fillers out of transcripts, and words like "like" are only sometimes fillers ("I like jazz" vs. "it was, like, fine"). If the filler count is wrong, the product's core metric is wrong.</p>
-        <p><strong>How this build was tested:</strong> Four recordings were sent to three speech-to-text services, each with hand-counted disfluencies. Of those, the three normal recordings (18 fillers total) scored:</p>
-        <ul>
-          <li>Deepgram Nova-2 (the tech from build 1): 13/18</li>
-          <li>CrisperWhisper 2 (the current tech): 18/18</li>
-          <li>ElevenLabs Scribe v3: 18/18</li>
-        </ul>
-        <p>CrisperWhisper 2 provides more metrics which will be deployed in future builds. None of the services could differentiate between a true filler word "um" and an "um" used as a word, a gap which remains.</p>
+        <p><strong>Baseline completion:</strong> That a speaker will record 10 responses before seeing a number. The baseline is kept free of feedback so later change can be measured against it. The cost is 5 to 10 minutes of speaking with only playback and a transcription in return.</p>
+        <p><strong>How this will be tested:</strong> Count the accounts that reach 10 recordings. Not yet tested.</p>
+        <p><strong>Carried from Build 2 (Accurate Detection):</strong> The new metrics were run on the four hand-counted recordings from Build 2. Three of the four showed zero sentence-end pauses, because the speech service drops the full stop when a filler follows. Sentence ends are now also read from the service's tidied text. Pause and filled-share numbers have not been checked against a hand count.</p>
 
         <h3>Unit Economics &amp; Analytics (Updated Weekly)</h3>
         <div class="grid-2">
           <div class="stat-box">
             <div class="stat-label">Cumulative Build Spend</div>
-            <div class="stat-value">$10 (Nyra prepaid, under $1 used); Deepgram, ElevenLabs, Render, PostHog free</div>
+            <div class="stat-value">$11.77. $10 Nyra prepaid ($0.51 used) and $1.77 OpenRouter for image generation. Supabase (free tier), Render, PostHog, Deepgram and ElevenLabs free.</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Claude (AI Coding Agent)</div>
-            <div class="stat-value">~45M tokens (Build 1: ~12M · Build 2: ~33M), mostly re-reading project context; ~310K tokens written</div>
+            <div class="stat-value">~123M tokens (Build 1: ~12M · Build 2: ~33M · Build 3: ~78M), mostly re-reading project context; ~860K tokens written</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Est. Cost Per User Run</div>
-            <div class="stat-value">~1.5¢ per 60-second recording ($0.90 per audio hour)</div>
+            <div class="stat-value">~1¢ per 40-second recording, up to 1.5¢ at the 60-second limit ($0.90 per audio hour)</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">User Evidence</div>
-            <div class="stat-value">PostHog live: pageviews, clicks, session replay, recording events. First numbers next week.</div>
+            <div class="stat-value">Owner only so far: about 15 recordings. No outside testers yet. Pod tests the live app on Nov. 24.</div>
           </div>
         </div>
       </div>
@@ -318,10 +329,10 @@
 
     <div class="divider" aria-hidden="true"></div>
 
-    <!-- RIGHT: build log + research. Active build open by default; upcoming builds greyed, not clickable -->
+    <!-- RIGHT: build log (Research Impetus dock hidden). Active build open by default; upcoming builds greyed, not clickable -->
     <div class="panel split" id="build-log">
       <h2>Build Log</h2>
-      <p class="meta">As of Nov. 16, 2026</p>
+      <p class="meta">As of Nov. 23, 2026</p>
       <div class="scroll">
       <details class="build">
         <summary>Build 1: Nov. 9, 2026 – First Working Prototype</summary>
@@ -334,7 +345,7 @@
         </ul>
         </div>
       </details>
-      <details class="build current" open>
+      <details class="build">
         <summary>Build 2: Nov. 16, 2026 – Live, Redesigned, with Analytics</summary>
         <div class="body">
           <ul>
@@ -345,12 +356,22 @@
         </ul>
         </div>
       </details>
-      <div class="build upcoming">Build 3: Upcoming</div>
+      <details class="build current" open>
+        <summary>Build 3: Nov. 23, 2026 – Accounts, Stored Recordings and a Personal Baseline</summary>
+        <div class="body">
+          <ul>
+          <li><strong>What shipped:</strong> Build 3, merged in <a href="https://github.com/building-with-ai-f26/dal380-soundsmarter/pull/10" target="_blank" rel="noopener">PR #10</a> and live on Render. Accounts with a personal sign-up code and a consent notice. Sign-in, a Postgres database and prompt images on Supabase, with row-level security on every table; only the server writes recordings. 206 approved prompts in five families (176 text, 30 image). After stopping, the user chooses Send or Discard. Unusable recordings are rejected and not stored. Each recording stores its transcript, word timings and the full metric set (version 3), and no audio. The first 10 recordings set a baseline, shown as a table on the Account page; from the 11th, results show the baseline beside fillers per 100 words and prep time. A cap of 20 recordings a day per account. 57 unit tests. Demo-code visitors keep the Build 2 flow. <strong>Did not ship:</strong> audio prompts; the 25 Invent story prompts, held for the next build; a separate baseline page or trend chart (one table on the Account page instead); the next prompt starting on its own after Send (it is still a link to click); account deletion and password reset; a rate limit of our own on sign-up and sign-in; the acoustic features and the recommendation first planned for Build 3. The analysis screen still shows the unsourced Build 2 reference numbers.</li>
+          <li><strong>Things learned with AI:</strong> Have a second agent with no memory of the work review it before merging: four reviews of this build produced 63 findings. The first found that a signed-in user could write made-up recordings straight to the database with the public key, so I learned the difference between a publishable key and a secret key and moved those writes to the server. Code that follows a definition word for word can still miss its purpose: the sentence-end rule matched the wording and was wrong on three of four real recordings. Check that a result can be saved before paying for it. Database changes are kept as numbered migration files and run on the development database before the live one. An image-generation script with a hard spend cap made 108 images for $1.77.</li>
+          <li><strong>What broke / changed in PRD:</strong> Review found that users could write their own records directly; now only the server can. A wrong server key would have let a recording be transcribed and paid for before the save failed; the server now checks first. Sentence-end pauses were missed wherever a filler sat at the boundary, fixed in metrics version 3. A rejected recording used up its prompt, and an image prompt counted as seen before its pictures loaded; both fixed. PRD changes: the riskiest assumption moves from accurate detection to baseline completion; Supabase Postgres replaces the planned SQLite; accounts, consent, Send or Discard and a 10-recording baseline with no numbers join the core workflow; the prompt bank for signed-in users grows from 12 to 206 in five families, with images; the acoustic features and recommendation planned for this build are put off.</li>
+          <li><strong>Cost & time this week:</strong> $1.77 (OpenRouter, 108 generated images). Nyra drawn from the $10 prepaid ($0.51 used to date); everything else free · 10–12 hours</li>
+        </ul>
+        </div>
+      </details>
       <div class="build upcoming">Build 4: Upcoming</div>
       <div class="build upcoming">Build 5: Upcoming</div>
 
       </div>
-      <div class="dock" id="research">
+      <div class="dock" id="research" hidden>
         <h2>Research Impetus</h2>
         <!-- DRAFT: Duncan writes this section -->
         <p>[Research Impetus: copy to come]</p>
