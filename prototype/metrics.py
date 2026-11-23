@@ -11,17 +11,21 @@ Shown on the results page (owner, 2026-11-15):
     so each speaker's own pause pattern shows up as a baseline.
 
 Stored with every signed-in recording (HANDOFF decisions 23, 25 and 26):
-  - pauses split by position: a sentence-end pause follows a word ending in
-    . ? or !; any other pause is mid-sentence
+  - pauses split by position: a sentence-end pause follows the end of a
+    sentence; any other pause is mid-sentence. A sentence ends at a word that
+    ends in . ? or ! in what was said, or in the service's tidied version of
+    it (the service often drops the full stop from the spoken words when a
+    filler follows). Fillers sitting at the boundary don't hide it: the pause
+    after "chimneys. [UM]" is a sentence-end pause.
   - speaking rate: non-filler words per minute, first word start to last word end
   - articulation rate: the same, with silent pauses taken out of the time
   - repetitions, cut-offs and "disfluent" words: the labels the speech service
     puts on each word. A repair is one unbroken run of such words.
   - corrections: how many the service made. Stored, never shown.
   - filled share: of all hesitations, the share that were filled with a sound.
-    A filled hesitation is one filler, together with any pause touching it.
-    A silent hesitation is a mid-sentence pause that touches no filler.
-    Stored by count and by time.
+    A filled hesitation is one filler, together with any pause touching it
+    ("uh um" is two). A silent hesitation is any pause that touches no filler,
+    mid-sentence or at a sentence end. Stored by count and by time.
   - word-list counts by form (wordlist.py)
 """
 
@@ -40,27 +44,30 @@ def is_sound(word: str) -> bool:
     return w.startswith("[") and normalize(w) not in COUNTED_FILLERS
 
 
-def labels_for(response: dict, words: list[dict]) -> list[str]:
-    """The speech service's label for each word: match, filler, repetition, cutoff, disfluent or correction.
+def entries_for(response: dict, words: list[dict]) -> list[int | None]:
+    """Which entry of the service's `alignment` list belongs to each word (None if it can't be told).
 
-    The response has an `alignment` list holding the labels. Usually each word
-    says which entry is its own (`alignment_index`). Sometimes that is missing;
-    then the words and the labelled entries are lined up by their text, and a
-    word that can't be lined up is treated as an ordinary word ("match").
+    Each entry holds the word as said (`verbatim`), the tidied word (`intended`)
+    and a label (`type`: match, filler, repetition, cutoff, disfluent, correction).
+    Usually each word says which entry is its own (`alignment_index`). Sometimes
+    that is missing; then the words and the entries are lined up by their text.
     """
     alignment = response.get("alignment") or []
     if words and all(w.get("alignment_index") is not None for w in words):
-        return [alignment[w["alignment_index"]]["type"] if w["alignment_index"] < len(alignment) else "match"
-                for w in words]
-    spoken = [a for a in alignment if a.get("verbatim") is not None]
+        return [w["alignment_index"] if w["alignment_index"] < len(alignment) else None for w in words]
+    spoken = [k for k, a in enumerate(alignment) if a.get("verbatim") is not None]
     key = lambda s: s.strip().lower()  # noqa: E731
     matcher = difflib.SequenceMatcher(None, [key(w.get("word", "")) for w in words],
-                                      [key(a["verbatim"]) for a in spoken], autojunk=False)
-    labels = ["match"] * len(words)
+                                      [key(alignment[k]["verbatim"]) for k in spoken], autojunk=False)
+    entries: list[int | None] = [None] * len(words)
     for block in matcher.get_matching_blocks():
         for k in range(block.size):
-            labels[block.a + k] = spoken[block.b + k]["type"]
-    return labels
+            entries[block.a + k] = spoken[block.b + k]
+    return entries
+
+
+def closes_sentence(text: str | None) -> bool:
+    return (text or "").strip().endswith((".", "?", "!"))
 
 
 def share(part: float, rest: float) -> float | None:
@@ -69,7 +76,9 @@ def share(part: float, rest: float) -> float | None:
 
 def compute(response: dict) -> dict:
     words = [w for w in words_from_response(response) if not is_sound(w.get("word", ""))]
-    labels = labels_for(response, words)
+    alignment = response.get("alignment") or []
+    entries = entries_for(response, words)
+    labels = [alignment[k]["type"] if k is not None else "match" for k in entries]  # unplaced = an ordinary word
     is_filler = [normalize(w.get("word", "")) in COUNTED_FILLERS for w in words]
 
     # Transcript tokens for the results page, and every pause with what sits on each side of it
@@ -92,8 +101,27 @@ def compute(response: dict) -> dict:
         return round(n / real_words * 100, 1) if real_words else 0.0
 
     # Pauses by position
+    def word_ends_sentence(i: int) -> bool:
+        """Full stop on the word as said, on its tidied version, or added by the service right after it."""
+        if closes_sentence(words[i].get("word")):
+            return True
+        k = entries[i]
+        if k is None:
+            return False
+        if closes_sentence(alignment[k].get("intended")):
+            return True
+        nxt = alignment[k + 1] if k + 1 < len(alignment) else None
+        return bool(nxt and nxt.get("verbatim") is None and closes_sentence(nxt.get("intended")))
+
     def ends_sentence(i: int) -> bool:
-        return words[i].get("word", "").strip().endswith((".", "?", "!"))
+        """Is the pause after word i at a sentence end? Looks back past fillers sitting at the boundary."""
+        while i >= 0:
+            if word_ends_sentence(i):
+                return True
+            if not is_filler[i]:
+                return False
+            i -= 1
+        return False
 
     end_pauses = [p for p in pauses if ends_sentence(p["before"])]
     mid_pauses = [p for p in pauses if not ends_sentence(p["before"])]
@@ -113,11 +141,12 @@ def compute(response: dict) -> dict:
         repairs += hit and not in_run
         in_run = hit
 
-    # Filled share: fillers (with any pause touching them) against silent mid-sentence pauses
+    # Filled share: fillers (with any pause touching them) against every pause that touches no filler
     touches_filler = [is_filler[p["before"]] or is_filler[p["after"]] for p in pauses]
-    filled_time = sum((w.get("end") or 0) - (w.get("start") or 0) for w, f in zip(words, is_filler) if f)
+    filled_time = sum(w["end"] - w["start"] for w, f in zip(words, is_filler)
+                      if f and w.get("start") is not None and w.get("end") is not None)
     filled_time += sum(p["s"] for p, t in zip(pauses, touches_filler) if t)
-    silent = [p for p, t in zip(pauses, touches_filler) if not t and not ends_sentence(p["before"])]
+    silent = [p for p, t in zip(pauses, touches_filler) if not t]
 
     return {
         "word_count": word_count,
@@ -136,7 +165,7 @@ def compute(response: dict) -> dict:
         "cutoffs": sum(lab == "cutoff" and not f for lab, f in zip(labels, is_filler)),
         "disfluent": sum(lab == "disfluent" and not f for lab, f in zip(labels, is_filler)),
         "repairs": int(repairs),
-        "corrections": sum(a.get("type") == "correction" for a in response.get("alignment") or []),
+        "corrections": sum(a.get("type") == "correction" for a in alignment),
         "filled_hesitations": fillers,
         "silent_hesitations": len(silent),
         "filled_share_count": share(fillers, len(silent)),

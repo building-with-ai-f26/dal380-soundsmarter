@@ -139,3 +139,21 @@ def test_results_baseline_is_for_the_same_family_and_mode():
     base = records.baseline_for(recs, "argue", "image")
     assert (base["fillers_per_100"], base["prep_s"]) == (6.0, 2.0)
     assert records.baseline_for(recs, "argue", "audio")["fillers_per_100"] is None  # no baseline for that mode
+
+
+def test_a_rejected_attempt_does_not_wipe_earlier_skips():
+    events = [
+        {"prompt_id": "a", "event": "skipped", "created_at": "2026-11-22T10:00:00Z"},
+        {"prompt_id": "b", "event": "served", "created_at": "2026-11-22T10:01:00Z"},
+        {"prompt_id": "b", "event": "rejected", "created_at": "2026-11-22T10:02:00Z"},
+    ]
+    assert records.skipped_before(events) == ["a"]  # the re-recorded "b" still knows "a" was skipped before it
+
+
+def test_a_rejected_prompt_can_be_served_again_until_it_is_recorded_or_skipped():
+    prompts = [{"id": "des-0", "family": "describe"}]
+    events = [{"prompt_id": "des-0", "event": "served"}, {"prompt_id": "des-0", "event": "rejected"}]
+    assert records.choose_prompt(prompts, events, [])["id"] == "des-0"
+    for finished in ("sent", "skipped", "discarded"):
+        assert records.choose_prompt(prompts, events + [{"prompt_id": "des-0", "event": finished}], []) is None
+    assert records.choose_prompt(prompts, events[:1], []) is None  # merely served: used up, as before

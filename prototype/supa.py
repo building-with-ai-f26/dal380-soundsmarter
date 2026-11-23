@@ -139,14 +139,21 @@ class Supa:
 
         Sends an empty recording, which the database always turns down because
         required fields are missing, so no row is ever created. What matters
-        is *why* it was turned down: 401 or 403 means the key is wrong, revoked
-        or not allowed to add rows (migration 003 not run).
+        is *why* it was turned down. A healthy setup gives exactly one answer:
+        "a required field is empty" (HTTP 400, Postgres code 23502). Anything
+        else (a wrong or revoked key, missing permission, an outage) stops the
+        recording here. If Supabase ever words that answer differently, every
+        recording stops until this check is updated: loud, and costs nothing.
         """
         if not self.can_write:
             raise SupaError(503, "Saving is not set up on this server.")
         r = await self._call("POST", "/rest/v1/recordings", json={}, headers={
             "apikey": self.secret, "Authorization": f"Bearer {self.secret}", "Prefer": "return=minimal"})
-        if r.status_code in (401, 403):
+        try:
+            healthy = r.status_code == 400 and r.json().get("code") == "23502"
+        except ValueError:  # not JSON at all
+            healthy = False
+        if not healthy:
             raise SupaError(503, "Saving isn't working on this server right now. Nothing was sent for analysis.")
 
     async def insert_as_server(self, table: str, row: dict) -> None:

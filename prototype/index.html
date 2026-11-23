@@ -579,11 +579,18 @@ async function fetchPrompt(family) {
   // screen appears and recording starts, so prep time runs from a visible image.
   current.imgEls = await Promise.all((current.images || []).map((im) => new Promise((resolve, reject) => {
     const el = new Image();
-    el.onload = () => resolve(el);
-    el.onerror = () => reject(new Error("A picture didn't load. Try again."));
+    const giveUp = setTimeout(() => reject(new Error("A picture took too long to load. Try again.")), 15000);
+    el.onload = () => { clearTimeout(giveUp); resolve(el); };
+    el.onerror = () => { clearTimeout(giveUp); reject(new Error("A picture didn't load. Try again.")); };
     el.alt = im.label || "Prompt picture";
     el.src = im.url;
   })));
+  // Only now does an image prompt count as seen. If a picture failed above, the
+  // prompt is not used up and can be served again.
+  if (current.confirm_served) {
+    try { await authJSON("/api/prompt-event", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt_id: current.id, event: "served" }) }); } catch (err) { /* still record */ }
+  }
 }
 
 async function startSignedIn(family) {

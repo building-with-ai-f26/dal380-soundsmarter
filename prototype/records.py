@@ -66,6 +66,18 @@ def day_start_utc(now: datetime | None = None) -> str:
     return midnight.astimezone(timezone.utc).isoformat()
 
 
+def seen_prompt_ids(events: list[dict]) -> set[str]:
+    """Prompts the user has used up. Any event counts, with one exception.
+
+    A prompt whose recording was rejected as unusable, and which the user has not
+    since recorded properly or skipped, is not used up: the user is owed another
+    go at it (decision 21), so it can be served again.
+    """
+    finished = {e["prompt_id"] for e in events if e.get("event") in ("sent",) + SKIP_EVENTS}
+    rejected = {e["prompt_id"] for e in events if e.get("event") == "rejected"}
+    return {e["prompt_id"] for e in events} - (rejected - finished)
+
+
 def choose_prompt(prompts: list[dict], events: list[dict], recordings: list[dict],
                   family: str | None = None, rng: random.Random | None = None) -> dict | None:
     """Pick the next prompt, or None if every approved prompt has been seen.
@@ -80,7 +92,7 @@ def choose_prompt(prompts: list[dict], events: list[dict], recordings: list[dict
     either order. Otherwise both are text.
     """
     rng = rng or random.Random()
-    seen = {e["prompt_id"] for e in events}
+    seen = seen_prompt_ids(events)
     unseen = [p for p in prompts if p["id"] not in seen]
     if not unseen:
         return None
@@ -169,10 +181,14 @@ def session_slot(last_recording: dict | None, now: datetime) -> tuple[int, int]:
 
 
 def skipped_before(events: list[dict]) -> list[str]:
-    """Prompt ids skipped or discarded since the user's last sent/rejected recording."""
+    """Prompt ids skipped or discarded since the user's last saved recording.
+
+    A rejected attempt saves nothing, so it doesn't clear the list: the skips made
+    before it still belong to the recording that is finally saved.
+    """
     out = []
     for e in sorted(events, key=lambda e: e["created_at"]):
-        if e["event"] in COUNTS_TOWARD_CAP:
+        if e["event"] == "sent":
             out = []
         elif e["event"] in SKIP_EVENTS:
             out.append(e["prompt_id"])

@@ -104,9 +104,10 @@ def test_repairs_are_unbroken_runs_of_labelled_words():
 
 def test_filled_share_by_count_and_by_time():
     m = compute(labelled(STORY))
-    assert (m["filled_hesitations"], m["silent_hesitations"]) == (1, 1)
-    assert m["filled_share_count"] == 0.5
-    assert m["filled_share_time"] == 0.6  # 1.5 s filled against 1.0 s silent
+    # Silent hesitations are all pauses touching no filler: the 1.0 s at the sentence end and the 1.0 s mid-sentence
+    assert (m["filled_hesitations"], m["silent_hesitations"]) == (1, 2)
+    assert m["filled_share_count"] == 0.333
+    assert m["filled_share_time"] == 0.429  # 1.5 s filled against 2.0 s silent
 
 
 def test_word_forms_are_raw_counts():
@@ -128,3 +129,26 @@ def test_labels_are_found_even_when_words_do_not_point_at_them():
     m = compute(resp)
     assert (m["repetitions"], m["cutoffs"], m["repairs"]) == (1, 2, 2)
     assert m["filled_hesitations"] == 1  # "[UM]s" is a word about fillers, not a filler
+
+
+def test_back_to_back_fillers_are_two_hesitations():
+    m = compute(response(("So", 0, 0.2), ("[UH]", 0.3, 0.5), ("[UM]", 0.6, 0.8), ("yes", 0.9, 1.0)))
+    assert m["filled_hesitations"] == 2
+
+
+def test_sentence_ends_come_from_the_tidied_text_too():
+    # The service drops the full stop from the spoken word when a filler follows,
+    # but keeps it in its tidied version: "chimneys [UM] I" / "chimneys."
+    words = [("the", 0.0, 0.2, "match"), ("chimneys", 0.2, 0.6, "match"), ("[UM]", 0.7, 1.0, "filler"),
+             ("I", 2.0, 2.2, "match"), ("saw", 2.2, 2.4, "match"), ("smoke", 3.0, 3.2, "match")]
+    resp = labelled(words)
+    assert compute(resp)["end_pauses"] == 0                      # nothing marks the sentence end yet
+    resp["alignment"][1]["intended"] = "chimneys."
+    m = compute(resp)
+    assert (m["end_pauses"], m["mid_pauses"]) == (1, 1)          # the pause after "[UM]" is at the boundary; "saw ... smoke" is not
+    # Same when the service adds the full stop as its own entry after the word
+    resp = labelled(words)
+    resp["alignment"].insert(2, {"verbatim": None, "intended": ".", "type": "correction"})
+    for w in resp["verbatim"]["words"][2:]:
+        w["alignment_index"] += 1
+    assert compute(resp)["end_pauses"] == 1

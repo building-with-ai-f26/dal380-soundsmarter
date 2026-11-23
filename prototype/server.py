@@ -43,7 +43,9 @@ STT_MODEL = NYRA_FIELDS["model"]
 MAX_AUDIO_BYTES = 2_000_000  # a 60 s recording is ~1 MB; refuse anything much bigger
 
 CONSENT_VERSION = "2026-11-21"  # bump when the consent wording on the sign-up page changes
-METRICS_VERSION = 2             # bump when a metric definition changes. 1 = fillers, rate and prep time only
+# Bump when a metric definition changes. 1 = fillers, rate and prep time only. 2 = the full set.
+# 3 = sentence ends read from the tidied text too; filled share counts every silent pause.
+METRICS_VERSION = 3
 WORD_LIST_VERSION = wordlist.VERSION  # bump (in wordlist.py) when the counted word list changes
 
 app = FastAPI()
@@ -165,7 +167,7 @@ class Refresh(BaseModel):
 
 class PromptEvent(BaseModel):
     prompt_id: str
-    event: str  # "skipped" or "discarded"
+    event: str  # "skipped", "discarded", or "served" (the page confirming an image prompt's pictures loaded)
 
 
 @app.post("/api/signup")
@@ -236,7 +238,7 @@ async def next_prompt(request: Request, family: str | None = None):
     token = bearer(request)
     user = await supa_call(supa.user(token))
     prompts = await supa_call(supa.select(token, "prompts", {"select": "id,family,mode,variant,text,stimulus_id"}))
-    events = await supa_call(supa.select(token, "prompt_events", {"select": "prompt_id"}))
+    events = await supa_call(supa.select(token, "prompt_events", {"select": "prompt_id,event"}))
     recs = await supa_call(supa.select(token, "recordings", {"select": "family,mode", "order": "created_at.asc"}))
     # A prompt whose stimulus file is missing is never served (decision 22): drop it and choose again.
     while True:
@@ -250,6 +252,10 @@ async def next_prompt(request: Request, family: str | None = None):
         prompts = [p for p in prompts if p["id"] != prompt["id"]]
     if prompt is None:
         raise HTTPException(404, "No new prompts left. More are coming.")
+    if prompt.get("images"):
+        # An image prompt counts as seen only once its pictures have loaded in the browser;
+        # the page then reports "served". If a picture fails to load, the prompt is not used up.
+        return {**prompt, "confirm_served": True}
     await supa_call(supa.insert_as_server("prompt_events", {
         "user_id": user["id"], "prompt_id": prompt["id"], "event": "served"}))
     return prompt
@@ -257,8 +263,8 @@ async def next_prompt(request: Request, family: str | None = None):
 
 @app.post("/api/prompt-event")
 async def prompt_event(request: Request, body: PromptEvent):
-    """Record a skip (during recording) or a discard (after stopping)."""
-    if body.event not in records.SKIP_EVENTS:
+    """Record a skip (during recording), a discard (after stopping), or an image prompt's pictures having loaded."""
+    if body.event not in records.SKIP_EVENTS + ("served",):
         raise HTTPException(400, "Unknown event")
     user = await supa_call(supa.user(bearer(request)))
     await supa_call(supa.insert_as_server("prompt_events", {

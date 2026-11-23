@@ -47,6 +47,7 @@ class FakeSupabase:
         self.sent_today = sent_today
         self.consented = True
         self.key_works = True
+        self.database_down = False
         self.prompts = [PROMPT]
         self.files_in_bucket = set()
         self.recordings = []
@@ -65,6 +66,8 @@ class FakeSupabase:
         if path.startswith("/storage/v1/object/public/stimuli/"):
             return httpx.Response(200 if path.rsplit("/", 1)[-1] in self.files_in_bucket else 400)
         table = path.rsplit("/", 1)[-1]
+        if request.method == "POST" and self.database_down:
+            return httpx.Response(500, text="upstream connect error")
         if request.method == "POST" and not self.key_works:
             return httpx.Response(401, json={"message": "Invalid API key"})
         if request.method == "POST" and json.loads(request.content) == {}:  # the "does the key work?" check
@@ -112,7 +115,7 @@ def test_recording_is_stored_with_metrics_and_transcription_but_no_audio(fake):
     assert row["transcription"] == NYRA
     assert row["metrics"]["total"] == 1 and "tokens" not in row["metrics"]
     assert (row["session_no"], row["position_in_session"], row["prep_from"]) == (1, 1, "reveal")
-    assert (row["metrics_version"], row["word_list_version"]) == (2, 2)
+    assert (row["metrics_version"], row["word_list_version"]) == (3, 2)
     assert row["metrics"]["speaking_rate_wpm"] and row["metrics"]["word_forms"]["tier1"]["um"] == 1
     assert not any(isinstance(v, (bytes, bytearray)) for v in row.values())
 
@@ -172,6 +175,15 @@ def test_a_broken_secret_key_stops_before_transcription(fake, monkeypatch):
     assert fake.inserted == []
 
 
+def test_a_database_outage_stops_before_transcription(fake, monkeypatch):
+    fake.database_down = True  # the key is fine, but the database can't answer properly
+
+    async def must_not_run(audio, content_type):
+        raise AssertionError("transcription ran although nothing could be saved")
+    monkeypatch.setattr(server, "send_to_nyra", must_not_run)
+    assert post_recording(TestClient(server.app)).status_code == 503
+
+
 def test_signed_out_requests_cannot_add_prompt_events(fake):
     c = TestClient(server.app)
     r = c.post("/api/prompt-event", headers={"Authorization": "Bearer nope"}, json={"prompt_id": "des-t-01", "event": "skipped"})
@@ -209,6 +221,14 @@ def test_an_image_prompt_comes_with_its_pictures_and_item_names(fake):
         {"url": "https://x.supabase.co/storage/v1/object/public/stimuli/img-arg-01-a.jpg", "label": "Cat"},
         {"url": "https://x.supabase.co/storage/v1/object/public/stimuli/img-arg-01-b.jpg", "label": "Dog"}]
     assert r.json()["credit"] == "Generated image"
+    # Not yet counted as seen: the page reports "served" once the pictures have loaded
+    assert r.json()["confirm_served"] and fake.inserted == []
+    ok = TestClient(server.app).post("/api/prompt-event", headers={"Authorization": "Bearer user-token"},
+                                     json={"prompt_id": "arg-i-01", "event": "served"})
+    assert ok.status_code == 200 and fake.inserted == [("prompt_events", {"user_id": "u1", "prompt_id": "arg-i-01", "event": "served"})]
+    bad = TestClient(server.app).post("/api/prompt-event", headers={"Authorization": "Bearer user-token"},
+                                      json={"prompt_id": "arg-i-01", "event": "sent"})
+    assert bad.status_code == 400  # the page can never claim a recording was sent
 
 
 def test_a_prompt_whose_file_is_missing_is_never_served(fake):
