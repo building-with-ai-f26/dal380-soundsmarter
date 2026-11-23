@@ -5,12 +5,17 @@
   - which prompts were skipped or discarded just before a recording
   - the daily cap window (midnight to midnight, New York time)
 
+  - whether a transcribed recording is usable at all
+
 Rules come from HANDOFF.md decisions 19-25.
 """
 
 import random
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+from fillers import words_from_response
+from metrics import is_sound
 
 NY = ZoneInfo("America/New_York")
 SESSION_GAP = timedelta(minutes=30)  # a new session starts after 30 min with no recording
@@ -19,6 +24,35 @@ BASELINE_SIZE = 10                   # first 10 recordings: no numbers shown
 FAMILIES = ("describe", "narrate", "argue", "invent", "explain")
 COUNTS_TOWARD_CAP = ("sent", "rejected")  # each one cost a transcription
 SKIP_EVENTS = ("skipped", "discarded")
+
+# Unusable audio, checked after transcription (decisions 21 and 25)
+MIN_WORDS = 15                           # fewer spoken words than this can't be measured
+MIN_WORDS_PER_S, MAX_WORDS_PER_S = 0.8, 5.0  # outside this, the transcript is implausible
+UNUSABLE_MESSAGES = {
+    "not_english": "SoundSmarter works in English only, so that recording wasn't analysed. Please record again in English.",
+    "too_few_words": "That recording had too few words to analyse. Please record again and keep talking for at least 30 seconds.",
+    "implausible_rate": "That recording couldn't be analysed reliably. Please record again.",
+}
+
+
+def unusable_reason(response: dict) -> str | None:
+    """Why a transcribed recording can't be used, or None if it can.
+
+    A rejected recording stores no row and shows no numbers. It still cost a
+    transcription, so it counts toward the daily cap (a 'rejected' event).
+    """
+    language = (response.get("language") or "").lower()
+    if language and not language.startswith("en"):  # the service detects the language itself
+        return "not_english"
+    words = [w for w in words_from_response(response) if not is_sound(w.get("word", ""))]
+    if len(words) < MIN_WORDS:
+        return "too_few_words"
+    start, end = words[0].get("start"), words[-1].get("end")
+    if start is None or end is None or end <= start:
+        return "implausible_rate"
+    if not MIN_WORDS_PER_S <= len(words) / (end - start) <= MAX_WORDS_PER_S:
+        return "implausible_rate"
+    return None
 
 
 def parse_time(s: str) -> datetime:

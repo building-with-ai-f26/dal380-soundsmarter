@@ -250,6 +250,7 @@
   <section class="screen hidden" id="s-account">
     <h1 class="ph-no-capture" id="acct-email" style="font-size:28px;margin-bottom:10px"></h1>
     <div class="acct-facts"><span class="bbox" id="acct-baseline"></span><span class="bbox" id="acct-today"></span></div>
+    <p class="english">SoundSmarter works in English only. Recordings in other languages are not analysed.</p>
     <button class="primary start" id="acct-record">Record A Response</button>
     <p class="message" id="acct-msg"></p>
     <ul class="rec-list ph-no-capture" id="acct-list"></ul>
@@ -279,6 +280,14 @@
     <div class="rec-actions">
       <button id="stop" disabled>Stop</button>
       <button class="linklike" id="skip">Skip this prompt</button>
+    </div>
+  </section>
+
+  <!-- UNUSABLE (signed-in): too quiet, clipping, too short, or not English. Nothing is stored. -->
+  <section class="screen hidden" id="s-unusable">
+    <p class="prompt" id="unusable-msg"></p>
+    <div class="review-actions">
+      <button class="primary" id="rerecord">Record Again</button>
     </div>
   </section>
 
@@ -622,11 +631,53 @@ async function onStopped(r) {
   if (audioUrl) URL.revokeObjectURL(audioUrl);
   audioUrl = URL.createObjectURL(lastBlob);  // playback stays in the browser
   if (signedIn()) {  // nothing is sent until the user chooses Send
+    // Unusable before upload (decision 21): nothing is sent, and it doesn't count toward the daily cap
+    const problem = await levelProblem(lastBlob);
+    if (problem) {
+      track("recording_unusable", { stage: "before_upload", reason: problem });
+      return showUnusable(problem === "silent"
+        ? "That recording was too quiet to use. Check your microphone, then record again."
+        : "That recording was too loud and distorted to use. Move back from the microphone, then record again.");
+    }
     $("review-prompt").textContent = current.text || headerFor(current);
     show("s-review");
     return;
   }
   analyse(lastBlob, lastMime, lastSeconds, null);
+}
+
+// Sound-level check in the browser, before anything is sent. Returns "silent",
+// "clipping" or null. Thresholds (owner, 2026-11-22): 85% or more of the recording
+// near-silent, or more than 1% of it at full scale. If the browser can't read
+// the audio back, the check is skipped and the server's checks still apply.
+const QUIET_RMS = 0.005, QUIET_SHARE = 0.85, CLIP_LEVEL = 0.99, CLIP_SHARE = 0.01;
+async function levelProblem(blob) {
+  let ctx;
+  try {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const audio = await ctx.decodeAudioData(await blob.arrayBuffer());
+    const x = audio.getChannelData(0);
+    const frame = Math.round(audio.sampleRate * 0.05);  // 50 ms pieces
+    let frames = 0, quiet = 0, clipped = 0;
+    for (let i = 0; i + frame <= x.length; i += frame) {
+      let sum = 0;
+      for (let j = i; j < i + frame; j++) { sum += x[j] * x[j]; if (Math.abs(x[j]) >= CLIP_LEVEL) clipped++; }
+      frames++;
+      if (Math.sqrt(sum / frame) < QUIET_RMS) quiet++;
+    }
+    if (!frames) return null;
+    if (quiet / frames >= QUIET_SHARE) return "silent";
+    if (clipped / (frames * frame) > CLIP_SHARE) return "clipping";
+    return null;
+  } catch { return null; }
+  finally { if (ctx) ctx.close(); }
+}
+
+// Unusable recording: a message and one button that records the same prompt again
+function showUnusable(message) {
+  clearInterval(waitTimer);
+  $("unusable-msg").textContent = message;
+  show("s-unusable");
 }
 
 // Send one recording. Signed-in users may move on before it comes back.
@@ -643,6 +694,12 @@ async function analyse(blob, mimeType, seconds, prompt) {
     else resp = await fetch("/transcribe", { method: "POST", headers: { ...headers, "X-Access-Code": CODE }, body: blob });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.detail || resp.status);
+    if (data.rejected) {  // unusable after transcription: nothing stored, no numbers
+      track("recording_unusable", { stage: "after_transcription", reason: data.reason });
+      if (movedOn) { bgNote("Previous response wasn't saved. " + data.message); return; }
+      current = prompt;  // record the same prompt again
+      return showUnusable(data.message);
+    }
     if (takesLeft !== null) takesLeft -= 1;
     if (prompt) baselineLeft = Math.max(0, data.baseline_size - data.recordings);
     track("analysis_done", { fillers: data.total, um: data.breakdown.um, uh: data.breakdown.uh, seconds,
@@ -817,6 +874,9 @@ $("su-to-signin").onclick = () => show("s-signin");
 $("si-to-signup").onclick = () => show("s-signup");
 $("to-account").onclick = () => { $("audio").pause(); dropTake(); showAccount(); };
 $("acct-record").onclick = () => { bgNote(""); startSignedIn(); };
+$("rerecord").onclick = async () => {
+  try { await startTake(); } catch (err) { await showAccount(); $("acct-msg").textContent = "Error: " + err.message; }
+};
 $("signout").onclick = () => { track("signed_out"); signOut(""); };
 
 // Start: signed-in users go straight to their account; everyone else sees the landing page

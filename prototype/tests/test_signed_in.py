@@ -24,9 +24,19 @@ IMAGE_PROMPT = {"id": "arg-i-01", "family": "argue", "mode": "image", "variant":
                 "stimulus_id": "img-arg-01", "text": ""}
 STIMULUS = {"id": "img-arg-01", "kind": "pair", "files": ["img-arg-01-a.jpg", "img-arg-01-b.jpg"],
             "title": "Cat | Dog", "credit": "Generated image"}
-NYRA = {"language": "en", "verbatim": {"text": "um a kitchen", "words": [
-    {"word": "[UM]", "start": 1.0, "end": 1.3}, {"word": " a", "start": 1.4, "end": 1.5},
-    {"word": " kitchen.", "start": 1.5, "end": 2.0}]}}
+
+
+def transcription(text: str, seconds: float, language: str = "en") -> dict:
+    """A speech-service response for `text`, its words spread evenly over `seconds` (starting at 1 s)."""
+    words = text.split()
+    step = seconds / len(words)
+    return {"language": language, "verbatim": {"text": text, "words": [
+        {"word": (" " if i else "") + w, "start": round(1 + i * step, 2), "end": round(1 + (i + 0.8) * step, 2)}
+        for i, w in enumerate(words)]}}
+
+
+# One filler and 16 other words over 8 seconds: a usable recording
+NYRA = transcription("[UM] the kitchen in the house I grew up in was small and yellow and always warm", 8)
 
 
 class FakeSupabase:
@@ -206,3 +216,37 @@ def test_a_prompt_whose_file_is_missing_is_never_served(fake):
         assert [row["prompt_id"] for _, row in fake.inserted] == ["des-t-01"]  # the image prompt isn't marked as seen
     fake.prompts = [IMAGE_PROMPT]
     assert TestClient(server.app).get("/api/prompt", headers={"Authorization": "Bearer user-token"}).status_code == 404
+
+
+def rejected(fake, monkeypatch, response):
+    """Send a recording whose transcription comes back as `response`; return the server's answer."""
+    async def fake_nyra(audio, content_type):
+        return response
+    monkeypatch.setattr(server, "send_to_nyra", fake_nyra)
+    r = post_recording(TestClient(server.app))
+    assert r.status_code == 200
+    return r.json()
+
+
+def test_unusable_recordings_store_no_row_and_count_toward_the_cap(fake, monkeypatch):
+    cases = {
+        "too_few_words": transcription("[UM] a kitchen I think", 3),
+        "not_english": transcription(NYRA["verbatim"]["text"], 8, language="de"),
+        "implausible_rate": transcription(NYRA["verbatim"]["text"], 1),    # 17 words in one second
+    }
+    for reason, response in cases.items():
+        fake.inserted.clear()
+        body = rejected(fake, monkeypatch, response)
+        assert body["rejected"] and body["reason"] == reason and body["message"]
+        assert "total" not in body and "fillers_per_100" not in body          # no numbers
+        assert [(t, row["event"]) for t, row in fake.inserted] == [("prompt_events", "rejected")]  # no recordings row
+        assert "rejected" in server.records.COUNTS_TOWARD_CAP
+
+
+def test_a_slow_but_real_recording_is_not_rejected(fake, monkeypatch):
+    body = rejected(fake, monkeypatch, transcription(NYRA["verbatim"]["text"], 20))  # 17 words in 20 s = 0.85 a second
+    assert body.get("saved") and not body.get("rejected")
+
+
+def test_transcription_is_not_forced_to_english():
+    assert "language" not in server.NYRA_FIELDS

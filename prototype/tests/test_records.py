@@ -87,3 +87,14 @@ def test_skipped_before_resets_at_each_recording():
 def test_day_starts_at_new_york_midnight():
     late = datetime(2026, 11, 22, 3, 0, tzinfo=timezone.utc)  # 10pm on the 21st in New York
     assert records.day_start_utc(late) == "2026-11-21T05:00:00+00:00"
+
+
+def test_real_recordings_from_test_c_are_usable():
+    import json
+    folder = Path(__file__).parent.parent.parent / "experiments" / "stt-compare" / "results" / "crisper"
+    files = sorted(folder.glob("*.json"))
+    if not files:  # the owner's own recordings; kept out of git, so absent on a fresh copy
+        import pytest
+        pytest.skip("no local test C results")
+    for f in files:
+        assert records.unusable_reason(json.loads(f.read_text())) is None, f.name

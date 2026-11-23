@@ -35,7 +35,9 @@ load_dotenv(HERE.parent / ".env")  # repo-root .env (local only; online, the hos
 # CrisperWhisper 2 keeps fillers, repeats and cut-offs (test C: caught 18/18
 # hand-counted fillers vs. Deepgram Nova-2's 13). $0.90 per audio hour.
 NYRA_URL = "https://api.nyra-labs.com/v1/audio/transcriptions"
-NYRA_FIELDS = {"model": "crisperwhisper-v2", "language": "en"}
+# No "language" field: the service detects the language itself, and a recording
+# it hears as non-English is rejected for signed-in users (decision 25).
+NYRA_FIELDS = {"model": "crisperwhisper-v2"}
 STT_MODEL = NYRA_FIELDS["model"]
 MAX_AUDIO_BYTES = 2_000_000  # a 60 s recording is ~1 MB; refuse anything much bigger
 
@@ -302,6 +304,14 @@ async def transcribe_signed_in(request: Request):
     if not audio:
         raise HTTPException(400, "No audio received")
     data = await send_to_nyra(audio, request.headers.get("content-type", "audio/webm"))
+
+    # Unusable audio (decision 21): no row, no numbers, a re-record message. It
+    # cost a transcription, so the 'rejected' event counts toward the daily cap.
+    reason = records.unusable_reason(data)
+    if reason:
+        await supa_call(supa.insert_as_server("prompt_events", {
+            "user_id": user["id"], "prompt_id": prompt["id"], "event": "rejected"}))
+        return {"rejected": True, "reason": reason, "message": records.UNUSABLE_MESSAGES[reason]}
     shown = results(data)
 
     now = datetime.now(timezone.utc)
