@@ -147,6 +147,14 @@
   .english { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
   .error { color: #b00020; }
   .acct-facts { display: flex; gap: 16px; flex-wrap: wrap; margin: 6px 0 30px; }
+  /* baseline and trends: one table, family and mode down the side (scrolls sideways on a phone) */
+  .base-wrap { overflow-x: auto; margin-top: 30px; }
+  .base-table { border-collapse: collapse; width: 100%; font-size: 15px; white-space: nowrap; }
+  .base-table th, .base-table td { text-align: left; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--rule); }
+  .base-table thead th { border-bottom: 1px solid var(--ink); font-weight: 700; }
+  .base-table .since { color: var(--purple); }
+  .base-note { font-size: 13px; color: var(--grey); margin-top: 8px; }
+  .vs-base { color: var(--grey); font-weight: 400; }
   .rec-list { list-style: none; margin-top: 30px; border-top: 1px solid var(--ink); }
   .rec-list li { padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 16px; }
   .rec-list .when { font-weight: 700; margin-right: 8px; }
@@ -253,6 +261,14 @@
     <p class="english">SoundSmarter works in English only. Recordings in other languages are not analysed.</p>
     <button class="primary start" id="acct-record">Record A Response</button>
     <p class="message" id="acct-msg"></p>
+    <div class="base-wrap hidden" id="base-wrap">
+      <table class="base-table">
+        <thead><tr><th></th><th>Fillers per 100 words</th><th>Filled share</th><th>Mid-sentence pauses per 100 words</th>
+          <th>Speaking rate</th><th>Prep time</th></tr></thead>
+        <tbody id="base-rows"></tbody>
+      </table>
+      <p class="base-note">Each cell: baseline, then <span class="since">the average since</span> and how many recordings are in it. A dash means no number yet.</p>
+    </div>
     <ul class="rec-list ph-no-capture" id="acct-list"></ul>
     <p class="results-actions"><button class="linklike" id="signout">Sign out</button></p>
   </section>
@@ -484,6 +500,40 @@ $("signin-form").onsubmit = async (e) => {
 const FAMILY_NAMES = { describe: "Describe", narrate: "Narrate", argue: "Argue", invent: "Invent", explain: "Explain" };
 const fmtDate = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
 
+// How each compared number is written, on the Account table and the results page
+const COMPARED = [
+  ["fillers_per_100", (v) => v.toFixed(1)],
+  ["filled_share_count", (v) => Math.round(v * 100) + "%"],
+  ["mid_pauses_per_100", (v) => v.toFixed(1)],
+  ["speaking_rate_wpm", (v) => Math.round(v) + " wpm"],
+  ["prep_s", (v) => v.toFixed(1) + " s"],
+];
+const shown = (fmt, v) => (v === null || v === undefined ? "\u2013" : fmt(v));
+
+// Baseline and trends (after the 10th recording): rows are family and mode
+async function fillBaselineTable(ready) {
+  $("base-wrap").classList.add("hidden");
+  if (!ready) return;
+  const { rows } = await authJSON("/api/baseline");
+  if (!rows.length) return;
+  $("base-rows").replaceChildren(...rows.map((row) => {
+    const tr = document.createElement("tr");
+    const name = document.createElement("th");
+    name.textContent = `${FAMILY_NAMES[row.family] || row.family} \u00b7 ${row.mode}`;
+    tr.append(name);
+    for (const [metric, fmt] of COMPARED) {
+      const cell = row.cells[metric], td = document.createElement("td");
+      const since = document.createElement("span");
+      since.className = "since";
+      since.textContent = ` \u2192 ${cell.n ? `${shown(fmt, cell.since)} (${cell.n})` : "\u2013"}`;
+      td.append(shown(fmt, cell.baseline), since);
+      tr.append(td);
+    }
+    return tr;
+  }));
+  $("base-wrap").classList.remove("hidden");
+}
+
 async function showAccount() {
   show("s-account");
   $("acct-msg").textContent = "";
@@ -497,6 +547,7 @@ async function showAccount() {
     $("acct-today").textContent = `Today: ${me.today} of ${me.daily_cap}`;
     $("acct-record").disabled = me.today >= me.daily_cap;
     if (me.today >= me.daily_cap) $("acct-msg").textContent = `That's today's ${me.daily_cap} recordings. More tomorrow.`;
+    await fillBaselineTable(baselineLeft === 0);
     const list = $("acct-list");
     list.textContent = "";
     for (const r of await authJSON("/api/recordings")) {
@@ -755,6 +806,15 @@ function fillResults(data, inBaseline) {
   $("uhs").textContent = plural(data.breakdown.uh, "Uh");
   $("rate").textContent = `${data.fillers_per_100.toFixed(1)} fillers per 100 words`;
   $("prep").textContent = data.prep_s === null ? "No speech detected" : `${data.prep_s.toFixed(1)} seconds prep time`;
+  // From the 11th recording: the user's own baseline for this family and mode, beside each number that has one
+  const base = data.baseline || {};
+  for (const [id, metric, fmt] of [["rate", "fillers_per_100", (v) => v.toFixed(1)], ["prep", "prep_s", (v) => v.toFixed(1) + " s"]]) {
+    if (base[metric] === null || base[metric] === undefined) continue;
+    const span = document.createElement("span");
+    span.className = "vs-base";
+    span.textContent = ` \u00b7 baseline ${fmt(base[metric])}`;
+    $(id).append(span);
+  }
   $("word-count").textContent = inBaseline ? "Transcription" : `Transcription (${plural(data.word_count, "word")})`;
 
   // Transcript: fillers highlighted yellow, silent pauses as blue duration chips

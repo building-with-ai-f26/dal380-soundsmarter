@@ -285,6 +285,15 @@ async def my_recordings(request: Request):
     } for r in recs]
 
 
+@app.get("/api/baseline")
+async def my_baseline(request: Request):
+    """The Account page table: baseline and average since, by family and mode. Empty until the 10th recording."""
+    token = bearer(request)
+    recs = await supa_call(supa.select(token, "recordings", {
+        "select": "family,mode,metrics", "order": "created_at.asc"}))
+    return {"rows": records.baseline_table(recs)}
+
+
 async def transcribe_signed_in(request: Request):
     token = bearer(request)
     user = await supa_call(supa.user(token))  # rejects a bad or expired token before any cost
@@ -335,5 +344,8 @@ async def transcribe_signed_in(request: Request):
         "metrics_version": METRICS_VERSION, "word_list_version": WORD_LIST_VERSION,
         "transcription": data, "stt_model": STT_MODEL, "language": data.get("language"),
     }))
-    count = len(await supa_call(supa.select(token, "recordings", {"select": "id"})))
-    return {**shown, "saved": True, "recordings": count, "baseline_size": records.BASELINE_SIZE}
+    recs = await supa_call(supa.select(token, "recordings", {
+        "select": "family,mode,metrics", "order": "created_at.asc"}))
+    return {**shown, "saved": True, "recordings": len(recs), "baseline_size": records.BASELINE_SIZE,
+            # from the 11th recording on: the user's own baseline for this family and mode
+            "baseline": records.baseline_for(recs, prompt["family"], prompt["mode"])}

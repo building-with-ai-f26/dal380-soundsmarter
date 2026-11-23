@@ -49,6 +49,7 @@ class FakeSupabase:
         self.key_works = True
         self.prompts = [PROMPT]
         self.files_in_bucket = set()
+        self.recordings = []
 
     def __call__(self, request: httpx.Request) -> httpx.Response:
         self.calls.append(request)
@@ -75,6 +76,8 @@ class FakeSupabase:
             return httpx.Response(200, json=[{"id": 1}] if self.consented else [])
         if table == "prompts":
             return httpx.Response(200, json=self.prompts)
+        if table == "recordings" and "metrics" in q.get("select", ""):
+            return httpx.Response(200, json=self.recordings)
         if table == "stimuli":
             return httpx.Response(200, json=[STIMULUS])
         if table == "prompt_events" and "event" in q:  # the daily-cap count
@@ -252,3 +255,27 @@ def test_a_slow_but_real_recording_is_not_rejected(fake, monkeypatch):
 
 def test_transcription_is_not_forced_to_english():
     assert "language" not in server.NYRA_FIELDS
+
+
+def eleven_recordings():
+    old = [{"family": "describe", "mode": "text", "metrics": {"fillers_per_100": 4.0, "prep_s": 2.0}}] * 10
+    return old + [{"family": "describe", "mode": "text", "metrics": {"fillers_per_100": 1.0, "prep_s": 1.0}}]
+
+
+def test_from_the_eleventh_recording_results_carry_the_users_baseline(fake):
+    fake.recordings = eleven_recordings()[:10]  # this one is the 10th: still baseline, no comparison
+    assert post_recording(TestClient(server.app)).json()["baseline"] is None
+    fake.recordings = eleven_recordings()
+    body = post_recording(TestClient(server.app)).json()
+    assert (body["baseline"]["fillers_per_100"], body["baseline"]["prep_s"]) == (4.0, 2.0)
+
+
+def test_baseline_table_endpoint(fake):
+    c, auth = TestClient(server.app), {"Authorization": "Bearer user-token"}
+    fake.recordings = eleven_recordings()[:9]
+    assert c.get("/api/baseline", headers=auth).json() == {"rows": []}
+    fake.recordings = eleven_recordings()
+    rows = c.get("/api/baseline", headers=auth).json()["rows"]
+    assert [(r["family"], r["mode"]) for r in rows] == [("describe", "text")]
+    assert rows[0]["cells"]["fillers_per_100"] == {"baseline": 4.0, "since": 1.0, "n": 1}
+    assert c.get("/api/baseline").status_code == 401

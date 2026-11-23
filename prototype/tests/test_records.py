@@ -98,3 +98,44 @@ def test_real_recordings_from_test_c_are_usable():
         pytest.skip("no local test C results")
     for f in files:
         assert records.unusable_reason(json.loads(f.read_text())) is None, f.name
+
+
+def rec(family, mode, **metrics):
+    return {"family": family, "mode": mode, "metrics": metrics}
+
+
+def ten_baseline_recordings():
+    """2 per family; describe and argue get one text and one image."""
+    recs = []
+    for f in records.FAMILIES:
+        second = "image" if f in ("describe", "argue") else "text"
+        recs += [rec(f, "text", fillers_per_100=4.0, prep_s=1.0, speaking_rate_wpm=120.0),
+                 rec(f, second, fillers_per_100=6.0, prep_s=2.0, speaking_rate_wpm=140.0)]
+    return recs
+
+
+def test_no_table_until_the_baseline_is_complete():
+    assert records.baseline_table(ten_baseline_recordings()[:9]) == []
+    assert records.baseline_for(ten_baseline_recordings(), "describe", "text") is None  # the 10th shows no numbers
+
+
+def test_table_rows_are_family_and_mode_with_baseline_then_average_since():
+    recs = ten_baseline_recordings() + [
+        rec("describe", "text", fillers_per_100=2.0, prep_s=0.5, speaking_rate_wpm=130.0),
+        rec("describe", "text", fillers_per_100=3.0, prep_s=1.5, speaking_rate_wpm=150.0),
+        rec("narrate", "text", fillers_per_100=1.0, prep_s=1.0),  # stored before metrics v2: no speaking rate
+    ]
+    rows = {(r["family"], r["mode"]): r["cells"] for r in records.baseline_table(recs)}
+    assert list(rows)[:3] == [("describe", "text"), ("describe", "image"), ("narrate", "text")]
+    assert rows[("describe", "text")]["fillers_per_100"] == {"baseline": 4.0, "since": 2.5, "n": 2}
+    assert rows[("describe", "image")]["fillers_per_100"] == {"baseline": 6.0, "since": None, "n": 0}
+    assert rows[("narrate", "text")]["fillers_per_100"] == {"baseline": 5.0, "since": 1.0, "n": 1}  # two text baselines averaged
+    assert rows[("narrate", "text")]["speaking_rate_wpm"] == {"baseline": 130.0, "since": None, "n": 0}
+    assert rows[("describe", "text")]["filled_share_count"] == {"baseline": None, "since": None, "n": 0}  # never stored
+
+
+def test_results_baseline_is_for_the_same_family_and_mode():
+    recs = ten_baseline_recordings() + [rec("argue", "image", fillers_per_100=9.0, prep_s=3.0)]
+    base = records.baseline_for(recs, "argue", "image")
+    assert (base["fillers_per_100"], base["prep_s"]) == (6.0, 2.0)
+    assert records.baseline_for(recs, "argue", "audio")["fillers_per_100"] is None  # no baseline for that mode
