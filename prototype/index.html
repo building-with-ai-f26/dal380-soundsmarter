@@ -463,9 +463,17 @@ async function authJSON(url, opts) {
   return data;
 }
 
+// Empty the sign-up and sign-in forms, so a typed password never stays on the page:
+// without this, signing out showed the sign-in form still filled in, ready to submit.
+function clearAuthForms() {
+  $("signup-form").reset();
+  $("signin-form").reset();
+}
+
 function signOut(message) {
   saveSession(null);
   current = null;
+  clearAuthForms();
   show("s-signin");
   $("si-error").textContent = message || "";
 }
@@ -481,6 +489,7 @@ $("signup-form").onsubmit = async (e) => {
       signup_code: $("su-code").value, consent: true,
     }));
     track("account_created");
+    clearAuthForms();
     await showAccount();
   } catch (err) { $("su-error").textContent = err.message; }
   $("su-submit").disabled = false;
@@ -493,6 +502,7 @@ $("signin-form").onsubmit = async (e) => {
   try {
     saveSession(await postJSON("/api/signin", { email: $("si-email").value, password: $("si-password").value }));
     track("signed_in");
+    clearAuthForms();
     await showAccount();
   } catch (err) { $("si-error").textContent = err.message; }
   $("si-submit").disabled = false;
