@@ -591,6 +591,8 @@ async function fetchPrompt(family) {
   if (current.confirm_served) {
     try { await authJSON("/api/prompt-event", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt_id: current.id, event: "served" }) }); } catch (err) { /* still record */ }
+    // If that call found the user signed out, the page is already on the sign-in screen: stop here
+    if (!signedIn()) throw new Error("Signed out");
   }
 }
 

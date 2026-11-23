@@ -67,6 +67,8 @@ class FakeSupabase:
             return httpx.Response(200 if path.rsplit("/", 1)[-1] in self.files_in_bucket else 400)
         table = path.rsplit("/", 1)[-1]
         if request.method == "POST" and self.database_down:
+            if isinstance(self.database_down, tuple):  # (status, body): an odd but well-formed answer
+                return httpx.Response(self.database_down[0], json=self.database_down[1])
             return httpx.Response(500, text="upstream connect error")
         if request.method == "POST" and not self.key_works:
             return httpx.Response(401, json={"message": "Invalid API key"})
@@ -182,6 +184,10 @@ def test_a_database_outage_stops_before_transcription(fake, monkeypatch):
         raise AssertionError("transcription ran although nothing could be saved")
     monkeypatch.setattr(server, "send_to_nyra", must_not_run)
     assert post_recording(TestClient(server.app)).status_code == 503
+    # Well-formed answers that are not the healthy one also stop it: a list, "no permission", an unexpected success
+    for status, body in [(400, ["not", "an", "object"]), (400, {"code": "42501"}), (200, {})]:
+        fake.database_down = (status, body)
+        assert post_recording(TestClient(server.app)).status_code == 503
 
 
 def test_signed_out_requests_cannot_add_prompt_events(fake):

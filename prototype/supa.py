@@ -150,9 +150,10 @@ class Supa:
         r = await self._call("POST", "/rest/v1/recordings", json={}, headers={
             "apikey": self.secret, "Authorization": f"Bearer {self.secret}", "Prefer": "return=minimal"})
         try:
-            healthy = r.status_code == 400 and r.json().get("code") == "23502"
+            body = r.json()
         except ValueError:  # not JSON at all
-            healthy = False
+            body = None
+        healthy = r.status_code == 400 and isinstance(body, dict) and body.get("code") == "23502"
         if not healthy:
             raise SupaError(503, "Saving isn't working on this server right now. Nothing was sent for analysis.")
 
