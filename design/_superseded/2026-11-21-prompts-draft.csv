@@ -1,0 +1,61 @@
+id,family,task,mode,openness,beats,words_on_screen,text,status
+rec-01,recount-2,personal recount,text,guided,2,20,Tell the story of a trip that did not go to plan. Say what went wrong and how it ended.,draft
+rec-02,recount-2,personal recount,text,guided,2,24,Tell the story of the first day at a new job or school. Say what happened first and what stood out by the end.,draft
+rec-03,recount-2,personal recount,text,guided,2,17,Tell the story of a meal that turned out badly. Say who was there and what happened.,draft
+rec-04,recount-2,personal recount,text,guided,2,21,Tell the story of the last time something important got lost. Say how it went missing and whether it turned up.,draft
+rec-05,recount-2,personal recount,text,guided,2,17,Tell the story of getting lost somewhere unfamiliar. Say how it happened and how it was resolved.,draft
+rec-06,recount-2,personal recount,text,guided,2,20,Tell the story of a time a stranger helped out. Say what the situation was and what the stranger did.,draft
+rec-07,recount-2,personal recount,text,guided,2,22,Tell the story of the best live event ever attended. Say what led up to it and the moment that stood out.,draft
+rec-08,recount-2,personal recount,text,guided,2,21,Tell the story of learning to drive or ride a bike. Say who taught it and one thing that went wrong.,draft
+rec-09,recount-2,personal recount,text,guided,2,15,Tell the story of a memorable birthday. Say what was planned and what actually happened.,draft
+rec-10,recount-2,personal recount,text,guided,2,20,Tell the story of a time the weather changed a plan. Say what the plan was and what happened instead.,draft
+rec-11,recount-2,personal recount,text,guided,2,22,Tell the story of moving into a new home. Say what the first day was like and one problem that came up.,draft
+rec-12,recount-2,personal recount,text,guided,2,23,Tell the story of a game or competition that came down to the end. Say what was at stake and how it finished.,draft
+rec-13,recount-2,personal recount,text,guided,2,25,Tell the story of the last time a piece of technology failed at a bad moment. Say what was happening and how it got fixed.,draft
+rec-14,recount-2,personal recount,text,guided,2,20,Tell the story of meeting someone who later became important. Say where it happened and what the first impression was.,draft
+rec-15,recount-2,personal recount,text,guided,2,23,Tell the story of a time a small mistake caused a bigger problem. Say what the mistake was and how it played out.,draft
+pro-01,procedure-2,procedure,text,guided,2,21,Explain how to make a favorite breakfast. Give the steps in order and name the step people most often get wrong.,draft
+pro-02,procedure-2,procedure,text,guided,2,22,Explain how to pack for a week-long trip. Give the steps in order and name the step people most often get wrong.,draft
+pro-03,procedure-2,procedure,text,guided,2,25,Explain how to get from home to the nearest grocery store. Give the steps in order and name the step people most often get wrong.,draft
+pro-04,procedure-2,procedure,text,guided,2,23,Explain how to teach a child to tie shoelaces. Give the steps in order and name the step people most often get wrong.,draft
+pro-05,procedure-2,procedure,text,guided,2,22,Explain how to set up a new phone. Give the steps in order and name the step people most often get wrong.,draft
+pro-06,procedure-2,procedure,text,guided,2,25,Explain how to make a good cup of coffee or tea. Give the steps in order and name the step people most often get wrong.,draft
+pro-07,procedure-2,procedure,text,guided,2,22,Explain how to get through airport security quickly. Give the steps in order and name the step people most often get wrong.,draft
+pro-08,procedure-2,procedure,text,guided,2,22,Explain how to wash a load of laundry. Give the steps in order and name the step people most often get wrong.,draft
+pro-09,procedure-2,procedure,text,guided,2,23,Explain how to plan a dinner for six people. Give the steps in order and name the step people most often get wrong.,draft
+pro-10,procedure-2,procedure,text,guided,2,20,Explain how to wrap a gift. Give the steps in order and name the step people most often get wrong.,draft
+pro-11,procedure-2,procedure,text,guided,2,25,Explain how to find a good restaurant in an unfamiliar city. Give the steps in order and name the step people most often get wrong.,draft
+pro-12,procedure-2,procedure,text,guided,2,22,Explain how to prepare for a job interview. Give the steps in order and name the step people most often get wrong.,draft
+pro-13,procedure-2,procedure,text,guided,2,24,Explain how to play a simple card or board game. Give the steps in order and name the step people most often get wrong.,draft
+pro-14,procedure-2,procedure,text,guided,2,24,Explain how to clean a kitchen after a big meal. Give the steps in order and name the step people most often get wrong.,draft
+pro-15,procedure-2,procedure,text,guided,2,23,Explain how to host a guest for a weekend. Give the steps in order and name the step people most often get wrong.,draft
+opi-01,opinion-2,opinion,text,open,2,18,Argue for or against: Remote work is better than office work. Take one side and give two reasons.,draft
+opi-02,opinion-2,opinion,text,open,2,18,Argue for or against: Every child should learn a musical instrument. Take one side and give two reasons.,draft
+opi-03,opinion-2,opinion,text,open,2,19,Argue for or against: Tipping should be replaced by higher menu prices. Take one side and give two reasons.,draft
+opi-04,opinion-2,opinion,text,open,2,18,Argue for or against: Books are better than their film versions. Take one side and give two reasons.,draft
+opi-05,opinion-2,opinion,text,open,2,20,Argue for or against: Cities are better places to live than small towns. Take one side and give two reasons.,draft
+opi-06,opinion-2,opinion,text,open,2,19,Argue for or against: Phones should be banned at the dinner table. Take one side and give two reasons.,draft
+opi-07,opinion-2,opinion,text,open,2,17,Argue for or against: Homework does more harm than good. Take one side and give two reasons.,draft
+opi-08,opinion-2,opinion,text,open,2,20,Argue for or against: Breakfast is the most important meal of the day. Take one side and give two reasons.,draft
+opi-09,opinion-2,opinion,text,open,2,16,Argue for or against: Winter is better than summer. Take one side and give two reasons.,draft
+opi-10,opinion-2,opinion,text,open,2,16,Argue for or against: Everyone should learn to cook. Take one side and give two reasons.,draft
+opi-11,opinion-2,opinion,text,open,2,20,Argue for or against: A four-day work week would be better than five. Take one side and give two reasons.,draft
+opi-12,opinion-2,opinion,text,open,2,17,Argue for or against: Dogs make better pets than cats. Take one side and give two reasons.,draft
+opi-13,opinion-2,opinion,text,open,2,16,Argue for or against: Streaming has made music better. Take one side and give two reasons.,draft
+opi-14,opinion-2,opinion,text,open,2,20,Argue for or against: It is better to be early than on time. Take one side and give two reasons.,draft
+opi-15,opinion-2,opinion,text,open,2,19,Argue for or against: Travel is better alone than in a group. Take one side and give two reasons.,draft
+inv-01,continue-1,invention,text,open,1,13,"Continue this story: The train stopped between stations, and the lights went out.",draft
+inv-02,continue-1,invention,text,open,1,17,"Continue this story: Nobody had opened the shop on the corner for ten years, until this morning.",draft
+inv-03,continue-1,invention,text,open,1,17,Continue this story: The dog came home carrying a wallet that belonged to nobody in the house.,draft
+inv-04,continue-1,invention,text,open,1,11,Continue this story: At midnight the neighbor's piano started playing again.,draft
+inv-05,continue-1,invention,text,open,1,14,Continue this story: The letter was addressed to someone who had never lived there.,draft
+inv-06,continue-1,invention,text,open,1,17,"Continue this story: Halfway up the mountain, the guide admitted he had never been this way before.",draft
+inv-07,continue-1,invention,text,open,1,16,"Continue this story: The power came back on, but only in one house on the street.",draft
+inv-08,continue-1,invention,text,open,1,15,Continue this story: She found the key taped under the desk on her first day.,draft
+inv-09,continue-1,invention,text,open,1,13,"Continue this story: The ferry left on time, with one passenger too many.",draft
+inv-10,continue-1,invention,text,open,1,12,Continue this story: Every clock in the town showed a different time.,draft
+inv-11,continue-1,invention,text,open,1,12,Continue this story: The chef tasted the soup and went very quiet.,draft
+inv-12,continue-1,invention,text,open,1,10,Continue this story: The lost suitcase arrived three years late.,draft
+inv-13,continue-1,invention,text,open,1,15,Continue this story: The elevator opened onto a floor that was not on the panel.,draft
+inv-14,continue-1,invention,text,open,1,18,"Continue this story: On the last day of school, the teacher handed back a test nobody remembered taking.",draft
+inv-15,continue-1,invention,text,open,1,12,Continue this story: The new tenant paid a year's rent in coins.,draft

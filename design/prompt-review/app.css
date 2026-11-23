@@ -1,0 +1,58 @@
+/* app.css — Duncan's browser-app style, v1 (2026-11-20). From skills/browser-app-style.
+   A starting point: once copied into an app, this file belongs to that app and may be adjusted there. */
+
+/* ---- page ---- */
+* { font-family: "Times New Roman", Times, serif; }
+body { font-size: 18px; line-height: 1.4; color: #000; background: #fff;
+       margin: 1.5em auto; max-width: 90em; padding: 0 1em; }
+body.narrow { max-width: 60em; }           /* reading pages: one column of long rows */
+a { color: #000; text-decoration: underline; }
+a:hover { text-decoration: none; }
+ul { list-style: none; margin: 0; padding: 0; }
+li { margin: .3em 0; }
+
+/* ---- strip: the one-line status header ---- */
+.strip { border-bottom: 2px solid #000; padding-bottom: .5em; margin-bottom: 1em; }
+.strip b { margin-right: 1.5em; }
+.strip a { font-weight: bold; margin-right: 1.5em; }
+.strip div { margin-top: .2em; }
+
+/* ---- boxes and columns ---- */
+.box { border: 2px solid #000; padding: .3em .9em .8em; margin-bottom: 1em; }
+.box h2 { margin: .2em 0 .4em; font-size: 1.3em; text-transform: capitalize; }
+.cols { display: flex; gap: 1em; align-items: flex-start; margin-bottom: 1em; }
+.col { flex: 1; min-width: 0; }
+.col .box { margin-bottom: 0; }
+.col .box + .box { margin-top: -2px; }      /* stacked boxes share one border */
+@media (max-width: 900px) { .cols { flex-direction: column; } .col { width: 100%; } }
+
+/* ---- rows ---- */
+.rows > li { padding: .35em 0; margin: 0; border-bottom: 1px solid #f0efec; }  /* near-invisible rule, from the personal site */
+.rows > li:last-child { border-bottom: 0; }
+.nxt  { margin-left: 1.2em; font-size: .9em; }   /* second line under a row */
+.why  { font-style: italic; }                    /* the reason something is where it is */
+.more { font-size: .8em; margin-left: 1.2em; }
+.small { font-size: .8em; }
+
+/* ---- markers: small boxed labels ---- */
+.mk { font-weight: bold; font-size: .8em; border: 1px solid #000; padding: 0 .3em; margin-left: .3em; white-space: nowrap; }
+.mk.hi { background: #ffe36e; }                  /* the one highlight colour: needs you / new / top */
+.mk.bad { border-color: #b00020; color: #b00020; }
+
+/* ---- state colours (text only, never backgrounds) ---- */
+.c-bad  { color: #b00020; }   /* overdue, failed, error */
+.c-soon { color: #1a4fd6; }   /* near: within 2 days */
+.c-near { color: #6b2fb3; }   /* coming: within 7 days */
+
+/* ---- messages ---- */
+.err { border: 2px solid #b00020; color: #b00020; padding: .5em; margin-bottom: 1em; }
+.ok  { border: 2px solid #000; padding: .5em; margin-bottom: 1em; }
+
+/* ---- folding (click a .proj row to show its .fold siblings) ---- */
+.proj { cursor: pointer; }
+.fold { display: none; }
+.open .fold { display: list-item; }
+
+/* ---- tables (forms, dense data) ---- */
+table.grid { border-collapse: collapse; width: 100%; }
+table.grid td, table.grid th { border: 1px solid #000; padding: .2em .4em; vertical-align: top; text-align: left; }

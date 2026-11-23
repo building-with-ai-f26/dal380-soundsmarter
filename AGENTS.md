@@ -13,9 +13,9 @@
 - **Product source of truth:** [`HANDOFF.md`](./HANDOFF.md). Read it before building. Product decisions are made in design review and by the owner; the agent merges approved changes, builds, and never changes a product decision on its own. Put anything that needs deciding under "Questions for design" at the end of HANDOFF.md.
 
 ## 2. Commands
-All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_KEY` in the repo-root `.env` (CrisperWhisper via Nyra's API, from Build 2; Build 1 used Deepgram).
+All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_KEY` in the repo-root `.env` (CrisperWhisper via Nyra's API, from Build 2; Build 1 used Deepgram). Sign-in and stored records also need `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` and `SUPABASE_SECRET_KEY` (see `.env.example`); the secret key is server-only.
 - **Install dependencies:** `uv sync`
-- **Run locally:** `uv run uvicorn server:app --reload`, then open http://localhost:8000
+- **Run locally:** `uv run uvicorn server:app --reload --port 8001`, then open http://localhost:8001 (port 8000 is the logbook board)
 - **Run deterministic tests:** `uv run pytest`
 - **Run model evals:** none yet (Build 4)
 
@@ -24,15 +24,19 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
   - `server.py`: web server; receives a recording, calls Nyra, returns results
   - `index.html`: the whole front end (all screens, PostHog setup)
   - `fillers.py`: counts "um"/"uh" in the transcript
-  - `metrics.py`: word count, fillers per 100 words, prep time, pauses
+  - `metrics.py`: every number computed from a transcription (shown: word count, fillers per 100 words, prep time, pauses; stored: rates, repairs, filled share and more)
+  - `wordlist.py`: the words and phrases counted by form in every recording
   - `access.py`: invite codes and daily cap for the shared demo
+  - `supa.py`: talks to Supabase (sign-in, reading and saving records, stimulus files)
+  - `records.py`: rules for signed-in users (which prompt next, sessions, daily cap)
+  - `db/`: database migrations, the seed built from the prompt CSVs (`make_seed.py`), and `check_direct_write.py`
   - `analytics_proxy.py`: relays PostHog events so ad blockers don't drop them
-  - `tests/`: unit tests for `access`, `analytics_proxy`, `fillers`, `metrics` (`uv run pytest`)
+  - `tests/`: unit tests for `access`, `analytics_proxy`, `fillers`, `metrics`, `records` and the signed-in flow (`uv run pytest`)
 - `docs/index.html`: Product Page (PRD + build log), served by GitHub Pages
 - `HANDOFF.md`: product source of truth. Read before building
 - `README.md`: front page of the GitHub repo, for human visitors
 - `tests/` (repo root): verification guidance for Build 4, not test code
-- `design/`: design briefs, mockups, logo
+- `design/`: design briefs, mockups, logo; the prompt and stimulus CSVs (source of truth for prompts); `design/stimuli/` generates and reviews images
 - `experiments/stt-compare/`: speech-to-text comparison (test C); reference, not app code
 - `journal/`: optional weekly build notes
 - `Intent.md`, `Plan.md`: class kit files; their content lives on the Product Page (pointers only)
