@@ -12,14 +12,17 @@ Two kinds of visitor:
 Run from prototype/:  uv run uvicorn server:app --reload
 """
 
+import asyncio
+import logging
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 import records
@@ -41,6 +44,8 @@ NYRA_URL = "https://api.nyra-labs.com/v1/audio/transcriptions"
 NYRA_FIELDS = {"model": "crisperwhisper-v2"}
 STT_MODEL = NYRA_FIELDS["model"]
 MAX_AUDIO_BYTES = 2_000_000  # a 60 s recording is ~1 MB; refuse anything much bigger
+MAX_BODY_BYTES = 5_000_000   # no request to any route needs more (same limit as the analytics relay)
+log = logging.getLogger("uvicorn.error")
 
 CONSENT_VERSION = "2026-11-21"  # bump when the consent wording on the sign-up page changes
 # Bump when a metric definition changes. 1 = fillers, rate and prep time only. 2 = the full set.
@@ -48,10 +53,53 @@ CONSENT_VERSION = "2026-11-21"  # bump when the consent wording on the sign-up p
 METRICS_VERSION = 3
 WORD_LIST_VERSION = wordlist.VERSION  # bump (in wordlist.py) when the counted word list changes
 
-app = FastAPI()
+# No auto-generated API pages (/docs, /redoc, /openapi.json): they list every route to anyone.
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.include_router(analytics_router)  # /ingest/... -> PostHog (gets past ad blockers)
 gate = Gate.from_env()
 supa = Supa.from_env()
+# One transcription at a time per account: a second recording sent meanwhile waits its
+# turn, so a burst of simultaneous sends can't all pass the daily-cap check before any
+# is counted. Kept in memory, which is enough while there is one server process.
+user_locks: dict[str, asyncio.Lock] = {}
+
+# Per-visitor limit on creating accounts and signing in, so one visitor can't use up
+# the sign-in allowance everyone shares at Supabase, or guess sign-up codes at speed.
+# Generous on purpose: a classroom of testers can share one network address.
+AUTH_LIMIT, AUTH_WINDOW_S = 30, 600  # attempts per visitor address, per 10 minutes
+auth_attempts: dict[str, list[float]] = {}
+MAX_EVENTS_PER_DAY = 500  # prompt events per account; ordinary use is a few dozen
+
+
+def visitor_address(request: Request) -> str:
+    """The visitor's network address. Render sits behind Cloudflare, which reports it in cf-connecting-ip."""
+    forwarded = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+    return (request.headers.get("cf-connecting-ip") or forwarded
+            or (request.client.host if request.client else "unknown"))
+
+
+def limit_auth(request: Request):
+    """Refuse a visitor's sign-up and sign-in attempts beyond AUTH_LIMIT in AUTH_WINDOW_S."""
+    who, now = visitor_address(request), time.monotonic()
+    recent = [t for t in auth_attempts.get(who, []) if now - t < AUTH_WINDOW_S]
+    if len(auth_attempts) > 10_000:  # never let the list of addresses grow without end
+        auth_attempts.clear()
+    if len(recent) >= AUTH_LIMIT:
+        auth_attempts[who] = recent
+        raise HTTPException(429, "Too many sign-in attempts from this network. Try again in a few minutes.")
+    auth_attempts[who] = recent + [now]
+
+
+@app.middleware("http")
+async def refuse_huge_bodies(request: Request, call_next):
+    """Turn away a request that says it is bigger than anything this app accepts, before reading it."""
+    try:
+        too_big = int(request.headers.get("content-length") or 0) > MAX_BODY_BYTES
+    except ValueError:
+        too_big = True
+    if too_big:
+        return JSONResponse({"detail": "Request too large"}, status_code=413)
+    return await call_next(request)
 
 
 @app.get("/")
@@ -98,7 +146,9 @@ async def send_to_nyra(audio: bytes, content_type: str) -> dict:
     except httpx.HTTPError:
         raise HTTPException(502, "Could not reach the speech service")
     if resp.status_code != 200:
-        raise HTTPException(502, f"Speech service error {resp.status_code}: {resp.text[:300]}")
+        # The service's own words stay in the server log; they could name the account or its balance.
+        log.warning("Speech service error %s: %s", resp.status_code, resp.text[:300])
+        raise HTTPException(502, "The speech service could not analyse that recording.")
     return resp.json()
 
 
@@ -117,6 +167,10 @@ async def transcribe(request: Request):
         return await transcribe_signed_in(request)
 
     # Demo-code visitors: instant results, nothing saved.
+    try:
+        gate.takes_left(request.headers.get("x-access-code"))  # no valid code, no upload
+    except AccessDenied as e:
+        raise HTTPException(e.status, e.message)
     audio = await read_capped(request)
     if not audio:
         raise HTTPException(400, "No audio received")
@@ -171,7 +225,8 @@ class PromptEvent(BaseModel):
 
 
 @app.post("/api/signup")
-async def signup(body: SignUp):
+async def signup(request: Request, body: SignUp):
+    limit_auth(request)
     if not body.consent:  # no consent, no account (the database checks this too)
         raise HTTPException(400, "Consent is required to create an account.")
     if not body.signup_code.strip():
@@ -180,7 +235,8 @@ async def signup(body: SignUp):
 
 
 @app.post("/api/signin")
-async def signin(body: SignIn):
+async def signin(request: Request, body: SignIn):
+    limit_auth(request)
     return await supa_call(supa.sign_in(body.email.strip(), body.password))
 
 
@@ -266,7 +322,15 @@ async def prompt_event(request: Request, body: PromptEvent):
     """Record a skip (during recording), a discard (after stopping), or an image prompt's pictures having loaded."""
     if body.event not in records.SKIP_EVENTS + ("served",):
         raise HTTPException(400, "Unknown event")
-    user = await supa_call(supa.user(bearer(request)))
+    token = bearer(request)
+    user = await supa_call(supa.user(token))
+    # Only for a prompt this user can be served, and not without end: a script can't fill the table.
+    if not await supa_call(supa.select(token, "prompts", {"select": "id", "id": f"eq.{body.prompt_id}"})):
+        raise HTTPException(400, "Unknown prompt")
+    today = await supa_call(supa.select(token, "prompt_events", {
+        "select": "id", "created_at": f"gte.{records.day_start_utc()}"}))
+    if len(today) >= MAX_EVENTS_PER_DAY:
+        raise HTTPException(429, "That's enough prompts for today. More tomorrow.")
     await supa_call(supa.insert_as_server("prompt_events", {
         "user_id": user["id"], "prompt_id": body.prompt_id, "event": body.event}))
     return {"ok": True}
@@ -303,6 +367,11 @@ async def my_baseline(request: Request):
 async def transcribe_signed_in(request: Request):
     token = bearer(request)
     user = await supa_call(supa.user(token))  # rejects a bad or expired token before any cost
+    async with user_locks.setdefault(user["id"], asyncio.Lock()):
+        return await transcribe_and_store(request, token, user)
+
+
+async def transcribe_and_store(request: Request, token: str, user: dict):
     await supa_call(supa.check_can_write())  # a missing or broken key stops here, before Nyra is paid
     # Nothing is stored without consent (decision 14). Sign-up always writes a
     # consent row; this check replaces the database rule removed in migration 002.
