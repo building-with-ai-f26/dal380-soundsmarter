@@ -18,7 +18,7 @@ Demo-code visitors can also use the app without an account. Nothing is saved for
 | 4 | Production is protected from the agent | "Ask Me First" list added; manual backup made |
 | 5 | Spending caps and rate limits | Caps in place. Limits on the paid route, sign-up, sign-in and prompt events; the sign-in limit is unproven on the live host |
 | 6 | Dependency audit | Pass. `pip-audit`: no known vulnerabilities |
-| 7 | Agent security review | 10 findings and 1 of our own. 8 fixed, 3 open |
+| 7 | Agent security review | 10 findings and 2 of our own. 9 fixed, 3 open |
 
 ## 1. Access controls
 
@@ -122,7 +122,7 @@ There is one storage bucket, `stimuli`, and it is **public on purpose**. It hold
 
 ## 7. Agent security review
 
-A fresh coding agent with no memory of the build was asked to act as an attacker against the code: read another user's data, write fake data, run up the speech bill, get round the sign-up code, consent or caps, misuse the analytics relay, inject script, leak keys, or crash the server. It read the code and git history only. It found 10 problems. We found one more ourselves on the live site.
+A fresh coding agent with no memory of the build was asked to act as an attacker against the code: read another user's data, write fake data, run up the speech bill, get round the sign-up code, consent or caps, misuse the analytics relay, inject script, leak keys, or crash the server. It read the code and git history only. It found 10 problems. We found two more ourselves on the live site.
 
 Earlier in Build 3, four other fresh-agent reviews had already led to security fixes: users could write their own records directly (fixed by server-only writes), and a wrong server key would have let a recording be paid for before the save failed (fixed by checking first).
 
@@ -137,6 +137,7 @@ Earlier in Build 3, four other fresh-agent reviews had already led to security f
 | Medium. A very large request body was read into memory before its size was checked. | Any request declaring more than 5 MB is refused before it is read; the analytics relay stops reading at 5 MB. |
 | Low. The analytics relay passed any address on to PostHog. | It passes only the PostHog addresses the page was seen to use in a real session (events, session replay, flags and PostHog's own scripts), and tells browsers not to guess file types. |
 | Medium. No limit of our own on sign-up and sign-in: one script could use up the allowance all users share at Supabase, or guess sign-up codes. | 30 failed attempts per visitor address per 10 minutes. |
+| Medium (ours, found by the owner on the live site). After signing out, the sign-in form still held the email and password that had been typed, so the next person at that computer could sign straight back in. | Both forms are emptied on sign-in, on account creation and on sign-out. A browser's own password manager may still offer a saved password; that is the browser's setting, not the app's. |
 | Low to medium. A signed-in user could add unlimited prompt-event rows with a script. | The prompt must be an approved one; refused once the account has about 500 events that day. A burst of simultaneous requests can pass a little over. |
 
 **Checked by the review and found sound:** reading other users' data; writing fake data; database query injection; the sign-up code and consent checks; the order of checks before the paid call; the demo gate; script injection (everything from prompts, transcripts and emails is put on the page as plain text); session replay leaves out the forms, the email, the list of recordings and the transcript; keys.
@@ -161,4 +162,13 @@ Of the review's ten findings, three are open: 2 above (its finding 2), 3 above (
 
 ## Deployed
 
-[pending: today's fixes go live with a Manual Deploy on Render; date and live re-check to be added]
+The fixes in PR #12 were deployed to Render by the owner on 2026-11-23. Re-checked on the live site the same morning:
+- `/docs` and `/openapi.json` return 404;
+- an address outside the analytics relay's list returns 404, and PostHog's script still loads through it;
+- a demo upload with no code returns 403;
+- a wrong sign-in still gets its normal 401;
+- the owner signed in, sent a recording and skipped a prompt, and confirmed the events and a session replay arrived in PostHog.
+
+Not re-checked live: the 5 MB refusal (the host turned the test request away before it reached the app) and the sign-in limit (it would need 30 failed sign-ins).
+
+The sign-out fix is in a later change and needs one more deploy.
