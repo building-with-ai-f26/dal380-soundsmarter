@@ -60,15 +60,20 @@ def test_a_failed_recording_does_not_block_the_next_one(fake, monkeypatch):  # n
     assert post_recording(TestClient(server.app)).status_code == 200
 
 
-def test_sign_in_attempts_are_limited_per_visitor(fake, monkeypatch):  # noqa: F811
+def test_failed_sign_ups_are_limited_per_visitor_and_successes_are_not(fake, monkeypatch):  # noqa: F811
     monkeypatch.setattr(server, "auth_attempts", {})
     monkeypatch.setattr(server, "AUTH_LIMIT", 3)
     c = TestClient(server.app)
-    body = {"email": "a@b.c", "password": "password1"}
-    one = {"cf-connecting-ip": "203.0.113.1"}
-    assert [c.post("/api/signin", json=body, headers=one).status_code for _ in range(4)][-1] == 429
-    assert c.post("/api/signup", json={**body, "signup_code": "GOOD", "consent": True}, headers=one).status_code == 429
-    assert c.post("/api/signin", json=body, headers={"cf-connecting-ip": "203.0.113.2"}).status_code != 429
+    one, other = {"cf-connecting-ip": "203.0.113.1"}, {"cf-connecting-ip": "203.0.113.2"}
+
+    def sign_up(code, headers):
+        return c.post("/api/signup", headers=headers, json={
+            "email": "a@b.c", "password": "password1", "signup_code": code, "consent": True}).status_code
+    assert [sign_up("GOOD", one) for _ in range(5)] == [200] * 5   # a class signing up from one address
+    assert 429 not in [sign_up("GUESS", one) for _ in range(3)]    # three wrong codes are answered
+    assert sign_up("GUESS", one) == 429                            # the fourth is not tried
+    assert sign_up("GOOD", one) == 429                             # and the address waits
+    assert sign_up("GOOD", other) == 200                           # another visitor is unaffected
 
 
 def test_prompt_events_need_a_real_prompt_and_have_a_daily_limit(fake, monkeypatch):  # noqa: F811

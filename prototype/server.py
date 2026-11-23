@@ -63,31 +63,39 @@ supa = Supa.from_env()
 # is counted. Kept in memory, which is enough while there is one server process.
 user_locks: dict[str, asyncio.Lock] = {}
 
-# Per-visitor limit on creating accounts and signing in, so one visitor can't use up
-# the sign-in allowance everyone shares at Supabase, or guess sign-up codes at speed.
-# Generous on purpose: a classroom of testers can share one network address.
-AUTH_LIMIT, AUTH_WINDOW_S = 30, 600  # attempts per visitor address, per 10 minutes
+# Per-visitor limit on failed attempts to create an account or sign in, so one visitor
+# can't guess passwords or sign-up codes at speed. Only failures count, and the number
+# is generous, because a classroom of testers can share one network address.
+AUTH_LIMIT, AUTH_WINDOW_S = 30, 600  # failed attempts per visitor address, per 10 minutes
 auth_attempts: dict[str, list[float]] = {}
 MAX_EVENTS_PER_DAY = 500  # prompt events per account; ordinary use is a few dozen
 
 
 def visitor_address(request: Request) -> str:
-    """The visitor's network address. Render sits behind Cloudflare, which reports it in cf-connecting-ip."""
+    """The visitor's network address, as the host reports it.
+
+    Not confirmed on Render: if the host does not set or overwrite these headers,
+    a visitor can fake them and get round the limit (SECURITY.md, Remaining issues).
+    """
     forwarded = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
     return (request.headers.get("cf-connecting-ip") or forwarded
             or (request.client.host if request.client else "unknown"))
 
 
-def limit_auth(request: Request):
-    """Refuse a visitor's sign-up and sign-in attempts beyond AUTH_LIMIT in AUTH_WINDOW_S."""
+async def limited_auth(request: Request, coro):
+    """Run a sign-up or sign-in, unless this visitor has failed AUTH_LIMIT times in AUTH_WINDOW_S."""
     who, now = visitor_address(request), time.monotonic()
     recent = [t for t in auth_attempts.get(who, []) if now - t < AUTH_WINDOW_S]
-    if len(auth_attempts) > 10_000:  # never let the list of addresses grow without end
-        auth_attempts.clear()
     if len(recent) >= AUTH_LIMIT:
-        auth_attempts[who] = recent
-        raise HTTPException(429, "Too many sign-in attempts from this network. Try again in a few minutes.")
-    auth_attempts[who] = recent + [now]
+        coro.close()
+        raise HTTPException(429, "Too many failed sign-in attempts from this network. Try again in a few minutes.")
+    try:
+        return await supa_call(coro)
+    except HTTPException:
+        if len(auth_attempts) > 10_000:  # never let the list of addresses grow without end
+            auth_attempts.clear()
+        auth_attempts[who] = recent + [now]
+        raise
 
 
 @app.middleware("http")
@@ -226,18 +234,17 @@ class PromptEvent(BaseModel):
 
 @app.post("/api/signup")
 async def signup(request: Request, body: SignUp):
-    limit_auth(request)
     if not body.consent:  # no consent, no account (the database checks this too)
         raise HTTPException(400, "Consent is required to create an account.")
     if not body.signup_code.strip():
         raise HTTPException(400, "A sign-up code is required.")
-    return await supa_call(supa.sign_up(body.email.strip(), body.password, body.signup_code.strip(), CONSENT_VERSION))
+    return await limited_auth(request, supa.sign_up(
+        body.email.strip(), body.password, body.signup_code.strip(), CONSENT_VERSION))
 
 
 @app.post("/api/signin")
 async def signin(request: Request, body: SignIn):
-    limit_auth(request)
-    return await supa_call(supa.sign_in(body.email.strip(), body.password))
+    return await limited_auth(request, supa.sign_in(body.email.strip(), body.password))
 
 
 @app.post("/api/refresh")
@@ -324,7 +331,7 @@ async def prompt_event(request: Request, body: PromptEvent):
         raise HTTPException(400, "Unknown event")
     token = bearer(request)
     user = await supa_call(supa.user(token))
-    # Only for a prompt this user can be served, and not without end: a script can't fill the table.
+    # Only for an approved prompt, and not without end: a script can't fill the table.
     if not await supa_call(supa.select(token, "prompts", {"select": "id", "id": f"eq.{body.prompt_id}"})):
         raise HTTPException(400, "Unknown prompt")
     today = await supa_call(supa.select(token, "prompt_events", {

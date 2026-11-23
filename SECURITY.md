@@ -16,7 +16,7 @@ Demo-code visitors can also use the app without an account. Nothing is saved for
 | 2 | Secret keys stay on the server | Pass. Nothing found in the repo, its history or the live site |
 | 3 | File storage is private | One public bucket, on purpose: prompt images only, no user files |
 | 4 | Production is protected from the agent | "Ask Me First" list added; manual backup made |
-| 5 | Spending caps and rate limits | Caps in place. Per-visitor and per-account limits on the paid route, sign-up, sign-in and prompt events |
+| 5 | Spending caps and rate limits | Caps in place. Limits on the paid route, sign-up, sign-in and prompt events; the sign-in limit is unproven on the live host |
 | 6 | Dependency audit | Pass. `pip-audit`: no known vulnerabilities |
 | 7 | Agent security review | 10 findings and 1 of our own. 8 fixed, 3 open |
 
@@ -112,9 +112,9 @@ There is one storage bucket, `stimuli`, and it is **public on purpose**. It hold
 
 **Rate limits on routes that write to the database**
 - Sign-up needs an unused personal code, checked inside the database. Each code makes one account.
-- Sign-up and sign-in: 30 attempts per visitor address per 10 minutes, then a 429 (new today). The number is generous because a classroom of testers can share one address.
+- Sign-up and sign-in: 30 failed attempts per visitor address per 10 minutes, then a 429 (new today). Only failures count, and the number is generous, because a classroom of testers can share one address.
 - Recordings and prompt events can be written only for a signed-in user, by the server.
-- Prompt events: only for a prompt the user can be served, and at most 500 a day per account (new today).
+- Prompt events: only for an approved prompt, and refused once the account has about 500 events that day (new today).
 
 ## 6. Dependencies
 
@@ -136,14 +136,14 @@ Earlier in Build 3, four other fresh-agent reviews had already led to security f
 | Low (ours). The live site served auto-generated pages listing every route (`/docs`, `/openapi.json`). | Turned off. |
 | Medium. A very large request body was read into memory before its size was checked. | Any request declaring more than 5 MB is refused before it is read; the analytics relay stops reading at 5 MB. |
 | Low. The analytics relay passed any address on to PostHog. | It passes only the PostHog addresses the page was seen to use in a real session (events, session replay, flags and PostHog's own scripts), and tells browsers not to guess file types. |
-| Medium. No limit of our own on sign-up and sign-in: one script could use up the allowance all users share at Supabase, or guess sign-up codes. | 30 attempts per visitor address per 10 minutes. |
-| Low to medium. A signed-in user could add unlimited prompt-event rows with a script. | The prompt must be one the user can be served; 500 events a day per account. |
+| Medium. No limit of our own on sign-up and sign-in: one script could use up the allowance all users share at Supabase, or guess sign-up codes. | 30 failed attempts per visitor address per 10 minutes. |
+| Low to medium. A signed-in user could add unlimited prompt-event rows with a script. | The prompt must be an approved one; refused once the account has about 500 events that day. A burst of simultaneous requests can pass a little over. |
 
 **Checked by the review and found sound:** reading other users' data; writing fake data; database query injection; the sign-up code and consent checks; the order of checks before the paid call; the demo gate; script injection (everything from prompts, transcripts and emails is put on the page as plain text); session replay leaves out the forms, the email, the list of recordings and the transcript; keys.
 
 ## Remaining issues
 
-1. **The new sign-in limit has not been proven on the live host.** It reads the visitor's address from a header the hosting service sets. If that header is missing, it falls back to one a visitor can fake. Tested in code only. The one-at-a-time rule also assumes the app runs as a single server process, which is Render's default and has not been confirmed.
+1. **The new sign-in limit has not been proven on the live host.** It reads the visitor's address from headers the hosting service is expected to set. If the host does not set or overwrite them, a visitor can fake them and get round the limit; if it sends none, all visitors share one count. Tested in code only. Successful sign-ins are not limited by us, so the allowance all users share at Supabase can still be used up by one person with a working account. The one-at-a-time rule also assumes the app runs as a single server process, which is Render's default and has not been confirmed.
 2. **A recording's length is not checked before it is paid for.** The 2 MB limit caps file size, not minutes. Someone with a code or an account could send a long, low-quality file straight to the server, not through the page, and it would be billed by its length. The daily caps and the $10 wallet limit the damage. Fix: trim or refuse audio over 65 seconds on the server.
 3. **The demo's daily count is kept in the server's memory**, so it restarts at zero whenever the server restarts or wakes from sleep. The same is true of the new sign-in limit. Fix: keep the counts in the database, which needs a migration.
 4. **The analytics relay's list of addresses is fixed.** If PostHog starts using a new address (surveys, for example), those calls are refused until the list is updated.
