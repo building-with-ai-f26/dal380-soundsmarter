@@ -447,11 +447,12 @@ async function authFetch(url, opts = {}) {
   if (!session) throw new Error("Signed out");
   if (Date.now() > session.expires_at) {
     try { saveSession({ ...(await postJSON("/api/refresh", { refresh_token: session.refresh_token })) }); }
-    catch { signOut("Signed out. Please sign in again."); throw new Error("Signed out"); }
+    catch { track("signed_out_forced", { at: "refresh" }); signOut("Signed out. Please sign in again."); throw new Error("Signed out"); }
   }
   const headers = { ...(opts.headers || {}), Authorization: `Bearer ${session.access_token}` };
   const resp = await fetch(url, { ...opts, headers });
-  if (resp.status === 401) { signOut("Signed out. Please sign in again."); throw new Error("Signed out"); }
+  // Not the user's choice: counted separately in PostHog, so repeated forced sign-outs can be spotted
+  if (resp.status === 401) { track("signed_out_forced", { at: url.split("?")[0] }); signOut("Signed out. Please sign in again."); throw new Error("Signed out"); }
   return resp;
 }
 
