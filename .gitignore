@@ -43,3 +43,9 @@ design/stimuli/candidates/
 
 # chosen images, renamed for upload to the Supabase stimuli bucket: local only
 design/stimuli/upload/
+
+# weekly codebase reviews: local only (owner, 2026-11-23: not to be readable by others)
+design/*-weekly-review.md
+
+# fresh-pi reviews recovered on 2026-11-23: local only (owner)
+design/2026-11-23-review-*.md

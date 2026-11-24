@@ -64,7 +64,7 @@ PASS: on prod, Account B and signed-out visitors cannot read Account A's data.
 **Also checked:**
 - Signed-out requests to the live server: `/api/me`, `/api/recordings`, `/api/baseline` and `/api/prompt` each return 401. The demo route returns 403 without a valid code.
 - Signed-out requests to the dev database with the public key: all five tables return 401.
-- Direct writes: `prototype/db/check_direct_write.py` confirmed on the dev project on 2026-11-22 that a signed-in user cannot add rows to `recordings` or `prompt_events` with the public key. Only the server can write them (migrations 002 and 003).
+- Direct writes: `prototype/db/check_direct_write.py` confirmed on the dev project on 2026-11-22 that a signed-in user cannot add rows to `recordings` or `prompt_events` with the public key. Only the server can write them (migrations 002 and 003). The owner ran the same check with `--prod` on the production project on 2026-11-23, after this audit was written: success (owner's report; the output was not saved).
 
 **Why it holds.** Row-level security is on for every table. Each user can read only rows carrying their own user id. Users have no permission to insert, change or delete rows. The server's secret key was given permission only to insert into two tables (migration 003); the server does all its reading with the user's own sign-in.
 
@@ -101,7 +101,7 @@ There is one storage bucket, `stimuli`, and it is **public on purpose**. It hold
 
 **Spending caps**
 - **Nyra (the only paid service the live app calls):** a prepaid wallet with automatic top-up off. $10 was paid in and $0.51 is used (owner, from Nyra's dashboard, 2026-11-23). When the wallet is empty the service stops; it cannot bill more. This is the hard cap.
-- **OpenRouter (image generation, not called by the live app):** pay as you go, automatic top-up off, no credit limit set on the key (owner, 2026-11-23). The generating script stops itself at $10.
+- **OpenRouter (image generation, not called by the live app):** prepaid, with automatic top-up off, so spending cannot pass the prepaid balance. No per-key limit is set; the owner found no such setting (owner, 2026-11-23). The generating script also stops itself at $10.
 - **Supabase and Render:** free plans with no card on file.
 - **PostHog:** free plan.
 

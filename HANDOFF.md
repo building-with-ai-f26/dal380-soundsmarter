@@ -1,18 +1,34 @@
 # SoundSmarter — Handoff
 
-*As of 2026-11-23 (Build 3) · living document · first written 2026-11-05*
+*As of 2026-11-23 (Build 3; scope section added after the weekly review) · living document · first written 2026-11-05*
 
 ## Context
 
-SoundSmarter is an app that records 30–60 seconds of extemporaneous speech, analyzes it, and returns measured metrics.
+SoundSmarter is an app that records 30–60 seconds of spontaneous speech, analyzes it, and returns measured metrics.
 
-**Where things stand (2026-11-23).** Build 3 is live at https://soundsmarter-demo.onrender.com/: accounts with consent, 206 prompts in five families, Send or Discard, unusable-audio rejection, stored metrics (version 3), and a 10-recording baseline with a baseline table. The current decisions are 12–29 under **Decisions made**, the dated note under the **Roadmap**, and the open items under **Questions for design**. The Product Page (`docs/index.html`) carries the current PRD; `SECURITY.md` carries the Build 3 security audit.
+**Where things stand (2026-11-23).** Build 3 is live at https://soundsmarter-demo.onrender.com/: accounts with consent, 206 prompts in five prompt types, Send or Discard, unusable-audio rejection, stored metrics (version 3), and a 10-recording baseline with a baseline table. The current decisions are 12–29 under **Decisions made**, the dated note under the **Roadmap**, and the open items under **Questions for design**. The Product Page (`docs/index.html`) carries the current PRD; `SECURITY.md` carries the Build 3 security audit.
 
 **How to read the older sections.** Target user, Problem, Before / after, The finished loop, Pipeline, Metrics spec, Session record and Technical choices were written on 2026-11-05, before any code existed. They are kept as the original design. Where a later dated note or numbered decision differs, the later one wins. The recommendation, acoustic features and AI-written feedback described there have not been built.
 
 This file began as the handoff for the coding agent implementing build 1. It fixes the product decisions, defines the metrics, and names the technical choices with their trade-offs. Items under **Decisions made** are settled. Items under **Open questions** are not — ask rather than pick. Provenance is marked throughout: what the product owner stated vs. what was proposed in design discussion and not yet confirmed.
 
 **How this file is maintained.** This is the single source of truth; git history holds every version. Product decisions are made in design review and by the owner. The coding agent merges approved changes, builds, and never changes product decisions on its own. Anything it needs decided goes under **Questions for design** at the end.
+
+## Scope (current, 2026-11-23)
+
+*Owner, 2026-11-23. Brings this file in line with the PRD on the Product Page (`docs/index.html`, design-review copy merged in PR #11). Where an older section of this file differs, this section wins.*
+
+- **What it is** (owner's words, 2026-11-23): SoundSmarter is an app that listens to human speech and provides a metric analysis of speech patterns given specific prompt types. It measures fillers and pauses across five prompt types, sets a personal baseline, and tracks each new recording against it.
+- **Measuring, not changing** (owner, 2026-11-23): "the scope is not changing user behavior. its measuring user behavior, including changes." The app shows the data and does not claim a change; what a user reads into a trend is up to them. "A pause should replace a filler" and "Pause instead of 'like'" are both out of scope. *(The same day, at the owner's direction, the idea was taken out of six places in the sections written on 2026-11-05: the Target user comparison, the Before / after row for fillers, the Metrics spec note on the ratio, the sample `focus` and `recommendation` in the session-record example, and the Ideas considered row. Git history holds the old wording.)*
+- **Target user:** speakers who want to develop awareness of their spontaneous speech patterns through metric analysis. Not for language learners.
+- **Non-goals:** a recommendation based on the metrics; grammar correction, vocabulary and pronunciation; clinical or diagnostic use; languages other than English.
+- **Still in scope, no build assigned:** acoustic analysis (pitch, loudness, tone: decision 3); audio prompts; telling a filler use of a word from an ordinary one.
+- **To build next** (owner, 2026-11-23; each is under Questions for design): a definitions page; account deletion (Build 4). Built on branch `review-followups`, not yet live: filled share on the results page; the baseline compared by prompt type; the "Next Recording" button after Send; the landing button leading to sign-in.
+- **Accuracy:** um and uh counts were re-checked on 2026-11-23 with the app's own settings (no forced language) on the four test C recordings: the same counts as test C, 18 of 18 on the three normal recordings, and English detected on all four (`experiments/stt-compare/RESULTS.md`). One speaker; phone recordings converted to WAV, not the browser's. Pauses, filled share, repairs and rates are not yet checked against a hand count. A test on 15 hand-counted recordings is planned (`experiments/stt-compare/hand-count/`) and will replace test C.
+- **What defines a speech pattern** (owner, 2026-11-23, from the research): three groups, tracked separately. **Delays**: pauses and fillers. A filler with a pause, a pause with a filler, filler + pause + filler, or pause + filler + pause is one single Delay. **Other disfluencies**: repeated words, cut-offs and the like. **Word usages**: quotatives, discourse markers and similar. "uh um" back to back is two fillers and one Delay. The same word repeated ("I I I went") is a single repair with a single length, not individual repeats. The results build-out (Build 4) is built on this. It differs from metrics version 3, where back-to-back fillers count as two (decision 26); the count changes when the build-out is built, as a new metrics version.
+- **Riskiest assumption** (owner, confirmed 2026-11-23): that people will complete 10 responses to provide a baseline. The worry is getting real test data before user fatigue sets in.
+- **Build 4 test** (owner, 2026-11-23): 4 users brought to baseline without coaching, due 2026-11-30 noon. Also due then: account deletion, password reset, email confirmation and the consent wording. Until then testers need a sign-up code the owner assigns in person, so these are not a concern for this week.
+- **Demo visitors** (owner, 2026-11-23): no unusable-audio or language checks for them; if they send bad audio they get no use from it. The demo code, the shared daily limit, the 2 MB limit and the prepaid wallet are what protect the bill. The unresearched reference facts are removed from the analysis screen.
 
 ## Target user
 
@@ -22,7 +38,7 @@ Build 1 targets young professionals, fluent English speakers, who speak under pr
 - Filler words and prep time are the starting focus.
 
 - Grammar correction and pronunciation/accent scoring are out of scope. Those features pull toward the ESL market (ELSA, Speak) and change the prompts, the feedback tone, and the technical stack.
-- Nearest native-speaker comparables are public-speaking coaches like Yoodli and Orai. SoundSmarter's intended difference: short daily extemporaneous reps, filler-to-pause substitution as the core metric, trend tracking, and acoustic "music of speech" feedback that goes beyond transcript analysis.
+- Nearest native-speaker comparables are public-speaking coaches like Yoodli and Orai. SoundSmarter's intended difference: short daily spontaneous reps, filled share (the share of delays that are filled) as the core metric, trend tracking, and acoustic "music of speech" feedback that goes beyond transcript analysis. *(Changed 2026-11-23 by the owner: was "filler-to-pause substitution as the core metric". Telling users to replace a filler with a pause is out of scope.)*
 - Objective mapping (dinner party vs. office vs. classroom) is deferred. Build 1 treats every user the same.
 
 ## Problem
@@ -39,7 +55,7 @@ Sustained use should move a user from unaware to self-correcting on a handful of
 | Behavior | Before | After |
 | --- | --- | --- |
 | Crutch word | Doesn't know they have one | Knows the word and its rate; watches it fall across sessions |
-| Fillers | Fills every gap with um / like / you know | Pauses instead; filler-to-pause ratio trends toward zero |
+| Fillers | Fills every gap with um / like / you know | Knows their filled share: how many of their delays are filled and how many are left silent, and how that moves across sessions |
 | Pace | Rushes, especially the first sentence | Speaking rate inside a conversational band; slows by pausing, not by dragging |
 | Starting | Talks immediately, usually "so, um…" | Takes a beat; prep time is visible and treated as normal |
 | Delivery | Monotone or trailing off, unaware of either | Hears where volume dropped or pitch flattened, on specific words |
@@ -53,9 +69,9 @@ Each build is due Monday at noon, New York time.
 | --- | --- | --- |
 | **1 · Nov 9** — Intent + throwaway prototype | PRD v1, one local interaction | Prompt (fixed bank of 5) → record → transcribe (fillers kept) → filler count. Disposable is fine. |
 | **2 · Nov 16** — Plan + smallest real local version + PostHog | Riskiest part, architecture, budget | Real stack (web + Python + SQLite); session records persisted; speaking rate + prep time (moved from build 1); pauses + filler-to-pause ratio; LLM classification of lexical fillers; PostHog installed. Start collecting and hand-labeling 10–15 recordings (owner + pod member) for build 4 evals. Tests the top risk: filler detection accuracy. |
-| **3 · Nov 23** — Build the core in small changes | The core product | Acoustic features (pitch, loudness); one recommendation per recording carried into the next prompt; trends within prompt type. |
-| **4 · Nov 30** — Test: domain evals or user replays | Evidence it works | Evals: hand-labeled recordings (collected from build 2) vs. app counts for fillers and pauses; tester sessions. |
-| **5 · Dec 7** — Ship | Live URL + 2-minute video | Cloud deploy; crutch word and vocabulary features if time allows. |
+| **3 · Nov 23** — Build the core in small changes | The core product | Accounts with consent; stored records on Supabase; the prompt engine (206 prompts, five prompt types, text and image); Send or Discard; unusable-audio rejection; the full metric set; a 10-recording baseline and a baseline table. Security audit. |
+| **4 · Nov 30** — Test: domain evals or user replays | Evidence it works | Test build: 4 users brought to baseline without coaching (owner, 2026-11-23). Accuracy test: 15 hand-counted recordings against the app's numbers, sent with the app's settings. Results build-out. Account deletion, password reset, email confirmation, consent wording. |
+| **5 · Dec 7** — Ship | Live URL + 2-minute video | To be set after Build 4. (The live URL has existed since Nov 9.) |
 
 *Changed 2026-11-23 by the owner (design review for the Build 3 Product Page, `docs/index.html`):*
 - **Build 3 as shipped** is accounts, stored records, the prompt engine and the baseline (decisions 12–29), not the Build 3 row above. Acoustic features and the per-recording recommendation are put off; no build is assigned to them.
@@ -63,7 +79,9 @@ Each build is due Monday at noon, New York time.
 - **Need state:** speakers who say "um" and "uh" or pause when speaking off-the-cuff don't know how often they do it, or how it shifts with what they are asked to talk about. One recording can't show a pattern.
 - **Success test:** a signed-in user completes the 10 baseline recordings without help and sees the baseline table.
 - **New non-goals:** clinical or diagnostic use; languages other than English.
-- **Not reconciled:** the Product Page's target user ("speakers who want to develop awareness of their extemporaneous speech patterns", PRD 2026-11-16) and **Target user** above (young professionals who speak under pressure) still differ.
+- **Reconciled 2026-11-23 by the owner:** the target user is the Product Page's ("speakers who want to develop awareness of their spontaneous speech patterns", PRD 2026-11-16). **Target user** below is the original and no longer applies. See **Scope**.
+
+*Changed 2026-11-23 by the owner (after the weekly review of 2026-11-23, kept on the owner's machine, not in the repo):* rows 3, 4 and 5 of the table above were rewritten. Row 3 was "Acoustic features (pitch, loudness); one recommendation per recording carried into the next prompt; trends within prompt type". Row 4 was "Evals: hand-labeled recordings (collected from build 2) vs. app counts for fillers and pauses; tester sessions". Row 5 was "Cloud deploy; crutch word and vocabulary features if time allows".
 
 ### Build 1 detail (due Nov 9)
 
@@ -108,10 +126,10 @@ Decided by the owner in design review, 2026-11-15. Reference implementation: `de
 
 **Visual system.** Paper `#fdfcfa`, ink `#222`, purple `#4a2a7d` (flat accent: numbers, primary buttons, fill bar — never a gradient), yellow `#ffd21e` (marks fillers), maya blue `#73c2fb` (marks silent pauses; value boxes). Type: Archivo Narrow 700 (Google Fonts), fallback "Helvetica Neue", Arial. On every page after the landing, a 6 px rule under the header: left half yellow, right half blue. Logo assets: `design/logo/` (SVG plus 1024 and 512 PNG).
 
-1. **Landing.** Large logo, then "SoundSmarter", then "A self-improvement tool that listens to you speak and helps you communicate your thoughts more fluidly and confidently." Purple OK button. No header chrome on this page.
+1. **Landing.** Large logo, then "SoundSmarter", then "A self-improvement tool that listens to you speak and helps you communicate your thoughts more fluidly and confidently." Purple OK button. No header chrome on this page. *(Changed 2026-11-23 by the owner: the app tracks metrics and does not promise improvement. The line is now "A tool that listens to you speak and tracks your speech metrics.")*
 2. **Start.** Headline "Record A Response". Instruction on two lines: "A prompt will appear and recording will begin." / "At least 30 seconds of audio are needed." Purple START button, centered, enlarged.
 3. **Record.** Prompt large. Soft fill bar represents 0–60 s, no numerals; thin purple tick at the 30 s mark; at 30 s a blue check appears above the tick and Stop becomes enabled; Skip works at any time; hard stop at 60 s advances to Analyze.
-4. **Analyze.** Button top-center, greyed: "Analyzing (n)" counting down from 10, flipping to purple "Results" when analysis returns — the countdown number shows immediately, and the flip follows actual completion, sooner or later than the 10. Below, three reference lines: "Most common filler words:" with the list on the next line in yellow boxes (um, uh, like, you know, so, I mean, actually, basically, kind of, sort of, right, well, okay, just, literally); "Average filler words per 100 spoken words:" with **2.6** in a blue box (Bortfeld et al. 2001, conversational task); "Average prep time (pause before beginning to speak):" with **1.5 seconds** in a blue box. On-page note: "Filler word list and prep time average are placeholders, not yet research-sourced."
+4. **Analyze.** Button top-center, greyed: "Analyzing (n)" counting down from 10, flipping to purple "Results" when analysis returns — the countdown number shows immediately, and the flip follows actual completion, sooner or later than the 10. Below, three reference lines: "Most common filler words:" with the list on the next line in yellow boxes (um, uh, like, you know, so, I mean, actually, basically, kind of, sort of, right, well, okay, just, literally); "Average filler words per 100 spoken words:" with **2.6** in a blue box (Bortfeld et al. 2001, conversational task); "Average prep time (pause before beginning to speak):" with **1.5 seconds** in a blue box. On-page note: "Filler word list and prep time average are placeholders, not yet research-sourced." *(Changed 2026-11-23 by the owner: the three reference lines and the placeholder note are removed. Signed-in users get no countdown; see Questions for design, "After Send".)*
 5. **Results.** Left: light-grey card with purple border — filler count in purple beside "Fillers", under it yellow boxes "N Ums" / "N Uh" (plural only when the count is greater than 1). To the right, vertically centered against the card: blue boxes "N fillers per 100 words" and "N seconds prep time". Then Playback (button plus progress bar), then "Transcription (N words)" with fillers highlighted yellow and silent pauses as blue duration chips, legend beneath. Bottom: purple button "Record Next Response (N left)" — the invite-code responses-left count lives here now.
 
 Cut from the build 2 results page by the owner, 2026-11-15: the recommendation line, the fillers-by-recording trend chart, the standalone responses-left line, and pauses, filler-to-pause ratio, hitches and words per minute as displayed numbers. The metrics spec still computes and stores all metrics; this list only governs what build 2 displays.
@@ -179,7 +197,7 @@ Every number comes from code, never from the LLM. All rates are normalized to sp
 | Top words | Most frequent words per recording, stopwords excluded | Feeds crutch-word detection and vocabulary suggestions. |
 | Crutch word | The non-content word that recurs most across sessions | Computed per recording; surfaced as "your crutch" only once stable across N recordings (suggest N = 5). One recording is noise. |
 | Pauses | Count, mean, max duration of silences ≥ threshold (suggest 300 ms, tunable) | Split by position: boundary (between clauses or thoughts) vs. hesitation (mid-clause). Position comes from word timestamps plus clause boundaries in the transcript. |
-| Filler-to-pause ratio | Fillers ÷ (fillers + hesitation pauses) | Headline metric. Directly measures the substitution behavior the advice is about. |
+| Filler-to-pause ratio | Fillers ÷ (fillers + hesitation pauses) | Headline metric. Built as filled share (decision 26): the share of delays that are filled. |
 | Hitches | Restarts, repeated words ("I— I went"), false starts | From the disfluency transcript, not the audio. |
 | Pitch | F0 mean, range, variability per phrase; terminal-rise flag on declaratives (uptalk) | Relative to the user's baseline. Range is personal. |
 | Loudness | RMS energy envelope; trailing-off at phrase ends; dynamic range | Relative within the recording. Mic and room make absolute dB meaningless. |
@@ -198,7 +216,7 @@ One JSON object per recording is the contract between every part of the app: the
     "id": "p_017",
     "type": "narrative | opinion | explanation",
     "text": "Tell me about your last weekend: ...",
-    "focus": "Pause instead of 'like'"
+    "focus": null
   },
   "timing": {
     "reveal_ms": 0,
@@ -250,7 +268,7 @@ One JSON object per recording is the contract between every part of the app: the
     "delivery_notes": [
       { "word_index": 41, "note": "Volume dropped and rate rose through 'and then we tried the'." }
     ],
-    "recommendation": "Next response: when you feel a 'like' coming, stop and wait instead."
+    "recommendation": null
   }
 }
 ```
@@ -401,8 +419,8 @@ Before writing any provider call, confirm flag names and model support against t
 | Follow-up question between recordings | Deferred to build 2 | Closer to real conversation. Templated per prompt first; LLM-generated from the transcript later. |
 | Prompt tagging by type; trends within type | Adopted | Prompt difficulty is a confound; narrative produces fewer fillers than opinion or explanation. |
 | Crutch word surfaced only once stable | Adopted | Three "likes" in one recording is noise; the same word across five recordings is a crutch. |
-| Filler-to-pause ratio as headline metric | Adopted | Measures the substitution behavior directly. |
-| Exactly one recommendation per recording, carried into the next prompt | Adopted | Turns "iterate" into a loop rather than a series of report cards. |
+| Filler-to-pause ratio as headline metric | Adopted | Shows how a speaker's delays split between filled and silent. Built as filled share. |
+| Exactly one recommendation per recording, carried into the next prompt | Dropped 2026-11-23 (was Adopted) | A non-goal: the app measures and does not recommend. See **Scope**. |
 | Allow stopping early; track ended-cleanly | Adopted | Ending cleanly vs. trailing off is a skill. |
 | Audio-native LLM listening to the clip | Side experiment | A vibe, not a number. Compare against hand-rolled features; don't build the pipeline on it. |
 | Objective mapping / onboarding by use case | Deferred | Owner's call: post-build-1. |
@@ -413,33 +431,33 @@ The first list is settled and should not be relitigated. The second list is prop
 
 **Stated by the owner**
 
-1. Target user is young professionals (fluent English speakers) who speak under pressure. Testers: the owner and test user 1. *(Changed 2026-11-08; was MBA students + one pod member. Changed 2026-11-10 by the owner: "native" → "fluent". Fillers are a nerves-and-habit problem, not a language problem; still not for language learners.)*
-2. Filler words are the defining feature; vocabulary is second in priority and scheduled for build 5 if time allows.
-3. The app analyzes the acoustic "music" of speech — hitches, volume, tone — beyond transcript-plus-LLM.
+1. Target user is young professionals (fluent English speakers) who speak under pressure. Testers: the owner and test user 1. *(Changed 2026-11-08; was MBA students + one pod member. Changed 2026-11-10 by the owner: "native" → "fluent". Fillers are a nerves-and-habit problem, not a language problem; still not for language learners.)* *(Changed 2026-11-23 by the owner: the target user is the PRD's, "speakers who want to develop awareness of their spontaneous speech patterns through metric analysis". See **Scope**.)*
+2. Filler words are the defining feature; vocabulary is second in priority and scheduled for build 5 if time allows. *(Changed 2026-11-23 by the owner: vocabulary is a non-goal. See **Scope**.)*
+3. The app analyzes the acoustic "music" of speech — hitches, volume, tone — beyond transcript-plus-LLM. *(2026-11-23, owner: still in scope. Put off; no build assigned.)*
 4. Metrics are computed per recording and tracked over time: words per minute, fillers per minute, repetition of fillers and most-used words (the crutch), pause metrics.
 5. The timer does not start until the first word is spoken; preparation time is part of the skill.
 6. Continuous flow of speech is the essential UI problem: good prompts, natural progression of thought, structure set up before speaking.
 7. Objective mapping (who the user is speaking to) is deferred.
-8. The finished loop is prompt → record → listen → analyze → metrics → recommendation → iterate, and nothing more.
-9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt (fixed bank of 5) → record → transcribe → filler count. *(Changed 2026-11-05: speaking rate and prep time moved to build 2.)*
+8. The finished loop is prompt → record → listen → analyze → metrics → recommendation → iterate, and nothing more. *(Changed 2026-11-23 by the owner: the recommendation is a non-goal. The loop as built is account → prompt → record → Send or Discard → analyze → baseline → results. See **Scope**.)*
+9. Builds follow the roadmap above; build 1 (due Nov 9) is prompt (fixed bank of 5) → record → transcribe → filler count. *(Changed 2026-11-05: speaking rate and prep time moved to build 2.)* *(Changed 2026-11-23: rows 3 to 5 of the roadmap rewritten to match what shipped and what is planned.)*
 10. Prep time = prompt reveal → first spoken word, from the STT first-word timestamp; framed neutrally.
 11. The build 2 front end ships the five-page design of 2026-11-15 (see **Build 2 front end** below). No built-in education in build 2: no recommendation line, no trend chart on results.
 12. **Build 3 storage (2026-11-21):** hosted Postgres on Supabase replaces SQLite (proposed decision 11 below). Two projects: `soundsmarter-dev` (local `.env`) and `soundsmarter-prod` (Render). Schema lives in `prototype/db/migrations/`, run in dev first, then prod. RLS on every table; each user reads and adds only their own rows. *(Changed 2026-11-22 by the owner: each user reads only their own rows and can no longer add rows. Only the server adds prompt events and recordings, using Supabase's secret key after checking who the user is, so every stored recording is one the server measured. Migrations `002_server_writes.sql` and `003_server_grants.sql` (both must run; without 003 the server cannot save). Needs `SUPABASE_SECRET_KEY` in `.env` and on Render. The consent check for recordings (decision 14) is now made by the server, not by a database rule. From review finding 1. Before paying for a transcription the server checks that it can save: it goes ahead only on the one answer a healthy database gives, and otherwise tells the user nothing was sent (strict since 2026-11-22, owner's call).)*
 13. **Sign-in (2026-11-21):** email + password, email confirmation off (Supabase's built-in mailer only reaches team addresses). No password reset for now.
 14. **What is stored per recording (2026-11-21):** metrics and the full transcription response (words + timestamps), so metrics can be recomputed. No audio. A recording is saved only after the user accepts the consent notice at sign-up.
-15. **Demo-code visitors (2026-11-21):** keep the instant-results flow; nothing is saved for them. Records exist only for signed-in users.
+15. **Demo-code visitors (2026-11-21):** keep the instant-results flow; nothing is saved for them. Records exist only for signed-in users. *(Changed 2026-11-23: they no longer land in it. The landing button leads to sign-in, and the demo is the smaller "Use the demo version" button there. Results are still instant and nothing is saved.)*
 16. **Build 3 scope (2026-11-21, owner):** decisions 16–24 supersede `design/2026-11-21-build3-brief.md` wherever they differ.
 17. **Consent (2026-11-21):** consent is required to create an account; no consent, no account. Decision 14 stands: every signed-in recording stores metrics and the full transcription response, no audio.
 18. **English only (2026-11-21):** stated before sign-up and before the first recording. *(2026-11-22: the line is also on the Account page beside the record button, so signed-in users see it before every recording.)*
-19. **Baseline (2026-11-21):** the first 10 recordings, 2 per family, families interleaved. During baseline the user gets playback and transcript, no numbers. After the 10th, the baseline map appears. From the 11th on, each result is shown against the user's baseline for that family.
-20. **Send or Discard (2026-11-21):** nothing goes to transcription until the user confirms. After stopping, the user chooses Send or Discard. Discard gives a new prompt from the same family, costs nothing, and is recorded like a skip.
+19. **Baseline (2026-11-21):** the first 10 recordings, 2 per prompt type, prompt types interleaved. During baseline the user gets playback and transcript, no numbers. After the 10th, the baseline map appears. From the 11th on, each result is shown against the user's baseline for that prompt type.
+20. **Send or Discard (2026-11-21):** nothing goes to transcription until the user confirms. After stopping, the user chooses Send or Discard. Discard gives a new prompt from the same prompt type, costs nothing, and is recorded like a skip.
 21. **Unusable audio (2026-11-21):** caught before a row is saved: no numbers, nothing stored, a re-record message. Before upload: too little sound or bad input level. After transcription: too few words, implausible words per second, or non-English text. *(Built 2026-11-22, Slice B, owner's calls: the checks apply to signed-in users; demo-code visitors keep the instant flow. Before upload, the browser rejects a recording that is 85% or more near-silent, or more than 1% clipped; nothing is sent and it does not count toward the daily cap. After transcription, the server rejects fewer than 15 words, a rate outside 0.8 to 5 words per second, or a language other than English; it stores a `rejected` event, which counts toward the cap, and no recording row. In both cases the user records the same prompt again. A rejected recording uses no baseline slot.)* *(Fixed 2026-11-22 after the third review: a prompt whose recording was rejected is not used up, so if the user has already moved on it can be served again later; and a rejected attempt no longer clears the list of prompts skipped before the recording that is finally saved.)*
 22. **Prompt engine (2026-11-21):**
-    - Five families: Describe, Narrate, Argue, Invent, Explain. Three modes: text, image, audio. Explain has no audio.
+    - Five prompt types: Describe, Narrate, Argue, Invent, Explain. Three modes: text, image, audio. Explain has no audio.
     - Sources: `design/2026-11-21-prompts-text-draft.csv` and `design/2026-11-21-audio-stimuli-draft.csv`. Only rows the owner marks approved are served.
     - Prompts and stimuli live in the database. Each stimulus carries its license and credit. A prompt whose stimulus file is missing is never served.
     - A user never sees the same prompt twice. Skips and discards count as seen.
-    - Each recording stores: prompt id, family, mode, variant, stimulus id, position in the session, and prompts skipped or discarded before it.
+    - Each recording stores: prompt id, prompt type, mode, variant, stimulus id, position in the session, and prompts skipped or discarded before it.
     - For audio prompts, prep time runs from the end of the clip.
 23. **Metrics stored per recording (2026-11-21):**
     - Fillers, repetitions, cut-offs, mid-sentence pauses, sentence-end pauses, speaking rate, articulation rate, prep time.
@@ -448,14 +466,14 @@ The first list is settled and should not be relitigated. The second list is prop
     - Raw counts by form for the word list in `design/2026-11-21-word-list-and-prompt-guidelines.md` (tiers 1 and 2), with a word-list version number.
     - *(Built 2026-11-22, Slice B. Metrics version 2 and word-list version 2; rows stored earlier stay version 1, with no backfill. Code: `prototype/metrics.py`, `prototype/wordlist.py`. Readings the owner approved: the labels come from the speech service's own alignment list; a filler ends a repair run; word-list counts are raw, every use of the form, so "like" includes "I like dogs" and the "like" inside "I feel like"; the filler number shown to the user is still um and uh only, and er, erm and ah are counted by form but not shown. The results page is unchanged.)*
     - *(Metrics version 3, 2026-11-22, after the third review: sentence ends and filled share changed as noted under decisions 25 and 26. Rows stored as version 2, a few test recordings on dev, keep their numbers; no backfill.)*
-24. **Pages (2026-11-21):** in the current style: sign-up with consent, sign-in, account, baseline map, trends within family. *(Built 2026-11-22, Slice B, smallest version: no new page and no chart. After the 10th recording the Account page shows one table above the list. Rows are family and mode. Columns are fillers per 100 words, filled share (by count), mid-sentence pauses per 100 words, speaking rate and prep time. Each cell shows the baseline value, then the average since baseline with the number of recordings in it. From the 11th recording the results page shows the user's baseline for that family and mode beside fillers per 100 words and prep time, the two numbers on the cards that have one. The baseline is the user's first 10 recordings. Recordings stored before metrics version 2 have no filled share, mid-sentence pause or speaking rate numbers, so those cells show a dash.)*
+24. **Pages (2026-11-21):** in the current style: sign-up with consent, sign-in, account, baseline map, trends within prompt type. *(Built 2026-11-22, Slice B, smallest version: no new page and no chart. After the 10th recording the Account page shows one table above the list. Rows are prompt type and mode. Columns are fillers per 100 words, filled share (by count), mid-sentence pauses per 100 words, speaking rate and prep time. Each cell shows the baseline value, then the average since baseline with the number of recordings in it. From the 11th recording the results page shows the user's baseline for that prompt type and mode beside fillers per 100 words and prep time, the two numbers on the cards that have one. The baseline is the user's first 10 recordings. Recordings stored before metrics version 2 have no filled share, mid-sentence pause or speaking rate numbers, so those cells show a dash.)* *(Changed 2026-11-23 by the owner: the table has one row per prompt type, text and image together. From the 11th recording the results page also shows filled share, as "N% filled share", with the baseline beside it.)*
 25. **Build 3 follow-ups (2026-11-21, owner):**
     - **Scope:** text and image prompts this build; audio prompts and the baseline/trends pages after, if time runs out. Baseline uses text and image prompts.
-    - **Comparisons** (baseline map, results vs. baseline, trends) are by family × mode.
-    - **A family that runs out** of unseen prompts for a user stops being served to that user.
+    - **Comparisons** (baseline map, results vs. baseline, trends) are by prompt type × mode. *(Changed 2026-11-23 by the owner: comparisons are by prompt type only, so each baseline number is an average of two recordings. By prompt type and mode, six of the eight groups held a single recording. The baseline still takes one text and one image recording where a prompt type has images (decision 28). Mode is still stored with every recording. Nothing stored changes: the baseline is worked out when the page loads.)*
+    - **A prompt type that runs out** of unseen prompts for a user stops being served to that user.
     - **Session:** a new session starts after 30 minutes with no recording (for "position in the session").
     - **Language:** transcription is no longer forced to English; a recording the service detects as non-English is rejected as unusable.
-    - **Background sending:** after Send, the next prompt starts automatically, with no extra click, while the previous recording is analysed in the background. *(Changed 2026-11-22 by the owner; was an optional "next prompt" link.)*
+    - **Background sending:** after Send, the next prompt starts automatically, with no extra click, while the previous recording is analysed in the background. *(Changed 2026-11-22 by the owner; was an optional "next prompt" link.)* *(Changed 2026-11-23 by the owner: after Send a "Next Recording" button is ready at once; the next recording does not start by itself. See Questions for design, "After Send".)*
     - **Send/Discard** applies to signed-in users; demo-code visitors keep the instant flow.
     - **Sign-up** needs a personal sign-up code supplied by the owner, separate from the existing demo codes. Codes live in a Supabase table (`signup_codes`); a database check at sign-up rejects a missing or used code, so the publishable key alone can't create accounts. One code = one account.
     - **Caps:** 20 recordings a day per signed-in account (sent + rejected both count). Demo codes keep the current shared daily cap, unchanged.
@@ -466,12 +484,12 @@ The first list is settled and should not be relitigated. The second list is prop
     - **Stimulus files** live in a public Supabase Storage bucket in each project.
     - **Definitions:** speaking rate = non-filler words per minute, first word start to last word end; articulation rate = the same minus silent pauses of 450 ms or more; a sentence-end pause follows a word ending in `.`, `?` or `!`; otherwise it is mid-sentence. *(Changed 2026-11-22 by the owner, metrics version 3: a sentence ends at a word ending in `.`, `?` or `!` in what was said or in the speech service's tidied version of it, because the service often drops the full stop from the spoken words when a filler follows. A filler sitting at the boundary does not hide it: the pause after "chimneys. um" is a sentence-end pause. Confirmed as they stand: speaking rate counts cut-off fragments and repeated words as words ("it's about the noise you make"); articulation rate is kept as defined.)*
     - **Unusable audio thresholds:** fewer than 15 words; speaking rate outside 0.8–5 words per second; mostly near-silent or clipping (browser level check).
-26. **Filled share (2026-11-21):** filled hesitations ÷ (filled + silent hesitations). Silent hesitations are mid-sentence pauses of 450 ms or more; a filler with an adjacent pause counts as one filled hesitation. Stored in two versions: by count and by time. The map shows the count version, per family. *(Built 2026-11-22. By time: seconds spent in filled hesitations, meaning each filler plus any pause touching it, divided by that plus the seconds of silent mid-sentence pauses. A pause that touches a filler belongs to the filled hesitation and is not counted as silent.)* *(Changed 2026-11-22 by the owner, metrics version 3: silent hesitations are all silent pauses of 450 ms or more that touch no filler, at sentence ends as well as mid-sentence. Back-to-back fillers ("uh um") are two filled hesitations.)*
+26. **Filled share (2026-11-21):** filled delays ÷ (filled + silent delays). Silent delays are mid-sentence pauses of 450 ms or more; a filler with an adjacent pause counts as one filled delay. Stored in two versions: by count and by time. The map shows the count version, per prompt type. *(Built 2026-11-22. By time: seconds spent in filled delays, meaning each filler plus any pause touching it, divided by that plus the seconds of silent mid-sentence pauses. A pause that touches a filler belongs to the filled delay and is not counted as silent.)* *(Changed 2026-11-22 by the owner, metrics version 3: silent delays are all silent pauses of 450 ms or more that touch no filler, at sentence ends as well as mid-sentence. Back-to-back fillers ("uh um") are two filled delays.)*
 27. **Prompt voice (2026-11-22, owner):**
     - Prompts sound warm and human, and speak to the user as "you". The "no second person" rule covers app copy only, never prompts.
     - Easy to talk about, difficult to describe: easy to take on emotionally, demanding in word choice. Ordinary discomfort (a group project, speaking to a crowd) is fine; the user can skip.
     - Every question in a prompt must be one a person would sensibly ask. No question with an obvious answer ("what goes on in a kitchen").
-    - No fixed sentence pasted onto every prompt in a family.
+    - No fixed sentence pasted onto every prompt in a prompt type.
     - Stakes and constraints make a prompt answerable: a situation that gives a reason to answer (a prize, a guest, a choice of one) and a limit that gives the answer a shape, without boxing the speaker in.
     - The number of beats is not fixed. It depends on what is being asked: a simple first beat (a kitchen is a kitchen) needs less thought, so the prompt can carry more.
     - Invent / text / before ("Tell the story that ends this way") is retired as unwieldy. Hypotheticals ("If you had to...") replace it, as Invent / text / whatif.
@@ -488,8 +506,8 @@ The first list is settled and should not be relitigated. The second list is prop
     - Every image is square, so it stays readable on a phone. No legible text or logos, no recognizable people or places, nothing distressing.
     - Made with OpenAI GPT Image 2.5 Sunburst through OpenRouter (`design/stimuli/generate_images.py`; every image, its generation prompt and its cost are logged in `design/stimuli/generated.csv`). License "generated", credit "Generated image".
     - Build 3 set: 12 argue pairs, 6 invent scenes, 12 describe scenes (`design/2026-11-22-stimuli-image.csv`, `design/2026-11-22-prompts-image.csv`). Files live in each project's `stimuli` bucket.
-    - An image prompt has no text of its own. A header line per family and mode says what is wanted. Invent / image: "What's going on here? What will happen next?" (owner, 2026-11-22). Describe / image: "What do you notice about this picture?" (owner, 2026-11-22). Argue / image: "Make your case for either. Be specific."
-    - Baseline (decision 19): where a family has an approved image prompt, its two recordings are one text and one image, in either order. Otherwise two text.
+    - An image prompt has no text of its own. A header line per prompt type and mode says what is wanted. Invent / image: "What's going on here? What will happen next?" (owner, 2026-11-22). Describe / image: "What do you notice about this picture?" (owner, 2026-11-22). Argue / image: "Make your case for either. Be specific."
+    - Baseline (decision 19): where a prompt type has an approved image prompt, its two recordings are one text and one image, in either order. Otherwise two text.
     - Prep time for an image prompt starts when the image has finished loading: the record screen appears, and recording starts, only then.
     - Before serving an image prompt the server checks its files are in the bucket; if one is missing the prompt is not served.
     - An image prompt counts as seen only once its pictures have loaded in the browser, which then tells the server. A picture that fails to load, or takes more than 15 seconds, does not use the prompt up. *(Owner, 2026-11-22.)*
@@ -506,13 +524,13 @@ The first list is settled and should not be relitigated. The second list is prop
 1. Two WPM figures: speaking rate and articulation rate.
 2. Lexical fillers classified by the LLM with context; vocalized fillers from the STT flag.
 3. Crutch word shown only once stable across N recordings.
-4. Pauses split by position; filler-to-pause ratio as the headline metric.
+4. Pauses split by position; filler-to-pause ratio as the headline metric. *(2026-11-23: the ratio is built as filled share, decision 26. The owner wants it on the results page; see Questions for design.)*
 5. Recording starts at prompt reveal; prep time stored and framed neutrally.
 6. No numeric countdown; soft fill bar; hard stop at 60 s; stopping early allowed.
 7. Structure inside the prompt; no mid-recording prompts.
 8. Prompts tagged by type; trends compared within type.
-9. Exactly one recommendation per recording, carried into the next prompt as its focus.
-10. Numbers come from code; narration comes from the LLM.
+9. Exactly one recommendation per recording, carried into the next prompt as its focus. *(Dropped 2026-11-23: a non-goal.)*
+10. Numbers come from code; narration comes from the LLM. *(2026-11-23: numbers still come from code. There is no narration; the recommendation is a non-goal.)*
 11. Web client, Python backend, SQLite from build 2 (build 1 is a throwaway).
 
 ## Open questions
@@ -524,7 +542,7 @@ Raise these rather than resolve them.
 - [ ] Vocabulary feature (build 5): precision suggestions ("really good" → a specific word), a lexical-diversity score, or tracking whether suggested words get used in later recordings? Only the last one creates a habit loop; it also needs the most sessions to show anything.
 - [ ] Prompt bank (build 1 uses a fixed bank of 5; prompt generation later): how many prompts, who writes them, how many per type. The three-beat structure needs to be consistent across the bank or the metrics drift.
 - [ ] Listen before metrics: is playback mandatory before the numbers appear, or optional?
-- [ ] Playback: raw audio, or with fillers and hesitation pauses highlighted on a waveform?
+- [ ] Playback: raw audio, or with fillers and delay pauses highlighted on a waveform?
 - [x] Multi-user accounts, or single-user for the demo? *Multi-user with sign-in, 2026-11-21 (decision 13).*
 - [ ] Is a particular LLM provider required for the recommendation call?
 
@@ -546,10 +564,24 @@ Raise these rather than resolve them.
 
 Added by the coding agent for the next design review. Resolved items move into **Decisions made**.
 
+- [ ] **To build, from the weekly review** (owner, 2026-11-23; the review file is kept on the owner's machine, not in the repo):
+  - **Filled share on the results page.** It is the headline metric (Ideas considered; decision 26) and appeared only in the Account table. *Built 2026-11-23 on branch `review-followups`: a third blue box, "N% of delays filled" (owner's approval of the agent's wording), with the prompt type baseline beside it from the 11th recording. "No delays" when a recording has no filler and no silent pause. Shown to demo-code visitors too.* *Until the results build-out, the number still counts each filler as its own delay (metrics version 3), not a chain of fillers and pauses as one.* *Changed the same day after the fresh-pi review (owner: "fix finding 4 with proper verbiage"): the box reads "N% filled share", or "No fillers or silent pauses", so the label does not claim the one-chain-one-Delay count before it is built.*
+  - **Words** (owner, 2026-11-23): "prompt type" replaces "family", and "delay" replaces "hesitation" (the term in the research), throughout HANDOFF, the README and the Product Page. A filled delay is an um or uh; a silent delay is a silent pause. Not changed: "hesitation" in the sections of this file written on 2026-11-05, the dated files in `design/`, and names inside the code and the database (`family`, `filled_hesitations`, `silent_hesitations`), which stay as stored.
+  - **Speed-talking minigame** (owner, 2026-11-23): 30 seconds describing your surroundings, as many articulated words as possible; a high score, competitive between users. It "doesnt tell users what good speech is. its about speaking fast." Minigame recordings never count toward the baseline, the averages or any results number. "its a minigame. a side quest. just for fun." Its own task, due 2026-11-30 noon; design brief still to be written.
+  - **Prompt engine work** (owner, 2026-11-23): a Build 4 step. It includes the review of the 16 borderline prompts and the 7 Argue prompts that ask for several answers, against rule 1 (one task per prompt).
+  - **Results build-out** (owner, 2026-11-23; scoped to Build 4, with the redo of the Account table): show repetitions and cut-offs, which are stored and not shown today. The owner's likely shape: group everything into "disfluencies" for one overall trend line, with detail the user can click into to see exactly what they are doing. Each baseline number stays one average across the prompt type's recordings; no low and high. To settle in the design: how the grouped total is counted, so that a filler with a pause beside it, or a run of repeated words, is not counted twice. *(Owner, later the same day: the grouping is Delays, other disfluencies, and word usages; see **Scope**. Any chain of fillers and pauses that touch is one Delay, which settles the first double-counting question.)*
+  - **The "corrections" count** (owner, 2026-11-23): left as it is until the hand-counted recordings show what a real correction looks like. In the four test C recordings it mostly counted full stops the speech service added. Stored, never shown.
+  - **Spec-kit files removed** (owner, 2026-11-23): `.specify/` and `.pi/prompts/speckit.*`, unused since 2026-11-05. Git history keeps them.
+  - **A definitions page:** what each number means, in plain terms. Copy to be drafted from this file's definitions for the owner to mark up.
+  - **After Send** (decision 25 and the owner's note after testing Slice B, both 2026-11-22). *Built 2026-11-23 on branch `review-followups`, for signed-in users: no countdown; a "Next Recording" button is ready at once and the sent recording is analysed in the background; a second button opens its results (or transcript, during baseline) when they are ready. The next recording does not start by itself: recording begins the moment a prompt appears, so the speaker chooses when. Confirmed by the owner, 2026-11-23: the button is correct, and it replaces decision 25's "starts automatically, with no extra click". Demo-code visitors keep the countdown.*
+  - **Landing button and the way in** (owner, 2026-11-23; replaces his 2026-11-22 note about labelling the OK button as the demo). The demo is not what people should use. The big landing button reads "Record New Response" and opens the sign-in page. Under the sign-in form: "Create Account", then a smaller "Use the demo version" button, which still needs a demo code. *Built 2026-11-23 on branch `review-followups`. The "Sign in · Create account" links on the landing page were removed, since the button now leads to both (confirmed by the owner, 2026-11-23).*
+  - **Account deletion** (Build 4, not before: the owner needs the stored data this week): a delete button on the Account page with an "are you sure" step. It deletes the account and every stored transcript, recording row and prompt event. Needs a migration and a server route; the browser still never writes to the database (AGENTS rule 11).
+  - **Accuracy test on the current build:** 15 hand-counted recordings (`experiments/stt-compare/hand-count/`), sent with the app's own settings (no forced language) and run through `metrics.py`. Replaces test C as the evidence; test C forced English.
+
 - [ ] **Invent story snippets need reshaping** (owner, 2026-11-22): the Invent / text / after prompts (`inv-t-01` to `inv-t-25`, a line of fiction plus a question) are not working. They are denied for Build 3 and move to the next build. The owner will work out the principles more systematically before another pass; his first rewordings of five of them (`inv-t-03`, `06`, `07`, `08`, `11`) are saved in the CSV. The hypotheticals (Invent / text / whatif) are good and stay.
 - [ ] **Owner's design notes after testing Slice B** (2026-11-22), for the next build:
-  - The analysis screen still shows the stale, unresearched facts (the common-filler list, "2.6 fillers per 100 words", "1.5 seconds" prep time). Replace or remove them.
-  - Signed-in users should not have to click the "Next prompt while this one is analysed" link. After Send, show a "Next recording" button and no analysis countdown. The countdown can stay for demo-code visitors. (Decision 25 already says the next prompt should start with no extra click; the app does not do that yet.)
+  - The analysis screen still shows the stale, unresearched facts (the common-filler list, "2.6 fillers per 100 words", "1.5 seconds" prep time). Replace or remove them. *(Removed 2026-11-23 on branch `review-followups`; owner: "the unresearched facts can be removed from the analysis screen.")*
+  - Signed-in users should not have to click the "Next prompt while this one is analysed" link. After Send, show a "Next recording" button and no analysis countdown. The countdown can stay for demo-code visitors. (Decision 25 already says the next prompt should start with no extra click; the app does not do that yet.) *(Built 2026-11-23 as a "Next Recording" button; see "After Send" above.)*
   - The Account page needs work, the baseline table included.
 - [ ] **Which word count the too-slow / too-fast check uses** (third review, 2026-11-22; owner to revisit with design): a recording is rejected if its rate is outside 0.8 to 5 words per second. The code counts every spoken word, fillers included. Decision 25 defines "speaking rate" as non-filler words. Counting non-filler words only would reject more slow, filler-heavy recordings: one of the owner's own test recordings (about 0.75 non-filler words a second, 0.9 with fillers) would be rejected. Which count should the check use?
 - [ ] **Known gaps left open for the test period** (first review, findings 4 to 8; owner's calls 2026-11-22):
@@ -557,12 +589,12 @@ Added by the coding agent for the next design review. Resolved items move into *
   - **The server does not check that a prompt was served before accepting a recording for it** (finding 5): "never the same prompt twice" is enforced by the page only. Fine while testing; move the rule to the server at some point.
   - **No rate limit of our own on sign-up and sign-in** (finding 6): every attempt reaches Supabase from the server's single address, so Supabase's per-address limits are shared by all users. Fine while testing; needed before the app goes truly public. Supabase's limits as set on 2026-11-22: 360 sign-ups and sign-ins an hour, 360 token requests an hour, 1,800 token refreshes an hour, each per address.
   - **A failed "who is this user?" check signs the user out and loses the recording** (finding 7): accepted for now. Losing one recording is tolerable; watch for it happening repeatedly. The page records a `signed_out_forced` event in PostHog whenever it signs a user out on its own, so repeats can be counted. Likely causes: a Supabase incident, Supabase rate limiting, or a paused project.
-  - **The daily cap can be exceeded by simultaneous sends** (finding 4): ignored.
+  - **The daily cap can be exceeded by simultaneous sends** (finding 4): fixed 2026-11-23 in PR #12, after the security review rated it High. The server now handles one transcription at a time per account, so each is counted before the next is checked. *(Was "ignored", owner's call 2026-11-22.)*
 - [ ] **Which sounds count as a filler inside the metrics** (fourth review, 2026-11-22): the pause and filled-share arithmetic treats only um and uh as fillers, matching the number shown to the user. Er, erm and ah are counted by form but otherwise treated as ordinary words, so a pause beside "er" counts as silent. Should they count as fillers there too?
 - [ ] **Averages across metrics versions** (fourth review, 2026-11-22): the baseline table averages a user's rows whatever their metrics version. Only the owner's dev test recordings span versions 1 to 3; prod starts at version 3. If a definition changes again after real users have recordings, decide whether old rows are recomputed or left out.
 - [ ] **Word forms in context** (owner, 2026-11-22): the stored word-list counts are raw (every "like", whatever its use). Telling a filler use from an ordinary one is for the next build, in the context layer.
-- [ ] **Rule 1, one task per prompt** (owner, 2026-11-22): many of the reworded prompts ask for two things, which rule 1 in §B3 of the guidelines forbids; decision 27 did not override it. The owner decides in the pending prompt review whether rule 1 goes or the prompts change. Conflicts are listed in `design/2026-11-22-rule1-conflicts.md`.
-- [ ] **A header for every family** (owner, 2026-11-22): each family will get a line above the prompt saying what kind of response is wanted. Wording to be decided. Argue (text and image) and the Invent and Describe image prompts have one so far.
+- [x] **Rule 1, one task per prompt** (owner, 2026-11-22): many of the reworded prompts ask for two things, which rule 1 in §B3 of the guidelines forbids; decision 27 did not override it. The owner decides in the pending prompt review whether rule 1 goes or the prompts change. Conflicts are listed in `design/2026-11-22-rule1-conflicts.md`. *Applied 2026-11-22 in decision 29: rule 1 stays; 10 prompts denied for it and 3 fixed. Still open as its own question: the 16 borderline prompts and the 7 Argue prompts that ask for several answers stay approved.*
+- [ ] **A header for every prompt type** (owner, 2026-11-22): each prompt type will get a line above the prompt saying what kind of response is wanted. Wording to be decided. Argue (text and image) and the Invent and Describe image prompts have one so far.
 - [ ] **Image and audio prompt wording** (owner, 2026-11-22): the old on-screen templates ("Describe this picture. Say what is happening and what stands out.") were deleted as not good. Image prompts now use header lines (decision 28). Audio wording is still to be written.
 - [ ] **Invent and Describe images** (owner, 2026-11-22): the generated photographs are a stopgap. Find an alternative to the photorealistic look.
 
@@ -573,9 +605,9 @@ Added by the coding agent for the next design review. Resolved items move into *
   - **Prompt types, including visual prompts:** the user responds to a non-text impetus, e.g. describe a picture or animation; say what is happening, has happened, or will happen.
   - **Short, shifting prompts to create instability:** instead of one 30 s prompt, 6 × 10 s or 4 × 15 s responses with quickly changing prompts. Needs research on time pressure, task switching and prompt type vs. filler/pause rate. Leads: Christenfeld 1995; picture-description tasks ("Cookie Theft") in speech research; cognitive load and filler rate.
   - **Famous speakers on the analysis page:** show SoundSmarter results for famous speakers. Scripted speeches (e.g. Churchill) show few fillers, so they aren't a like-for-like comparison; unscripted moments compare better: press conferences (JFK, Obama), talk shows (Carson, Cavett), live debates (Buckley–Vidal 1968), Prime Minister's Questions. Film clips raise copyright questions; public-domain material is safer.
-  - **Scope: do fewer fillers make a better speaker?** Obama is widely seen as an excellent speaker yet says "uh" often when unscripted; Clark & Fox Tree 2002 treat um/uh as signals listeners use. Wit is content; SoundSmarter measures delivery only. The PRD's goal is awareness, not "eliminate fillers"; a famous-speaker comparison could undercut that unless it includes great speakers with high filler counts. Owner's questions: who are the great extemporaneous speakers? Is it rapier wit? How do you define it?
+  - **Scope: do fewer fillers make a better speaker?** Obama is widely seen as an excellent speaker yet says "uh" often when unscripted; Clark & Fox Tree 2002 treat um/uh as signals listeners use. Wit is content; SoundSmarter measures delivery only. The PRD's goal is awareness, not "eliminate fillers"; a famous-speaker comparison could undercut that unless it includes great speakers with high filler counts. Owner's questions: who are the great spontaneous speakers? Is it rapier wit? How do you define it?
   - **More prompt modes and task types** (owner, 2026-11-17): **audio prompts** (play a short clip, the user describes it), alongside text and visual. Task types: describe something; give an opinion; estimate or reason something through; solve a puzzle aloud; continue a story from a given opening; more to come. Question: does filler/pause rate differ by mode and task type?
-  - **Terminology:** in competitive speech, "extemporaneous" = prepared, delivered without a script; "impromptu" = little or no prep. SoundSmarter is closer to impromptu, but the docs say extemporaneous.
+  - **Terminology:** in competitive speech, "extemporaneous" = prepared, delivered without a script; "impromptu" = little or no prep. SoundSmarter is closer to impromptu, but the docs say extemporaneous. *(Resolved 2026-11-23 by the owner: the word is "spontaneous", replaced throughout the docs. "Extemporaneous" does not mean the same thing.)*
 
 - [ ] **Fail states: bad audio** (owner, 2026-11-17): no design yet for when the app gets poor audio. Owner tested in a loud room with several people talking at once; the app returned metrics as normal on a transcript that started readable, then broke down into fragments and mixed languages (excerpt: "sv delleissant Fell timber ... incred incred76 incred norms¿ 원래 careg") and other people's speech. Design needs guidelines for:
   - **Detection:** how the app knows the audio is bad (e.g. low transcription confidence, non-English or garbled words, more than one speaker, background noise level).
@@ -593,7 +625,7 @@ Added by the coding agent for the next design review. Resolved items move into *
   - **Profile page:** establishes the user's speech-pattern profile, then shows trends over time.
   - **Does practice change speech?** Decide how to measure whether a user's metrics change across sessions or within a practice session, and what counts as a real change vs. noise.
 
-- [ ] **What is SoundSmarter?** (owner, 2026-11-17): a consumer self-improvement product, or a tool that builds a research repository on the circumstances under which people's filler and pause use changes (text vs. visual vs. audio prompts; describe vs. opinion vs. estimate vs. puzzle)? Or both: the consumer app as the data source. The answer shapes consent, data storage, the profile and the metrics.
+- [x] **What is SoundSmarter?** (owner, 2026-11-17): a consumer self-improvement product, or a tool that builds a research repository on the circumstances under which people's filler and pause use changes (text vs. visual vs. audio prompts; describe vs. opinion vs. estimate vs. puzzle)? Or both: the consumer app as the data source. The answer shapes consent, data storage, the profile and the metrics. *Answered 2026-11-23 by the owner: "SoundSmarter is an app that listens to human speech and provides a metric analysis of speech patterns given specific prompt types." See **Scope**.*
 
 - [ ] **Evaluate content, not just delivery?** (owner, 2026-11-17; to explore in design/research before anything is built). "Sounding smart" is also what you say. Owner is unsure it fits the scope. Options, roughly from most to least defensible:
   - **Structure of the response:** was the question answered? Was a reason given? Closer to interview training; may be out of scope.

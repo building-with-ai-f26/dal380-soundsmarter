@@ -3,12 +3,12 @@
 > Give this file to your coding agent and check that it is using these instructions. Keep the stack, commands, and ground rules current.
 
 ## 1. Project Overview
-- **What this repo builds:** SoundSmarter records 30–60 seconds of extemporaneous speech and returns measured metrics (filler count, fillers per 100 words, prep time, pauses) so speakers become aware of their filler and pause habits.
-- **Who it's for:** Speakers who want to develop awareness of their extemporaneous speech patterns through metric analysis (PRD, 2026-11-16). Improvement-seeking users come later, once recommendations or tracking across recordings exist. Not for language learners.
+- **What this repo builds:** SoundSmarter records 30–60 seconds of spontaneous speech and returns measured metrics (filler count, fillers per 100 words, prep time, pauses) so speakers become aware of their filler and pause habits.
+- **Who it's for:** Speakers who want to develop awareness of their spontaneous speech patterns through metric analysis (PRD, 2026-11-16). Improvement-seeking users come later, once recommendations or tracking across recordings exist. Not for language learners.
 - **The one job:** give a speaker measured feedback on *how* they speak, response after response.
 - **Primary user & core workflow:** prompt → record → transcribe → metrics. Full PRD in `docs/index.html`.
 - **Copy rule:** never call a recording a "take" (owner, 2026-11-16). Say recording, response, or attempt. Applies to the app, the Product Page and docs. Code identifiers (`takes_left`, `TAKES_PER_CODE`) can stay.
-- **Tech stack:** Build 1: throwaway local prototype using Deepgram speech-to-text (filler words on, word timestamps). From Build 2: speech-to-text is CrisperWhisper 2 via Nyra's hosted API (decided 2026-11-15 after test C). Current lean, not set in stone: web client (browser MediaRecorder), Python backend (FastAPI), SQLite. Details in HANDOFF.md → Technical choices.
+- **Tech stack:** Build 1: throwaway local prototype using Deepgram speech-to-text (filler words on, word timestamps). From Build 2: speech-to-text is CrisperWhisper 2 via Nyra's hosted API (decided 2026-11-15 after test C). From Build 3: web client (browser MediaRecorder), Python backend (FastAPI) on Render, Supabase for sign-in and Postgres (it replaced the planned SQLite, HANDOFF decision 12). Details in HANDOFF.md → Technical choices.
 
 - **Product source of truth:** [`HANDOFF.md`](./HANDOFF.md). Read it before building. Product decisions are made in design review and by the owner; the agent merges approved changes, builds, and never changes a product decision on its own. Put anything that needs deciding under "Questions for design" at the end of HANDOFF.md.
 
@@ -43,7 +43,7 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
 - `Intent.md`, `Plan.md`: class kit files; their content lives on the Product Page (pointers only)
 - `SPONSOR_MEMO.md`: class template; the final memo is written here (due Dec 14)
 - `.env.example`: required environment variables (real keys go in `.env`, never committed)
-- Deploy: Render serves `prototype/` from `main`. Auto-deploy doesn't fire; run Manual Deploy after each merge. Steps in section 5.
+- Deploy: Render serves `prototype/` from `main`. A GitHub workflow (`.github/workflows/deploy.yml`) runs the tests on every pull request and asks Render to deploy after a merge; Manual Deploy is the fallback. Steps in section 5.
 
 ## 4. Non-Negotiable Engineering Rules
 1. **Plan before coding:** Before touching multiple files, propose a brief plan and wait for approval.
@@ -62,11 +62,11 @@ All commands run from the `prototype/` folder (`cd prototype`). Needs `NYRA_API_
 ## 5. Shipping
 The steps the agent follows to get a change live. The agent works against `soundsmarter-dev` only; steps marked **owner** are done by the owner, because prod's keys are not on this machine.
 1. **Branch and test.** Work on a branch. `uv run pytest` passes.
-2. **Database change?** Add the next numbered file in `prototype/db/migrations/`. **Owner** runs it in the dev project's SQL Editor. Run both access checks on dev.
+2. **Database change?** Add the next numbered file in `prototype/db/migrations/`. Write it so the version of the app that is live now keeps working after it has run: add new columns, tables or names first; remove or rename old ones only in a later migration, once no live code uses them. **Owner** runs it in the dev project's SQL Editor. Run both access checks on dev.
 3. **Pull request.** Body has `Goal:`, `Verified:`, `Gaps:`. A fresh pi with no session memory reviews the diff; fix what is real. Show the owner a two-line summary.
-4. **Merge** to `main` once the owner approves.
-5. **Prod database and settings (owner).** Run the same migration in the prod project's SQL Editor. Add any new variable to Render's Environment page. Never before step 4.
-6. **Deploy (owner).** Render dashboard → the service → Manual Deploy → Deploy latest commit. Auto-deploy does not fire.
+4. **Prod database and settings (owner), before the merge** (owner, 2026-11-23; was after the merge). Once the pull request is approved, run the same migration in the prod project's SQL Editor and add any new variable to Render's Environment page. Check the live site still works. Never before the pull request is approved.
+5. **Merge** to `main` once the owner approves and step 4 is done.
+6. **Deploy.** A merge that changes `prototype/` deploys by itself: `.github/workflows/deploy.yml` runs the tests and then asks Render to deploy. If it does not run (not yet proven as of 2026-11-23), the owner deploys by hand: Render dashboard → the service → Manual Deploy → Deploy latest commit.
 7. **Verify the live site.** The agent loads https://soundsmarter-demo.onrender.com/ and confirms the new version is served. **Owner:** one sign-in, one recording, and the events show in PostHog. If rules or grants changed, the owner runs both access checks with `--prod`.
 8. **Roll back if it is broken (owner).** Render → Deploys → pick the last good deploy → Redeploy. This does not undo a migration; a migration that must be reversed needs a new migration.
 9. **Record it.** Tag a submitted build (`build-3`). Update the Build Log and, for a product call, HANDOFF.md's dated notes.
@@ -76,5 +76,5 @@ Stop and ask the owner before any of these, every time, even mid-task:
 - **Deleting or changing data.** Any `DELETE`, `UPDATE`, `TRUNCATE` or `DROP`; running a migration or a seed on either project; deleting files in the storage bucket; anything at all on `soundsmarter-prod`.
 - **Keys, secrets and permissions.** Reading or editing `.env`; Render's environment variables; creating, rotating or revoking a key; row-level security rules and grants; Supabase sign-in settings; making a bucket public or private; GitHub repository settings.
 - **Anything that costs money.** Calls to a paid API beyond one test recording; generating images; a new paid service or a plan upgrade; raising a spending cap, the daily cap or a rate limit.
-- **Going live.** Merging to `main`; deploying.
+- **Going live.** Merging to `main` (a merge now deploys by itself); deploying by hand.
 - **Destructive commands.** Force push; deleting a branch or tag; rewriting history; `rm` outside this repo, and inside it for anything not created in the current session.

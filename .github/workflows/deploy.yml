@@ -1,0 +1,45 @@
+# Runs the tests on every pull request, and on every push to main.
+# After a push to main that changes the app, and only if the tests pass, it asks
+# Render to deploy. Render's own auto-deploy does not fire for this repo, because
+# Render's GitHub app is not installed on the class organisation.
+#
+# Needs one repository secret: RENDER_DEPLOY_HOOK_URL
+# (Render dashboard > the service > Settings > Deploy Hook. The address is a
+# secret: anyone who has it can trigger a deploy. Never paste it into a file or chat.)
+name: Test and deploy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototype
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history, so the deploy step can see everything the push changed
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - run: uv run pytest
+      - name: Did this push change the app?
+        id: changed
+        if: github.event_name == 'push'
+        working-directory: .
+        run: |
+          # every commit in the push, not only the last one (a rebase merge pushes several)
+          if git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -q '^prototype/'; then echo "app=yes" >> "$GITHUB_OUTPUT"; fi
+      - name: Ask Render to deploy
+        if: github.event_name == 'push' && steps.changed.outputs.app == 'yes'
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "RENDER_DEPLOY_HOOK_URL is not set; nothing deployed."; exit 1; fi
+          curl --fail --silent --show-error --output /dev/null -X POST "$HOOK"

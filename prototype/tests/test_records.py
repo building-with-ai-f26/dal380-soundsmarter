@@ -116,29 +116,29 @@ def ten_baseline_recordings():
 
 def test_no_table_until_the_baseline_is_complete():
     assert records.baseline_table(ten_baseline_recordings()[:9]) == []
-    assert records.baseline_for(ten_baseline_recordings(), "describe", "text") is None  # the 10th shows no numbers
+    assert records.baseline_for(ten_baseline_recordings(), "describe") is None  # the 10th shows no numbers
 
 
-def test_table_rows_are_family_and_mode_with_baseline_then_average_since():
+def test_table_rows_are_families_with_baseline_then_average_since():
     recs = ten_baseline_recordings() + [
         rec("describe", "text", fillers_per_100=2.0, prep_s=0.5, speaking_rate_wpm=130.0),
-        rec("describe", "text", fillers_per_100=3.0, prep_s=1.5, speaking_rate_wpm=150.0),
+        rec("describe", "image", fillers_per_100=3.0, prep_s=1.5, speaking_rate_wpm=150.0),
         rec("narrate", "text", fillers_per_100=1.0, prep_s=1.0),  # stored before metrics v2: no speaking rate
     ]
-    rows = {(r["family"], r["mode"]): r["cells"] for r in records.baseline_table(recs)}
-    assert list(rows)[:3] == [("describe", "text"), ("describe", "image"), ("narrate", "text")]
-    assert rows[("describe", "text")]["fillers_per_100"] == {"baseline": 4.0, "since": 2.5, "n": 2}
-    assert rows[("describe", "image")]["fillers_per_100"] == {"baseline": 6.0, "since": None, "n": 0}
-    assert rows[("narrate", "text")]["fillers_per_100"] == {"baseline": 5.0, "since": 1.0, "n": 1}  # two text baselines averaged
-    assert rows[("narrate", "text")]["speaking_rate_wpm"] == {"baseline": 130.0, "since": None, "n": 0}
-    assert rows[("describe", "text")]["filled_share_count"] == {"baseline": None, "since": None, "n": 0}  # never stored
+    rows = {r["family"]: r["cells"] for r in records.baseline_table(recs)}
+    assert list(rows) == list(records.FAMILIES)  # one row per family, text and image together
+    assert rows["describe"]["fillers_per_100"] == {"baseline": 5.0, "since": 2.5, "n": 2}  # text 4.0 and image 6.0 averaged
+    assert rows["argue"]["fillers_per_100"] == {"baseline": 5.0, "since": None, "n": 0}
+    assert rows["narrate"]["fillers_per_100"] == {"baseline": 5.0, "since": 1.0, "n": 1}
+    assert rows["narrate"]["speaking_rate_wpm"] == {"baseline": 130.0, "since": None, "n": 0}
+    assert rows["describe"]["filled_share_count"] == {"baseline": None, "since": None, "n": 0}  # never stored
 
 
-def test_results_baseline_is_for_the_same_family_and_mode():
+def test_results_baseline_is_the_average_of_the_family():
     recs = ten_baseline_recordings() + [rec("argue", "image", fillers_per_100=9.0, prep_s=3.0)]
-    base = records.baseline_for(recs, "argue", "image")
-    assert (base["fillers_per_100"], base["prep_s"]) == (6.0, 2.0)
-    assert records.baseline_for(recs, "argue", "audio")["fillers_per_100"] is None  # no baseline for that mode
+    base = records.baseline_for(recs, "argue")
+    assert (base["fillers_per_100"], base["prep_s"]) == (5.0, 1.5)  # the text and the image baseline recording together
+    assert records.baseline_for(recs, "nonesuch")["fillers_per_100"] is None  # no baseline for that family
 
 
 def test_a_rejected_attempt_does_not_wipe_earlier_skips():

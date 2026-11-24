@@ -103,11 +103,6 @@
   .analyze { text-align: center; padding-top: 24px; }
   .analyze-actions { margin-bottom: 48px; }
   .analyze-actions .primary { font-size: 21px; padding: 14px 32px; min-width: 220px; }
-  .facts { max-width: 54ch; margin: 0 auto; text-align: center; }
-  .facts p { font-size: 17px; line-height: 2.0; margin-bottom: 26px; }
-  .facts .f { margin: 0 1px; }
-  .facts .val { display: inline-block; background: var(--blue); padding: 4px 16px; font-weight: 700; font-size: 22px; text-shadow: none; margin-top: 8px; }
-  .facts-note { font-size: 15px; }
 
   /* results */
   .cards { display: flex; gap: 22px; align-items: center; margin-bottom: 40px; }
@@ -144,10 +139,12 @@
   .form .consent { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 16px; line-height: 1.5; margin-top: 22px; }
   .form .consent input { margin-top: 5px; width: 18px; height: 18px; flex: none; }
   .form .actions { margin-top: 26px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .other-ways { margin-top: 34px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .small-btn { font-size: 15px; padding: 7px 16px; }
   .english { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
   .error { color: #b00020; }
   .acct-facts { display: flex; gap: 16px; flex-wrap: wrap; margin: 6px 0 30px; }
-  /* baseline and trends: one table, family and mode down the side (scrolls sideways on a phone) */
+  /* baseline and trends: one table, family down the side (scrolls sideways on a phone) */
   .base-wrap { overflow-x: auto; margin-top: 30px; }
   .base-table { border-collapse: collapse; width: 100%; font-size: 15px; white-space: nowrap; }
   .base-table th, .base-table td { text-align: left; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--rule); }
@@ -202,17 +199,9 @@
   <section class="screen landing" id="s-landing">
     <svg aria-hidden="true"><use href="#logo"/></svg>
     <h1>SoundSmarter</h1>
-    <p class="tagline">A self-improvement tool that listens to you speak and helps you communicate your thoughts more fluidly and confidently.</p>
-    <button class="primary start" id="ok">OK</button>
-    <p class="message" id="access"></p>
-    <!-- Shown when the link has no valid demo code (owner copy: "You need a demo code.") -->
-    <form class="code-form hidden" id="code-form">
-      <p class="message">You need a demo code.</p>
-      <input id="code-input" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Demo code">
-      <button class="primary" type="submit">OK</button>
-    </form>
-    <!-- Build 3: accounts (sign-up needs a personal code from the owner) -->
-    <p class="account-links"><button class="linklike" id="go-signin">Sign in</button> · <button class="linklike" id="go-signup">Create account</button></p>
+    <p class="tagline">A tool that listens to you speak and tracks your speech metrics.</p>
+    <!-- Owner, 2026-11-23: the big button leads to sign-in; the demo is a smaller button on that page -->
+    <button class="primary start" id="ok">Record New Response</button>
     <!-- Recording + analytics notice (owner-approved draft, 2026-11-16) -->
     <p class="notice">This demo records your voice to measure your speech. It also uses PostHog to record how you use the page, including screen replays.</p>
   </section>
@@ -248,9 +237,20 @@
       <input type="password" id="si-password" autocomplete="current-password" required>
       <div class="actions">
         <button class="primary" type="submit" id="si-submit">Sign In</button>
-        <button class="linklike" type="button" id="si-to-signup">Create account</button>
       </div>
       <p class="message error" id="si-error"></p>
+    </form>
+    <!-- Below the sign-in form (owner, 2026-11-23): create an account, then the demo, smaller -->
+    <div class="form other-ways">
+      <button type="button" id="si-to-signup">Create Account</button>
+      <button class="small-btn" type="button" id="use-demo">Use the demo version</button>
+      <p class="message" id="access"></p>
+    </div>
+    <!-- Shown when the link has no valid demo code (owner copy: "You need a demo code.") -->
+    <form class="code-form form hidden" id="code-form">
+      <p class="message">You need a demo code.</p>
+      <input id="code-input" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Demo code">
+      <button class="primary" type="submit">OK</button>
     </form>
   </section>
 
@@ -321,20 +321,9 @@
   <section class="screen analyze hidden" id="s-analyze">
     <div class="analyze-actions">
       <button class="primary" id="results-btn" disabled>Analyzing (10)</button>
-      <!-- Signed-in: carry on while this one is analysed in the background -->
-      <p class="account-links hidden" id="bg-next-wrap"><button class="linklike" id="bg-next">Next prompt while this one is analysed</button></p>
+      <!-- Signed-in: carry on at once; this one is analysed in the background (owner, 2026-11-22) -->
+      <p class="account-links hidden" id="bg-next-wrap"><button class="primary" id="bg-next">Next Recording</button></p>
       <p class="message" id="analyze-error"></p>
-    </div>
-    <div class="facts" id="facts">
-      <p>Most common filler words:<br>
-        <span class="f">um</span> <span class="f">uh</span> <span class="f">like</span>
-        <span class="f">you know</span> <span class="f">so</span> <span class="f">I mean</span>
-        <span class="f">actually</span> <span class="f">basically</span> <span class="f">kind of</span>
-        <span class="f">sort of</span> <span class="f">right</span> <span class="f">well</span>
-        <span class="f">okay</span> <span class="f">just</span> <span class="f">literally</span></p>
-      <p>Average filler words per 100 spoken words:<br><span class="val">2.6</span></p>
-      <p>Average prep time (pause before beginning to speak):<br><span class="val">1.5 seconds</span></p>
-      <p class="facts-note">Filler word list and prep time average are <strong>placeholders, not yet research-sourced</strong>.</p>
     </div>
   </section>
 
@@ -350,6 +339,8 @@
       <div class="card-right">
         <div class="bbox" id="rate"></div>
         <div class="bbox" id="prep"></div>
+        <!-- Filled share, the headline metric (owner, 2026-11-23) -->
+        <div class="bbox" id="filled"></div>
       </div>
     </div>
 
@@ -426,6 +417,7 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 let session = JSON.parse(localStorage.getItem("ss_session") || "null");
 let current = null;      // signed-in: the prompt being answered {id, family, text, ...}
 let baselineLeft = null; // signed-in: recordings still needed before numbers appear
+let pending = [];        // signed-in: prompts whose recordings were sent and are still being analysed
 const signedIn = () => !!session;
 const ACCOUNT_SCREENS = ["s-landing", "s-signin", "s-signup"];
 
@@ -521,7 +513,7 @@ const COMPARED = [
 ];
 const shown = (fmt, v) => (v === null || v === undefined ? "\u2013" : fmt(v));
 
-// Baseline and trends (after the 10th recording): rows are family and mode
+// Baseline and trends (after the 10th recording): one row per prompt type
 async function fillBaselineTable(ready) {
   $("base-wrap").classList.add("hidden");
   if (!ready) return;
@@ -530,7 +522,7 @@ async function fillBaselineTable(ready) {
   $("base-rows").replaceChildren(...rows.map((row) => {
     const tr = document.createElement("tr");
     const name = document.createElement("th");
-    name.textContent = `${FAMILY_NAMES[row.family] || row.family} \u00b7 ${row.mode}`;
+    name.textContent = FAMILY_NAMES[row.family] || row.family;
     tr.append(name);
     for (const [metric, fmt] of COMPARED) {
       const cell = row.cells[metric], td = document.createElement("td");
@@ -584,8 +576,11 @@ async function showAccount() {
 
 // Ask the server for the next prompt (same family after a skip or discard)
 async function fetchPrompt(family) {
-  const q = family ? "?family=" + encodeURIComponent(family) : "";
-  current = await authJSON("/api/prompt" + q);
+  // Tell the server which recordings are still being analysed, so prompt types stay even
+  const q = new URLSearchParams();
+  if (family) q.set("family", family);
+  if (pending.length) q.set("pending", pending.map((p) => `${p.family}:${p.mode}`).join(","));
+  current = await authJSON("/api/prompt" + (q.toString() ? "?" + q : ""));
   // Image prompts: wait until every picture has fully loaded before the record
   // screen appears and recording starts, so prep time runs from a visible image.
   current.imgEls = await Promise.all((current.images || []).map((im) => new Promise((resolve, reject) => {
@@ -757,7 +752,9 @@ async function analyse(blob, mimeType, seconds, prompt) {
   startCountdown(inBaseline);
   const analysisStartedAt = Date.now();
   let movedOn = false;
-  $("bg-next").onclick = () => { movedOn = true; clearInterval(waitTimer); startSignedIn(); };
+  $("bg-next").disabled = false;
+  $("bg-next").onclick = () => { $("bg-next").disabled = true; movedOn = true; clearInterval(waitTimer); startSignedIn(); };  // one click only
+  if (prompt) pending.push(prompt);
   try {
     const headers = { "Content-Type": mimeType.split(";")[0] };
     let resp;
@@ -784,25 +781,29 @@ async function analyse(blob, mimeType, seconds, prompt) {
     track("transcribe_failed", { error: String(err.message).slice(0, 100) });
     if (movedOn) { bgNote("Previous response wasn't saved: " + err.message); return; }
     clearInterval(waitTimer);
+    $("bg-next-wrap").classList.add("hidden");  // one button is enough once it has failed
+    $("results-btn").classList.add("primary");
     $("results-btn").textContent = "Record Next Response";
     $("results-btn").disabled = false;
     $("results-btn").onclick = () => { if (signedIn()) startSignedIn(); else { nextPrompt(); startTake(); } };
     $("analyze-error").textContent = "Error: " + err.message;
+  } finally {
+    pending = pending.filter((p) => p !== prompt);
   }
 }
 
 function startCountdown(inBaseline) {
   show("s-analyze");
-  // During baseline the placeholder averages are numbers too: hide them
-  $("facts").classList.toggle("hidden", inBaseline);
   $("bg-next-wrap").classList.toggle("hidden", !signedIn());
   const btn = $("results-btn");
   btn.disabled = true;
   btn.onclick = showResults;
+  btn.classList.toggle("primary", !signedIn());  // signed-in: Next Recording is the main button
   $("analyze-error").textContent = "";
+  clearInterval(waitTimer);
+  if (signedIn()) { btn.textContent = "Analyzing..."; return; }  // no countdown; Next Recording is ready at once
   let left = COUNTDOWN;
   btn.textContent = `Analyzing (${left})`;
-  clearInterval(waitTimer);
   waitTimer = setInterval(() => {
     left -= 1;
     btn.textContent = left > 0 ? `Analyzing (${left})` : "Analyzing...(a bit longer)";
@@ -826,9 +827,13 @@ function fillResults(data, inBaseline) {
   $("uhs").textContent = plural(data.breakdown.uh, "Uh");
   $("rate").textContent = `${data.fillers_per_100.toFixed(1)} fillers per 100 words`;
   $("prep").textContent = data.prep_s === null ? "No speech detected" : `${data.prep_s.toFixed(1)} seconds prep time`;
-  // From the 11th recording: the user's own baseline for this family and mode, beside each number that has one
+  const pct = (v) => Math.round(v * 100) + "%";
+  const share = data.filled_share_count;  // null when the recording had no fillers and no silent pauses
+  $("filled").textContent = share === null || share === undefined ? "No fillers or silent pauses" : `${pct(share)} filled share`;
+  // From the 11th recording: the user's own baseline for this prompt type, beside each number that has one
   const base = data.baseline || {};
-  for (const [id, metric, fmt] of [["rate", "fillers_per_100", (v) => v.toFixed(1)], ["prep", "prep_s", (v) => v.toFixed(1) + " s"]]) {
+  for (const [id, metric, fmt] of [["rate", "fillers_per_100", (v) => v.toFixed(1)], ["prep", "prep_s", (v) => v.toFixed(1) + " s"],
+                                   ["filled", "filled_share_count", pct]]) {
     if (base[metric] === null || base[metric] === undefined) continue;
     const span = document.createElement("span");
     span.className = "vs-base";
@@ -891,34 +896,38 @@ $("track").onclick = (e) => {
 };
 
 // ---------- access ----------
-// Check the invite code before anyone records (no speech-service call, no cost)
-async function checkAccess() {
-  $("ok").disabled = true;
-  const resp = await fetch("/access", { headers: { "X-Access-Code": CODE } });
-  const data = await resp.json();
+// Check the invite code when the demo is chosen, before anyone records (no speech-service call, no cost)
+async function useDemo() {
+  $("access").textContent = "";
+  let resp, data;
+  try {
+    resp = await fetch("/access", { headers: { "X-Access-Code": CODE } });
+    data = await resp.json();
+  } catch { $("access").textContent = "Couldn't reach the server. Try again."; return; }
   if (resp.status === 403) {  // no code, or a wrong one: ask for it
-    $("ok").classList.add("hidden");
+    if (CODE) $("access").textContent = "That demo code isn't valid.";
     $("code-form").classList.remove("hidden");
     $("code-input").value = "";
+    $("code-input").focus();
     return;
   }
+  $("code-form").classList.add("hidden");
   if (!resp.ok) { $("access").textContent = data.detail; return; }
   takesLeft = data.takes_left;
-  $("code-form").classList.add("hidden");
-  $("ok").classList.remove("hidden");
-  $("ok").disabled = false;
+  track("demo_chosen");
+  show("s-intro");  // valid code: on to Start
 }
+$("use-demo").onclick = useDemo;
 $("code-form").onsubmit = async (e) => {
   e.preventDefault();
   CODE = $("code-input").value.trim();
   history.replaceState(null, "", "?code=" + encodeURIComponent(CODE));  // a reload keeps the code
-  await checkAccess();
-  if (!$("ok").disabled) show("s-intro");  // valid code: straight on to Start
+  await useDemo();
 };
 
 function nextPrompt() { index = (index + 1) % PROMPTS.length; }
 
-$("ok").onclick = () => show("s-intro");
+$("ok").onclick = () => show("s-signin");
 $("start").onclick = async () => {
   try {
     await startTake();
@@ -948,8 +957,6 @@ $("discard").onclick = async () => {
   startSignedIn(current.family);
 };
 
-$("go-signin").onclick = () => show("s-signin");
-$("go-signup").onclick = () => show("s-signup");
 $("su-to-signin").onclick = () => show("s-signin");
 $("si-to-signup").onclick = () => show("s-signup");
 $("to-account").onclick = () => { $("audio").pause(); dropTake(); showAccount(); };
@@ -960,7 +967,7 @@ $("rerecord").onclick = async () => {
 $("signout").onclick = () => { track("signed_out"); signOut(""); };
 
 // Start: signed-in users go straight to their account; everyone else sees the landing page
-if (signedIn()) showAccount(); else checkAccess();
+if (signedIn()) showAccount();
 </script>
 </body>
 </html>
