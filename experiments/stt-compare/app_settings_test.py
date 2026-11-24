@@ -55,7 +55,11 @@ def send(f: Path) -> dict:
     resp = httpx.post(server.NYRA_URL, headers={"Authorization": f"Bearer {os.environ['NYRA_API_KEY']}"},
                       data=server.NYRA_FIELDS, files={"file": (wav.name, wav.read_bytes(), "audio/wav")}, timeout=180)
     if resp.status_code != 200:
-        sys.exit(f"The speech service refused {f.name}: HTTP {resp.status_code} {resp.text[:300]}")
+        try:  # the error's short code only: its full text could name the account or its balance
+            code = resp.json()["error"]["code"]
+        except (ValueError, KeyError, TypeError):
+            code = "no code given"
+        sys.exit(f"The speech service refused {f.name}: HTTP {resp.status_code} ({code})")
     return resp.json()
 
 

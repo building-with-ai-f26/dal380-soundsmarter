@@ -210,7 +210,7 @@
           <div class="screen" data-screen="results" hidden>
             <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Results Page states"><button type="button" data-src="images/build3-results-no_baseline.png" aria-pressed="true">During baseline</button><button type="button" data-src="images/build3-results-baseline.png" aria-pressed="false">From the 11th</button></div></div>
             <a class="frame" style="--h:1000" href="images/build3-results-no_baseline.png" target="_blank" rel="noopener"><img src="images/build3-results-no_baseline.png" alt="Results Page" /></a>
-            <p class="caption">During the 10 baseline recordings, shows baseline progress, playback and the transcription, and no numbers. From the 11th, shows fillers, fillers per 100 words and prep time, with the baseline for that prompt type beside the last two, and marks fillers and silent pauses in the transcription.</p>
+            <p class="caption">During the 10 baseline recordings, shows baseline progress, playback and the transcription, and no numbers. From the 11th, shows fillers, fillers per 100 words, prep time and filled share, with the baseline for that prompt type beside the last three, and marks fillers and silent pauses in the transcription.</p>
           </div>
           <div class="screen" data-screen="unusable" hidden>
             <a class="frame" style="--h:330" href="images/build3-too-quiet.png" target="_blank" rel="noopener"><img src="images/build3-too-quiet.png" alt="Too Quiet Page" /></a>
@@ -259,9 +259,9 @@
           <li><strong>Record:</strong> 30 seconds minimum, 60 maximum. After stopping, the user chooses Send or Discard. Nothing is transcribed until Send.</li>
           <li><strong>Analyze:</strong> Nyra Labs CrisperWhisper 2 keeps every filler and times every word. A recording that is near-silent, clipped, under 15 words, implausibly fast or slow, or not in English is rejected: the recording is not stored and the user records the same prompt again.</li>
           <li><strong>Baseline:</strong> The first 10 recordings, two per prompt type. The user gets playback and the transcription. No numbers.</li>
-          <li><strong>Results:</strong> After the 10th recording the Account page shows a table by prompt type: fillers per 100 words, filled share (the share of delays filled with um or uh rather than left silent), mid-sentence pauses per 100 words, speaking rate and prep time, each as the baseline and the average since. From the 11th, the results page shows that recording's numbers with the baseline beside fillers per 100 words and prep time.</li>
+          <li><strong>Results:</strong> After the 10th recording the Account page shows a table by prompt type: fillers per 100 words, filled share (the share of delays filled with um or uh rather than left silent), mid-sentence pauses per 100 words, speaking rate and prep time, each as the baseline and the average since. From the 11th, the results page shows that recording's numbers with the baseline beside fillers per 100 words, prep time and filled share.</li>
         </ol>
-        <p>Demo-code visitors keep the Build 2 flow: 12 prompts, numbers straight away, nothing stored.</p>
+        <p>Demo-code visitors reach a shorter version from the sign-in page ("Use the demo version"): 12 prompts, numbers straight away, nothing stored.</p>
         <p><strong>Success test:</strong> A signed-in user completes the 10 baseline recordings without help and sees the baseline table.</p>
 
         <h3>Scope</h3>

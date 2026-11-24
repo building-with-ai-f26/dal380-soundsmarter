@@ -295,14 +295,31 @@ async def stimulus_for(token: str, prompt: dict) -> dict | None:
     }
 
 
+def pending_recordings(pending: str | None) -> list[dict]:
+    """Recordings the page says are still being analysed ("describe:text,argue:image"), as stand-in rows.
+
+    Only used to keep prompt types and modes even when choosing the next prompt. Anything
+    not a known prompt type and mode is dropped, and at most three are counted.
+    """
+    out = []
+    for item in (pending or "").split(",")[:3]:
+        fam, _, mode = item.partition(":")
+        if fam in records.FAMILIES and mode in ("text", "image", "audio"):
+            out.append({"family": fam, "mode": mode})
+    return out
+
+
 @app.get("/api/prompt")
-async def next_prompt(request: Request, family: str | None = None):
+async def next_prompt(request: Request, family: str | None = None, pending: str | None = None):
     """Serve the next prompt and record that it was seen."""
     token = bearer(request)
     user = await supa_call(supa.user(token))
     prompts = await supa_call(supa.select(token, "prompts", {"select": "id,family,mode,variant,text,stimulus_id"}))
     events = await supa_call(supa.select(token, "prompt_events", {"select": "prompt_id,event"}))
     recs = await supa_call(supa.select(token, "recordings", {"select": "family,mode", "order": "created_at.asc"}))
+    # After Send the user can ask for the next prompt before the last recording is saved:
+    # count the ones still being analysed, so the baseline stays two per prompt type.
+    recs = recs + pending_recordings(pending)
     # A prompt whose stimulus file is missing is never served (decision 22): drop it and choose again.
     while True:
         prompt = records.choose_prompt(prompts, events, recs, family=family)
@@ -424,10 +441,15 @@ async def transcribe_and_store(request: Request, token: str, user: dict):
         "metrics_version": METRICS_VERSION, "word_list_version": WORD_LIST_VERSION,
         "transcription": data, "stt_model": STT_MODEL, "language": data.get("language"),
     }))
-    # "sent" is recorded only once the recording is saved: if the save fails, the user
-    # keeps today's slot and the prompt can be served again.
-    await supa_call(supa.insert_as_server("prompt_events", {
-        "user_id": user["id"], "prompt_id": prompt["id"], "event": "sent"}))
+    # "sent" is recorded only once the recording is saved: if the save fails, the user keeps
+    # today's slot. (A text prompt is already used up by then: it was marked served.)
+    # If the recording saved but this event does not, the recording still stands and the user
+    # gets their results; that one recording is just not counted toward today's cap.
+    try:
+        await supa_call(supa.insert_as_server("prompt_events", {
+            "user_id": user["id"], "prompt_id": prompt["id"], "event": "sent"}))
+    except HTTPException:
+        log.warning("Recording saved, but its 'sent' event was not (user %s, prompt %s)", user["id"], prompt["id"])
     recs = await supa_call(supa.select(token, "recordings", {
         "select": "family,mode,metrics", "order": "created_at.asc"}))
     return {**shown, "saved": True, "recordings": len(recs), "baseline_size": records.BASELINE_SIZE,

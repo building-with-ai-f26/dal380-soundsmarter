@@ -417,6 +417,7 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 let session = JSON.parse(localStorage.getItem("ss_session") || "null");
 let current = null;      // signed-in: the prompt being answered {id, family, text, ...}
 let baselineLeft = null; // signed-in: recordings still needed before numbers appear
+let pending = [];        // signed-in: prompts whose recordings were sent and are still being analysed
 const signedIn = () => !!session;
 const ACCOUNT_SCREENS = ["s-landing", "s-signin", "s-signup"];
 
@@ -575,8 +576,11 @@ async function showAccount() {
 
 // Ask the server for the next prompt (same family after a skip or discard)
 async function fetchPrompt(family) {
-  const q = family ? "?family=" + encodeURIComponent(family) : "";
-  current = await authJSON("/api/prompt" + q);
+  // Tell the server which recordings are still being analysed, so prompt types stay even
+  const q = new URLSearchParams();
+  if (family) q.set("family", family);
+  if (pending.length) q.set("pending", pending.map((p) => `${p.family}:${p.mode}`).join(","));
+  current = await authJSON("/api/prompt" + (q.toString() ? "?" + q : ""));
   // Image prompts: wait until every picture has fully loaded before the record
   // screen appears and recording starts, so prep time runs from a visible image.
   current.imgEls = await Promise.all((current.images || []).map((im) => new Promise((resolve, reject) => {
@@ -748,7 +752,9 @@ async function analyse(blob, mimeType, seconds, prompt) {
   startCountdown(inBaseline);
   const analysisStartedAt = Date.now();
   let movedOn = false;
-  $("bg-next").onclick = () => { movedOn = true; clearInterval(waitTimer); startSignedIn(); };
+  $("bg-next").disabled = false;
+  $("bg-next").onclick = () => { $("bg-next").disabled = true; movedOn = true; clearInterval(waitTimer); startSignedIn(); };  // one click only
+  if (prompt) pending.push(prompt);
   try {
     const headers = { "Content-Type": mimeType.split(";")[0] };
     let resp;
@@ -776,10 +782,13 @@ async function analyse(blob, mimeType, seconds, prompt) {
     if (movedOn) { bgNote("Previous response wasn't saved: " + err.message); return; }
     clearInterval(waitTimer);
     $("bg-next-wrap").classList.add("hidden");  // one button is enough once it has failed
+    $("results-btn").classList.add("primary");
     $("results-btn").textContent = "Record Next Response";
     $("results-btn").disabled = false;
     $("results-btn").onclick = () => { if (signedIn()) startSignedIn(); else { nextPrompt(); startTake(); } };
     $("analyze-error").textContent = "Error: " + err.message;
+  } finally {
+    pending = pending.filter((p) => p !== prompt);
   }
 }
 
@@ -820,7 +829,7 @@ function fillResults(data, inBaseline) {
   $("prep").textContent = data.prep_s === null ? "No speech detected" : `${data.prep_s.toFixed(1)} seconds prep time`;
   const pct = (v) => Math.round(v * 100) + "%";
   const share = data.filled_share_count;  // null when the recording had no fillers and no silent pauses
-  $("filled").textContent = share === null || share === undefined ? "No delays" : `${pct(share)} of delays filled`;
+  $("filled").textContent = share === null || share === undefined ? "No fillers or silent pauses" : `${pct(share)} filled share`;
   // From the 11th recording: the user's own baseline for this prompt type, beside each number that has one
   const base = data.baseline || {};
   for (const [id, metric, fmt] of [["rate", "fillers_per_100", (v) => v.toFixed(1)], ["prep", "prep_s", (v) => v.toFixed(1) + " s"],
@@ -890,17 +899,21 @@ $("track").onclick = (e) => {
 // Check the invite code when the demo is chosen, before anyone records (no speech-service call, no cost)
 async function useDemo() {
   $("access").textContent = "";
-  const resp = await fetch("/access", { headers: { "X-Access-Code": CODE } });
-  const data = await resp.json();
+  let resp, data;
+  try {
+    resp = await fetch("/access", { headers: { "X-Access-Code": CODE } });
+    data = await resp.json();
+  } catch { $("access").textContent = "Couldn't reach the server. Try again."; return; }
   if (resp.status === 403) {  // no code, or a wrong one: ask for it
+    if (CODE) $("access").textContent = "That demo code isn't valid.";
     $("code-form").classList.remove("hidden");
     $("code-input").value = "";
     $("code-input").focus();
     return;
   }
+  $("code-form").classList.add("hidden");
   if (!resp.ok) { $("access").textContent = data.detail; return; }
   takesLeft = data.takes_left;
-  $("code-form").classList.add("hidden");
   track("demo_chosen");
   show("s-intro");  // valid code: on to Start
 }
