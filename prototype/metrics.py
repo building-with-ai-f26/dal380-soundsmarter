@@ -22,10 +22,12 @@ Stored with every signed-in recording (HANDOFF decisions 23, 25 and 26):
   - repetitions, cut-offs and "disfluent" words: the labels the speech service
     puts on each word. A repair is one unbroken run of such words.
   - corrections: how many the service made. Stored, never shown.
-  - filled share: of all hesitations, the share that were filled with a sound.
-    A filled hesitation is one filler, together with any pause touching it
-    ("uh um" is two). A silent hesitation is any pause that touches no filler,
+  - filled share: of all delays, the share that were filled with a sound.
+    A filled delay is one filler, together with any pause touching it
+    ("uh um" is two). A silent delay is any pause that touches no filler,
     mid-sentence or at a sentence end. Stored by count and by time.
+    ("Delay" is the owner's word, 2026-11-23; the stored names still say
+    "hesitations" so that older rows keep the same keys.)
   - word-list counts by form (wordlist.py)
 """
 

@@ -63,7 +63,7 @@ class Gate:
         if code not in self.codes:
             raise AccessDenied(403, "This link needs a valid invite code.")
         if self.takes_per_code and self.used.get(code, 0) >= self.takes_per_code:
-            raise AccessDenied(429, "You've used all your takes. Thanks for trying SoundSmarter!")
+            raise AccessDenied(429, "You've used all your responses. Thanks for trying SoundSmarter!")
         self._roll_day()
         if self.today_count >= self.daily_cap:
             raise AccessDenied(429, "The demo is full for today. Please try again tomorrow.")

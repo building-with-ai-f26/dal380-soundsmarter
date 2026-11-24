@@ -4,7 +4,7 @@ From design/2026-11-21-word-list-and-prompt-guidelines.md, tiers 1 and 2
 (HANDOFF.md decision 23). These are *raw counts by form*: every time the
 form is said, with no judgement about whether that use was a filler. "like"
 counts "I like dogs" as well as "it was, like, huge", and it also counts the
-"like" inside "I feel like". Classifying uses comes later (build 4).
+"like" inside "I feel like". Classifying uses comes later; no build is assigned.
 
 Bump VERSION whenever a form is added, removed or changed, so stored counts
 can be told apart.

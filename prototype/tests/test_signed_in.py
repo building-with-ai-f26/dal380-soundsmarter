@@ -48,6 +48,7 @@ class FakeSupabase:
         self.consented = True
         self.key_works = True
         self.database_down = False
+        self.recording_save_fails = False
         self.prompts = [PROMPT]
         self.files_in_bucket = set()
         self.recordings = []
@@ -74,6 +75,8 @@ class FakeSupabase:
             return httpx.Response(401, json={"message": "Invalid API key"})
         if request.method == "POST" and json.loads(request.content) == {}:  # the "does the key work?" check
             return httpx.Response(400, json={"code": "23502", "message": "null value in column"})
+        if request.method == "POST" and table == "recordings" and self.recording_save_fails:
+            return httpx.Response(500, text="could not save")
         if request.method == "POST":
             self.inserted.append((table, json.loads(request.content)))
             return httpx.Response(201, json=[json.loads(request.content)])
@@ -107,13 +110,21 @@ def post_recording(client):
         "Authorization": "Bearer user-token", "X-Prompt-Id": "des-t-01", "Content-Type": "audio/webm"})
 
 
+def test_a_failed_save_is_not_counted_as_sent(fake):
+    """If the recording row can't be saved, no "sent" event is written: the daily slot and the prompt are kept."""
+    fake.recording_save_fails = True
+    r = post_recording(TestClient(server.app))
+    assert r.status_code == 502
+    assert fake.inserted == []
+
+
 def test_recording_is_stored_with_metrics_and_transcription_but_no_audio(fake):
     r = post_recording(TestClient(server.app))
     assert r.status_code == 200 and r.json()["saved"]
     tables = [t for t, _ in fake.inserted]
-    assert tables == ["prompt_events", "recordings"]
-    assert fake.inserted[0][1]["event"] == "sent"
-    row = fake.inserted[1][1]
+    assert tables == ["recordings", "prompt_events"]  # the recording is saved first, then counted
+    assert fake.inserted[1][1]["event"] == "sent"
+    row = fake.inserted[0][1]
     assert row["transcription"] == NYRA
     assert row["metrics"]["total"] == 1 and "tokens" not in row["metrics"]
     assert (row["session_no"], row["position_in_session"], row["prep_from"]) == (1, 1, "reveal")
@@ -302,6 +313,6 @@ def test_baseline_table_endpoint(fake):
     assert c.get("/api/baseline", headers=auth).json() == {"rows": []}
     fake.recordings = eleven_recordings()
     rows = c.get("/api/baseline", headers=auth).json()["rows"]
-    assert [(r["family"], r["mode"]) for r in rows] == [("describe", "text")]
+    assert [r["family"] for r in rows] == ["describe"]
     assert rows[0]["cells"]["fillers_per_100"] == {"baseline": 4.0, "since": 1.0, "n": 1}
     assert c.get("/api/baseline").status_code == 401

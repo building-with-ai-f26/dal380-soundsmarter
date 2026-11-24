@@ -364,7 +364,7 @@ async def my_recordings(request: Request):
 
 @app.get("/api/baseline")
 async def my_baseline(request: Request):
-    """The Account page table: baseline and average since, by family and mode. Empty until the 10th recording."""
+    """The Account page table: baseline and average since, by family. Empty until the 10th recording."""
     token = bearer(request)
     recs = await supa_call(supa.select(token, "recordings", {
         "select": "family,mode,metrics", "order": "created_at.asc"}))
@@ -414,8 +414,6 @@ async def transcribe_and_store(request: Request, token: str, user: dict):
     session_no, position = records.session_slot(last[0] if last else None, now)
 
     # Written by the server, never by the browser, so every stored row is one we measured.
-    await supa_call(supa.insert_as_server("prompt_events", {
-        "user_id": user["id"], "prompt_id": prompt["id"], "event": "sent"}))
     await supa_call(supa.insert_as_server("recordings", {
         "user_id": user["id"], "prompt_id": prompt["id"], "family": prompt["family"], "mode": prompt["mode"],
         "variant": prompt["variant"], "stimulus_id": prompt.get("stimulus_id"),
@@ -426,8 +424,12 @@ async def transcribe_and_store(request: Request, token: str, user: dict):
         "metrics_version": METRICS_VERSION, "word_list_version": WORD_LIST_VERSION,
         "transcription": data, "stt_model": STT_MODEL, "language": data.get("language"),
     }))
+    # "sent" is recorded only once the recording is saved: if the save fails, the user
+    # keeps today's slot and the prompt can be served again.
+    await supa_call(supa.insert_as_server("prompt_events", {
+        "user_id": user["id"], "prompt_id": prompt["id"], "event": "sent"}))
     recs = await supa_call(supa.select(token, "recordings", {
         "select": "family,mode,metrics", "order": "created_at.asc"}))
     return {**shown, "saved": True, "recordings": len(recs), "baseline_size": records.BASELINE_SIZE,
-            # from the 11th recording on: the user's own baseline for this family and mode
-            "baseline": records.baseline_for(recs, prompt["family"], prompt["mode"])}
+            # from the 11th recording on: the user's own baseline for this family
+            "baseline": records.baseline_for(recs, prompt["family"])}

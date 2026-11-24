@@ -138,9 +138,11 @@ def _average(recordings: list[dict], metric: str) -> tuple[float | None, int]:
 
 
 def baseline_table(recordings: list[dict]) -> list[dict]:
-    """The Account page table: one row per family and mode the user has recorded.
+    """The Account page table: one row per family the user has recorded.
 
-    recordings: the user's recordings, oldest first, each with family, mode, metrics.
+    Text and image recordings of a family are taken together (owner, 2026-11-23), so
+    each baseline number is an average of two recordings, not a single one.
+    recordings: the user's recordings, oldest first, each with family and metrics.
     The first BASELINE_SIZE are the baseline; every later one is "since baseline".
     Each cell: {"baseline": value or None, "since": average or None, "n": recordings in that average}.
     Empty until the baseline is complete.
@@ -149,25 +151,25 @@ def baseline_table(recordings: list[dict]) -> list[dict]:
         return []
     base, later = recordings[:BASELINE_SIZE], recordings[BASELINE_SIZE:]
     rows = []
-    for family, mode in sorted({(r["family"], r["mode"]) for r in recordings},
-                               key=lambda fm: (FAMILIES.index(fm[0]) if fm[0] in FAMILIES else 99, fm[1] != "text", fm[1])):
-        mine = lambda rs: [r for r in rs if (r["family"], r["mode"]) == (family, mode)]  # noqa: E731
+    for family in sorted({r["family"] for r in recordings},
+                         key=lambda f: FAMILIES.index(f) if f in FAMILIES else 99):
+        mine = lambda rs: [r for r in rs if r["family"] == family]  # noqa: E731
         cells = {}
         for metric in COMPARED:
             since, n = _average(mine(later), metric)
             cells[metric] = {"baseline": _average(mine(base), metric)[0], "since": since, "n": n}
-        rows.append({"family": family, "mode": mode, "cells": cells})
+        rows.append({"family": family, "cells": cells})
     return rows
 
 
-def baseline_for(recordings: list[dict], family: str, mode: str) -> dict | None:
-    """The user's baseline numbers for one family and mode, for the results page.
+def baseline_for(recordings: list[dict], family: str) -> dict | None:
+    """The user's baseline numbers for one family (text and image together), for the results page.
 
     None during baseline (the first BASELINE_SIZE recordings show no numbers at all).
     """
     if len(recordings) <= BASELINE_SIZE:
         return None
-    mine = [r for r in recordings[:BASELINE_SIZE] if (r["family"], r["mode"]) == (family, mode)]
+    mine = [r for r in recordings[:BASELINE_SIZE] if r["family"] == family]
     return {metric: _average(mine, metric)[0] for metric in COMPARED}
 
 
