@@ -12,11 +12,11 @@
 ## What it does
 
 1. **Account.** Create an account with a personal sign-up code and agree to what is stored: the transcript, word timings and metrics of every recording. Audio is not stored. English only.
-2. **Prompt.** One of 206 prompts in five families: Describe, Narrate, Argue, Invent, Explain. Text, or an image.
+2. **Prompt.** One of 206 prompts in five prompt types: Describe, Narrate, Argue, Invent, Explain. Text, or an image.
 3. **Record.** 30 to 60 seconds in the browser, then Send or Discard.
 4. **Analyze.** Nyra Labs CrisperWhisper 2 keeps every filler and times every word. The app computes the numbers in code. For accounts, unusable recordings are rejected.
 5. **Baseline.** The first 10 recordings give playback and a transcription, no numbers.
-6. **Results.** After the 10th, the Account page shows a baseline table by family and mode. From the 11th, each recording's numbers appear beside the baseline.
+6. **Results.** After the 10th, the Account page shows a baseline table by prompt type. From the 11th, each recording's numbers appear beside the baseline.
 
 Demo-code visitors get a shorter version: 12 prompts, numbers straight away, nothing stored.
 

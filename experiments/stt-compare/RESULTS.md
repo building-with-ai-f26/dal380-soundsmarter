@@ -27,3 +27,20 @@ Same 4 phone recordings (m4a, no browser involved) sent to three speech-to-text 
 - One speaker, 4 takes, one phone. Test A/B (browser vs. phone) not run.
 - Scribe v3 tied CrisperWhisper on counts. CrisperWhisper's advantages are the per-token labels (hitches) and the published timing accuracy; Scribe's are a commercial license and slightly better text on take 3.
 - Raw responses are in `results/` (not committed: personal voice data).
+
+## Re-run with the app's settings (2026-11-23)
+
+Test C sent every recording with the language forced to English. Since 2026-11-22 the app sends no language and lets the service detect it. The same 4 recordings were sent again with the app's settings (`crisperwhisper-v2`, no language), and counted with the app's own code. Run from `prototype/`: `uv run python ../experiments/stt-compare/app_settings_test.py`. Four calls, about 4 cents at $0.90 per audio hour (estimated from length; not read from the wallet).
+
+| Recording | Hand (um+uh) | App settings, no language | Test C, English forced |
+|---|---|---|---|
+| 1 | 6 (4+2) | 6 (4+2) | 6 |
+| 2 | 9 | 9 | 9 |
+| 4 | 3 | 3 | 3 |
+| **Total, 1, 2, 4** | **18** | **18** | **18** |
+| 3 ("um" said as a word) | 1 | 5 | 5 |
+
+- Dropping the language setting changed no count. The service detected English on all four.
+- Recording 3 is unchanged: "um" said as a word is still counted as a filler.
+- Same limits as test C: one speaker, 4 recordings, one phone. The recordings were converted to 16 kHz mono WAV with ffmpeg before sending, as in test C; the service cannot decode the phone's .m4a as sent. The browser's own recordings were not tested here.
+- Not checked: pauses, filled share, repairs, rates. The 15-recording hand-counted set (`hand-count/`) is for those and will replace this test.

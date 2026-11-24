@@ -170,7 +170,7 @@
       <svg aria-hidden="true"><use href="#logo"/></svg>
       <span class="text">
         <span class="name">SoundSmarter</span>
-        <span class="desc">Extemporaneous-speech self-improvement app that tracks important speech metrics like filler word usage.</span>
+        <span class="desc">Spontaneous-speech app that tracks speech metrics like filler words and pauses.</span>
       </span>
     </div>
     <a class="course" href="https://github.com/building-with-ai-f26" target="_blank" rel="noopener">NYU Stern · Building with AI · Fall 2026</a>
@@ -197,7 +197,7 @@
           <div class="screen" data-screen="landing">
             <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Landing Page states"><button type="button" data-src="images/build3-landing.png" aria-pressed="true">Code needed</button><button type="button" data-src="images/build3-landing-sign-in.png" aria-pressed="false">Sign in</button></div></div>
             <a class="frame" style="--h:740" href="images/build3-landing.png" target="_blank" rel="noopener"><img src="images/build3-landing.png" alt="Landing Page" /></a>
-            <p class="caption">User sees this page first, and enters a demo code, signs in or creates an account.</p>
+            <p class="caption">User sees this page first. The button leads to sign-in, with account creation and the demo version below it.</p>
           </div>
           <div class="screen" data-screen="record" hidden>
             <a class="frame" style="--h:360" href="images/build3-record-text.png" target="_blank" rel="noopener"><img src="images/build3-record-text.png" alt="Record Page" /></a>
@@ -210,7 +210,7 @@
           <div class="screen" data-screen="results" hidden>
             <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Results Page states"><button type="button" data-src="images/build3-results-no_baseline.png" aria-pressed="true">During baseline</button><button type="button" data-src="images/build3-results-baseline.png" aria-pressed="false">From the 11th</button></div></div>
             <a class="frame" style="--h:1000" href="images/build3-results-no_baseline.png" target="_blank" rel="noopener"><img src="images/build3-results-no_baseline.png" alt="Results Page" /></a>
-            <p class="caption">During the 10 baseline recordings, shows baseline progress, playback and the transcription, and no numbers. From the 11th, shows fillers, fillers per 100 words and prep time, with the baseline for that family and mode beside the last two, and marks fillers and silent pauses in the transcription.</p>
+            <p class="caption">During the 10 baseline recordings, shows baseline progress, playback and the transcription, and no numbers. From the 11th, shows fillers, fillers per 100 words and prep time, with the baseline for that prompt type beside the last two, and marks fillers and silent pauses in the transcription.</p>
           </div>
           <div class="screen" data-screen="unusable" hidden>
             <a class="frame" style="--h:330" href="images/build3-too-quiet.png" target="_blank" rel="noopener"><img src="images/build3-too-quiet.png" alt="Too Quiet Page" /></a>
@@ -219,7 +219,7 @@
           <div class="screen" data-screen="account" hidden>
             <div class="toggle-row subtabs"><div class="toggle" role="group" aria-label="Account Page states"><button type="button" data-src="images/build3-account-no-baseline.png" aria-pressed="true">During baseline</button><button type="button" data-src="images/build3-account-with-baseline.png" aria-pressed="false">Baseline complete</button></div></div>
             <a class="frame" style="--h:750" href="images/build3-account-no-baseline.png" target="_blank" rel="noopener"><img src="images/build3-account-no-baseline.png" alt="Account Page" /></a>
-            <p class="caption">Shows baseline progress, recordings sent today against the daily limit of 20, and the list of recordings. After the 10th recording, shows the baseline table by family and mode.</p>
+            <p class="caption">Shows baseline progress, recordings sent today against the daily limit of 20, and the list of recordings. After the 10th recording, shows the baseline table by prompt type.</p>
           </div>
       </div>
 
@@ -246,7 +246,7 @@
       <p class="meta">Updated weekly</p>
       <div class="scroll">
         <h3>Target Userbase</h3>
-        <p>Speakers who want to develop awareness of their extemporaneous speech patterns through metric analysis.</p>
+        <p>Speakers who want to develop awareness of their spontaneous speech patterns through metric analysis.</p>
 
         <h3 class="tight">Need State</h3>
         <p>Speakers who say "um" and "uh" or pause when speaking off-the-cuff don't know how often they do it, or how it shifts with what they are asked to talk about. One recording can't show a pattern.</p>
@@ -255,11 +255,11 @@
         <h3>Core Workflow</h3>
         <ol>
           <li><strong>Account:</strong> User creates an account with a personal sign-up code and agrees that the transcript, word timings and metrics of every recording are stored. Audio is not stored. English only.</li>
-          <li><strong>Prompt:</strong> One of 206 prompts in five families: Describe, Narrate, Argue, Invent, Explain. Text, or an image for Describe, Argue and Invent. No prompt is shown twice. Option to skip.</li>
+          <li><strong>Prompt:</strong> One of 206 prompts in five prompt types: Describe, Narrate, Argue, Invent, Explain. Text, or an image for Describe, Argue and Invent. No prompt is shown twice. Option to skip.</li>
           <li><strong>Record:</strong> 30 seconds minimum, 60 maximum. After stopping, the user chooses Send or Discard. Nothing is transcribed until Send.</li>
           <li><strong>Analyze:</strong> Nyra Labs CrisperWhisper 2 keeps every filler and times every word. A recording that is near-silent, clipped, under 15 words, implausibly fast or slow, or not in English is rejected: the recording is not stored and the user records the same prompt again.</li>
-          <li><strong>Baseline:</strong> The first 10 recordings, two per family. The user gets playback and the transcription. No numbers.</li>
-          <li><strong>Results:</strong> After the 10th recording the Account page shows a table by family and mode: fillers per 100 words, filled share (the share of hesitations filled with um or uh rather than left silent), mid-sentence pauses per 100 words, speaking rate and prep time, each as the baseline and the average since. From the 11th, the results page shows that recording's numbers with the baseline beside fillers per 100 words and prep time.</li>
+          <li><strong>Baseline:</strong> The first 10 recordings, two per prompt type. The user gets playback and the transcription. No numbers.</li>
+          <li><strong>Results:</strong> After the 10th recording the Account page shows a table by prompt type: fillers per 100 words, filled share (the share of delays filled with um or uh rather than left silent), mid-sentence pauses per 100 words, speaking rate and prep time, each as the baseline and the average since. From the 11th, the results page shows that recording's numbers with the baseline beside fillers per 100 words and prep time.</li>
         </ol>
         <p>Demo-code visitors keep the Build 2 flow: 12 prompts, numbers straight away, nothing stored.</p>
         <p><strong>Success test:</strong> A signed-in user completes the 10 baseline recordings without help and sees the baseline table.</p>
@@ -318,7 +318,7 @@
           </div>
           <div class="stat-box">
             <div class="stat-label">Claude (AI Coding Agent)</div>
-            <div class="stat-value">~135M tokens (Build 1: ~12M · Build 2: ~33M · Build 3: ~90M), mostly re-reading project context; ~980K tokens written</div>
+            <div class="stat-value">~130M tokens (Build 1: ~9.6M · Build 2: ~30.5M · Build 3: ~90M), mostly re-reading project context; ~980K tokens written</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Est. Cost Per User Run</div>
@@ -365,9 +365,9 @@
         <summary>Build 3: Nov. 23, 2026 – Accounts, Stored Recordings and a Personal Baseline</summary>
         <div class="body">
           <ul>
-          <li><strong>What shipped:</strong> Build 3, merged in <a href="https://github.com/building-with-ai-f26/dal380-soundsmarter/pull/10" target="_blank" rel="noopener">PR #10</a> and live on Render. Accounts with a personal sign-up code and a consent notice. Sign-in, a Postgres database and prompt images on Supabase, with row-level security on every table; only the server writes recordings. 206 approved prompts in five families (176 text, 30 image). After stopping, the user chooses Send or Discard. Unusable recordings are rejected and not stored. Each recording stores its transcript, word timings and the full metric set (version 3), and no audio. The first 10 recordings set a baseline, shown as a table on the Account page; from the 11th, results show the baseline beside fillers per 100 words and prep time. A cap of 20 recordings a day per account. 66 unit tests. A security audit, written up in <a href="https://github.com/building-with-ai-f26/dal380-soundsmarter/blob/main/SECURITY.md" target="_blank" rel="noopener">SECURITY.md</a>: one account could not read another's data, and 9 of 12 findings were fixed. Demo-code visitors keep the Build 2 flow. <strong>Did not ship:</strong> audio prompts; the 25 Invent story prompts, held for the next build; a separate baseline page or trend chart (one table on the Account page instead); the next prompt starting on its own after Send (it is still a link to click); account deletion and password reset; the acoustic features and the recommendation first planned for Build 3. The analysis screen still shows the stale Build 2 reference numbers.</li>
+          <li><strong>What shipped:</strong> Build 3, merged in <a href="https://github.com/building-with-ai-f26/dal380-soundsmarter/pull/10" target="_blank" rel="noopener">PR #10</a> and live on Render. Accounts with a personal sign-up code and a consent notice. Sign-in, a Postgres database and prompt images on Supabase, with row-level security on every table; only the server writes recordings. 206 approved prompts in five prompt types (176 text, 30 image). After stopping, the user chooses Send or Discard. Unusable recordings are rejected and not stored. Each recording stores its transcript, word timings and the full metric set (version 3), and no audio. The first 10 recordings set a baseline, shown as a table on the Account page; from the 11th, results show the baseline beside fillers per 100 words and prep time. A cap of 20 recordings a day per account. 66 unit tests. A security audit, written up in <a href="https://github.com/building-with-ai-f26/dal380-soundsmarter/blob/main/SECURITY.md" target="_blank" rel="noopener">SECURITY.md</a>: one account could not read another's data, and 9 of 12 findings were fixed. Demo-code visitors keep the Build 2 flow. <strong>Did not ship:</strong> audio prompts; the 25 Invent story prompts, held for the next build; a separate baseline page or trend chart (one table on the Account page instead); the next prompt starting on its own after Send (it is still a link to click); account deletion and password reset; the acoustic features and the recommendation first planned for Build 3. The analysis screen still shows the stale Build 2 reference numbers.</li>
           <li><strong>Things learned with AI:</strong> Have a second agent with no memory of the work review it before merging: four reviews of this build produced 63 findings. The first found that a signed-in user could write made-up recordings straight to the database with the public key, so I learned the difference between a publishable key and a secret key and moved those writes to the server. Code that follows a definition word for word can still miss its purpose: the sentence-end rule matched the wording and was wrong on three of four real recordings. Check that a result can be saved before paying for it. Database changes are kept as numbered migration files and run on the development database before the live one. An image-generation script with a hard spend cap made 108 images for $1.77. Using the app myself still matters: after all the agent reviews, I found by signing out that the sign-in form kept my email and password filled in. No review had caught it.</li>
-          <li><strong>What broke / changed in PRD:</strong> Review found that users could write their own records directly; now only the server can. A wrong server key would have let a recording be transcribed and paid for before the save failed; the server now checks first. Sentence-end pauses were missed wherever a filler sat at the boundary, fixed in metrics version 3. A rejected recording used up its prompt, and an image prompt counted as seen before its pictures loaded; both fixed. PRD changes: the riskiest assumption moves from accurate detection to baseline completion; Supabase Postgres replaces the planned SQLite; accounts, consent, Send or Discard and a 10-recording baseline with no numbers join the core workflow; the prompt bank for signed-in users grows from 12 to 206 in five families, with images; the acoustic features and recommendation planned for this build are put off.</li>
+          <li><strong>What broke / changed in PRD:</strong> Review found that users could write their own records directly; now only the server can. A wrong server key would have let a recording be transcribed and paid for before the save failed; the server now checks first. Sentence-end pauses were missed wherever a filler sat at the boundary, fixed in metrics version 3. A rejected recording used up its prompt, and an image prompt counted as seen before its pictures loaded; both fixed. PRD changes: the riskiest assumption moves from accurate detection to baseline completion; Supabase Postgres replaces the planned SQLite; accounts, consent, Send or Discard and a 10-recording baseline with no numbers join the core workflow; the prompt bank for signed-in users grows from 12 to 206 in five prompt types, with images; the acoustic features and recommendation planned for this build are put off.</li>
           <li><strong>Cost & time this week:</strong> $1.77 (OpenRouter, 108 generated images). Nyra drawn from the $10 prepaid ($0.51 used to date); everything else free · 10–12 hours</li>
         </ul>
         </div>
