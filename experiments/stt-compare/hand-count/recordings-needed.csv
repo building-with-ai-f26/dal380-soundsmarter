@@ -1,0 +1,16 @@
+id,kind,tests,what_to_do,prompt,also_in_app
+01,natural,Ordinary speech: fillers and pauses as they fall,"Answer the way you normally would. Count afterwards, from the playback.",What did the kitchen look like in the home you grew up in? What's one specific detail you remember about it?,yes
+02,natural,"Ordinary speech, a story","Answer the way you normally would. Count afterwards, from the playback.",Tell me about a trip that didn't go to plan. What went wrong and how did you get home?,
+03,natural,"Ordinary speech, an opinion (usually more fillers)","Answer the way you normally would. Count afterwards, from the playback.",How faithful should a movie be to the book it's based on?,
+04,natural,"Ordinary speech, a hypothetical","Answer the way you normally would. Count afterwards, from the playback.","If you were given a food truck and $5,000 to get it started, what would you sell? Where would you park it on opening day?",
+05,natural,"Ordinary speech, a procedure","Answer the way you normally would. Count afterwards, from the playback.",Explain how you pack for a week-long trip.,
+06,natural,Ordinary speech with something to look at,"Answer the way you normally would. Count afterwards, from the playback.",Describe what is on the desk or table in front of you.,
+07,planted,Opening filler and prep time,"Wait about three seconds after pressing record, then open with a long ""uhh"" before your first word. Carry on normally.","What you did yesterday, start to finish.",yes
+08,planted,"Soft, quick ums","Say about eight ums, each one quiet and short, the kind that is easy to miss.","What you did yesterday, start to finish.",yes
+09,planted,A filler sitting at the end of a sentence,"At least five times: finish a sentence, say ""um"", pause for a second, then start the next sentence.","What you did yesterday, start to finish.",
+10,planted,Silent pauses in the middle of a sentence,"No fillers. Five times, stop for a full second in the middle of a sentence, then finish it.","What you did yesterday, start to finish.",yes
+11,planted,Silent pauses between sentences only,"No fillers. Five times, stop for a full second after a sentence ends. Keep the middle of each sentence flowing.","What you did yesterday, start to finish.",
+12,planted,"A filler with a pause beside it, and two fillers in a row","Five times mid-sentence: ""um"", then a one-second pause. Twice more: ""uh um"" back to back.","What you did yesterday, start to finish.",
+13,planted,Repeated words and cut-off words,"Four times, repeat a word (""I I went""). Three times, cut a word off and restart (""the st- the shop""). No ums.","What you did yesterday, start to finish.",
+14,planted,Other filler sounds and filler words,"Say ""er"", ""erm"" and ""ah"" twice each. Say ""like"" and ""you know"" as fillers three times each. No um or uh.","What you did yesterday, start to finish.",
+15,planted,"Fast, clean speech: nothing should be counted",Talk quickly with no fillers and no pauses longer than a breath.,"What you did yesterday, start to finish.",
